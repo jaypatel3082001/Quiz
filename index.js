@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const env = require('dotenv')
 const authRoute = require('./routes/authRoute')
 const question = require('./routes/questionRoute')
 const quize = require('./routes/quizRoute')
@@ -7,8 +8,11 @@ const section = require('./routes/sectionRoute')
 const group = require('./routes/groupRoute')
 // const mongoose = require('mongoose')
 const app = express()
+env.config()
 // const user = require('./models/user')
 const bodyParser = require('body-parser');
+
+const port = process.env.PORT || 3001
 // const mongo = mongoose()
 
 mongoose.connect("mongodb+srv://jayp_3008:jay123@cluster0.xycjrla.mongodb.net/Quizz_soft?retryWrites=true&w=majority",
@@ -76,7 +80,7 @@ app.use('/quize',quize)
 //     res.status(200).json({ message: 'Login successful!' });
 // })
 
-app.listen(3001,()=>{
+app.listen(port,()=>{
     console.log("port is working")
 })
-module.exports = app; 
+// module.exports = app; 
