@@ -1,10 +1,10 @@
-// const express = require('express');
-// const { question, updatequestion, deletequestion, getallquizequestion, getallquestion } = require('../controllers/questionController');
-// const { quuiz,getAll,updatequizname,deletequizname,insertOrupdateQuestionsToQuiz, deletionofquestionIntoquize} = require('../controllers/quizeController');
+const express = require('express');
+const { create } = require('../controllers/selectController');
 
-// const router = express.Router();
 
-// router.post('/question', question);
+const router = express.Router();
+
+router.post('/create/:id', create);
 // router.post('/quiz', quuiz);
 // router.get('/getall',getAll)
 // router.put('/update/:id',updatequizname)
@@ -17,4 +17,4 @@
 // router.get('/getallquestion',getallquestion)
 // // router.post('/login', login);
 
-// module.exports = router;
+module.exports = router;
