@@ -1,9 +1,10 @@
 const express = require('express');
-const { signup, login } = require('../controllers/authController');
-
+const { signup, login,handleAdmin } = require('../controllers/authController');
+// const authchreckmid = ddd;
 const router = express.Router();
-
-router.post('/signup', signup);
-router.post('/login', login);
+// router.use(authchreckmid)
+router.post('/signup',signup);
+router.post('/login',login);
+router.get('/admins', handleAdmin);
 
 module.exports = router;
