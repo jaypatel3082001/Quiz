@@ -6,8 +6,10 @@ const question = require('./routes/questionRoute')
 const quize = require('./routes/quizRoute')
 const section = require('./routes/sectionRoute')
 const history = require('./routes/historyRoute')
+const cors = require('cors')
 // const mongoose = require('mongoose')
 const app = express()
+
 env.config()
 // const user = require('./models/user')
 const bodyParser = require('body-parser');
@@ -25,7 +27,11 @@ mongoose.connect("mongodb+srv://jayp_3008:jay123@cluster0.xycjrla.mongodb.net/Qu
     console.error("Error connecting to MongoDB:", err);
 });
 
-app.use(bodyParser.json()); 
+
+app.use(bodyParser.json());
+app.use(cors())
+app.use(express.urlencoded({extended:true})); 
+
 app.use('/auth',authRoute)
 app.use('/questions',question)
 app.use('/quize',quize)
