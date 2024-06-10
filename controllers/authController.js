@@ -2,6 +2,7 @@ const User = require('../models/user');
 // const Role = require('../models/admin');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const tokengen = require('../middleware/authMiddleware');
 // const express = require('express')
 // const app = express()
 // const bodyParser = require('body-parser');
@@ -40,9 +41,10 @@ exports.signup = async (req, res) => {
     // Create a new user using the User model
     const user = new User({ username,email, password: hashedPassword, role: role1});
     await user.save();
+    const token = jwt.sign({ email: user.email, role: user.role }, 'Hs235', { expiresIn: '1h' });
 
     // Generate a JWT token
-    const token = jwt.sign({ emailId: user._id }, 'your_secret_key', { expiresIn: '1h' });
+    // tokengen()
 
     res.status(201).json({ message: 'User created successfully', token });
   } catch (err) {
@@ -74,7 +76,8 @@ exports.login = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ emailId: user._id }, 'your_secret_key', { expiresIn: '1h' });
+    const token = jwt.sign({ email: user.email, role: user.role }, 'Hs235', { expiresIn: '1h' });
+    
 
     res.status(200).json({ message: 'Login successful', token });
   } catch (err) {

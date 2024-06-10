@@ -66,11 +66,32 @@ async function getallquestion(req, res) {
     console.log(error)
         }
     }
+async function getonequestion(req, res) {
+    try {
+        // const { quizename } = req.params;
+        // const { questionid } = req.body;
+    
+     
+        // const allQuize = await Questions.find({}).populate('quizemcqs');
+        const quiz = await Questions.findById(req.params.id)
+      
+        console.log("pop",quiz);
+
+        // const quiii= await quiz
+        // if (!quiz) {
+        //     return res.status(404).json({ error: 'Question not found' });
+        //   }
+        res.status(200).json(quiz);
+    
+        } catch (error) {
+    console.log(error)
+        }
+    }
 
 
 
 
 
 module.exports = {
-    question,updatequestion,deletequestion,getallquestion
+    question,updatequestion,deletequestion,getallquestion,getonequestion
 }

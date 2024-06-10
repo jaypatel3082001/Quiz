@@ -1,5 +1,6 @@
 const express = require('express');
 const { signup, login,handleAdmin } = require('../controllers/authController');
+const { verifyToken } = require('../middleware/authMiddleware');
 // const authchreckmid = ddd;
 const router = express.Router();
 // router.use(authchreckmid)

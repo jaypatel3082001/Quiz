@@ -1,5 +1,5 @@
 const express = require('express');
-const { question, updatequestion, deletequestion, getallquizequestion, getallquestion } = require('../controllers/questionController');
+const { question, updatequestion, deletequestion, getallquestion,getonequestion } = require('../controllers/questionController');
 // const { quuiz,getAll,updatequizname,deletequizname,insertOrupdateQuestionsToQuiz, deletionofquestionIntoquize} = require('../controllers/quizeController');
 
 const router = express.Router();
@@ -15,6 +15,7 @@ router.delete('/delete/:id', deletequestion )
 
 // router.put('/deletequize-question/:id',deletionofquestionIntoquize)
 router.get('/getallquestions',getallquestion)
+router.get('/getallquestions/:id',getonequestion)
 // router.post('/login', login);
 
 module.exports = router;
