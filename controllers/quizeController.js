@@ -93,12 +93,12 @@ async function deletionofquestionIntoquize(req, res) {
 }
 async function getallquizequestion(req, res) {
     try {
-        const { quizename } = req.params;
+    
         // const { questionid } = req.body;
     
      
         // const allQuize = await Questions.find({}).populate('quizemcqs');
-        const quiz = await Quize.findOne({ quizename }).populate('quizemcqs');
+        const quiz = await Quize.findById(req.params.id).populate('quizemcqs');
       
         console.log("pop",quiz);
 

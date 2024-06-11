@@ -1,22 +1,40 @@
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
-function verifyToken(req, res, next) {
-  // Get auth header value
-  const bearerHeader = req.headers['authorization'];
+// // Middleware function for JWT authentication and token expiration
+// function authenticateToken(req, res, next) {
 
-  // Check if bearer is undefined
-  if (typeof bearerHeader !== 'undefined') {
-    // Split at the space
-    const bearer = bearerHeader.split(' ');
-    // Get token from array
-    const bearerToken = bearer[1];
-    // Set the token
-    req.token = bearerToken;
-    // Call next middleware
-    next();
-  } else {
-    // Forbidden
-    res.sendStatus(403);
-  }
-}
-module.exports={verifyToken}
+
+//   try{
+//      const token = req.headers['authorization'];
+//     res.status(200).send({ message: 'Success' });
+//     next();
+
+//   }catch(err){
+//     console.log(`the respose has error: ${err}`)
+//   }
+//     // Get token from headers, query parameters, or cookies
+//     // const token = req.headers['authorization'];
+//     // console.log("tokkk",req.headers)
+
+//     // if (!token) {
+//     //     return res.status(403).send({ auth: false, message: 'No token provided.' });
+//     // }
+
+//     // // Verify the token
+//     // jwt.verify(token, 'your_secret_key', function(err, decoded) {
+//     //     if (err) {
+//     //         return res.status(401).send({ auth: false, message: 'Failed to authenticate token.' });
+//     //     }
+
+//     //     // Check token expiration
+//     //     if (Date.now() >= decoded.exp * 1000) {
+//     //         return res.status(401).send({ auth: false, message: 'Token expired.' });
+//     //     }
+
+//     //     // If token is valid and not expired, save decoded token to request object
+//     //     req.userId = decoded.id;
+   
+//     // });
+// }
+
+// module.exports = {authenticateToken}

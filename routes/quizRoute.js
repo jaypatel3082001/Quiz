@@ -8,7 +8,7 @@ router.post('/create', quuiz);
 router.get('/getall',getAll)
 router.put('/update/:id',updatequizname)
 router.delete('/delete/:id',deletequizname)
-router.get('/read/:quizename',getallquizequestion)
+router.get('/read/:id',getallquizequestion)
 router.put('/insert-questions/:id',insertOrupdateQuestionsToQuiz)
 // router.put('/updatequestion/:id', updatequestion )
 // router.delete('/deletequestion/:id', deletequestion )
