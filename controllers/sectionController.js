@@ -75,5 +75,27 @@ async function deleteOperation (req,res){
     }
 
 }
+async function getallsectionQuize (req,res){
+    try{
 
-module.exports={create,update,read,deletes,insertOperation,deleteOperation}
+        const secData = await Section.findById(req.params.id).populate('sectioninfo')
+       
+        // const quiz = await Quize.findById(req.params.id).populate('quizemcqs');
+      
+        console.log("pop",secData);
+
+        // const quiii= await quiz
+        if (!secData) {
+            return res.status(404).json({ error: 'Section not found' });
+          }
+          res.status(201).json({data: secData})
+        // res.status(200).json(quiz);
+
+    }catch(err){
+        res.status(500).json(`error reading section ${err}`)
+        
+    }
+
+}
+
+module.exports={create,update,read,deletes,insertOperation,deleteOperation,getallsectionQuize}

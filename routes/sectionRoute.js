@@ -1,5 +1,5 @@
 const express = require('express')
-const {create,update,read,deletes,insertOperation,deleteOperation} = require('../controllers/sectionController')
+const {create,update,read,deletes,insertOperation,deleteOperation,getallsectionQuize} = require('../controllers/sectionController')
 const router=express.Router()
 
 
@@ -9,6 +9,7 @@ router.post('/create',create );
 router.put('/update/:id',update );
 router.delete('/delete/:id',deletes );
 router.get('/read',read );
+router.get('/read/:id',getallsectionQuize)
 router.put('/insertquiz/:id',insertOperation );
 router.put('/deletetquiz/:id',deleteOperation );
 
