@@ -1,14 +1,12 @@
-
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const sectionSchema = new mongoose.Schema({
-    sectionName:{
-        type:String,
-        required:true
-    },
-    sectioninfo:[{type:mongoose.Schema.Types.ObjectId, ref:'Quize'}],
+  sectionName: {
+    type: String,
+    required: true,
+  },
+  sectioninfo: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quize" }],
+  totalTime: { type: Number, default: 2 },
+});
 
-})
-
-
-module.exports = mongoose.model('Section', sectionSchema);
+module.exports = mongoose.model("Section", sectionSchema);

@@ -1,6 +1,7 @@
 const Result = require("../models/Result");
 const Questions = require("../models/questions");
 const Section = require("../models/section");
+const Quize = require("../models/Quizearr");
 
 async function send(req, res) {
   try {
@@ -19,6 +20,13 @@ async function send(req, res) {
       })
     );
     const result = countresult(allData, questions);
+    const allresult = await Result.create({
+      userId: req.params.id,
+      sectionId,
+      questions,
+      result: result,
+    });
+    // await user.save();
     // const existingUser = await Section.findOne({ section });
     // const user= await User.findById(req.params.id)
     // if (!selectedSection) {
@@ -30,7 +38,7 @@ async function send(req, res) {
     // console.log("ggghhhh",user._id.toString())
     // const crethistory = await History.create({selectedUser: user._id,selectedSection:selectedSection})
 
-    res.status(201).json({ message: crethistory });
+    res.status(201).json({ data: allresult });
 
     // }
 
@@ -40,22 +48,71 @@ async function send(req, res) {
     res.status(500).json({ err: error });
   }
 }
-const countresult = (allData, questions) => {
-  sum = 0;
+// const countresult = (allData, questions) => {
+//   let sum = 0;
+//   let temparry = [];
+//   //   questions.filter((ele)=>ele.isAttemoed);
 
-  allData.map((element, ind) => {
-    element.quizemcqs.map((que) => {
-      questions.map((ele, i) => {
-        if (ele.questionId === que._id) {
-          if (ele.answer === que.answer) {
-            sum = sum + que.weightage;
-          }
-        }
-      });
-    });
+//   allData.map((ele, ind) => {
+//     // element.quizemcqs.map((que) => {
+//     //   questions.map((ele, i) => {
+//     //     if (ele.questionId === que._id) {
+//     //       if (ele.answer === que.answer) {
+//     //         sum = sum + que.weightage;
+//     //       }
+//     //     }
+//     //   });
+//     // });
+//     // ele.quizemcqs
+//     temparry = temparry.push(ele.quizemcqs);
+//     // const children = ele.quizemcqs.concat(arr2);
+//   });
+//   //   let sum = 0;
+
+//   // Create a Map for quick lookup from allData
+//   const allDataMap = new Map(temparry.map((item) => [item.questionId, item]));
+
+//   // Iterate over the questions and check answers
+//   questions.forEach((question) => {
+//     if (question.isAttempted) {
+//       const correspondingData = allDataMap.get(question.questionId);
+//       if (correspondingData && correspondingData.ans === question.ans) {
+//         sum += correspondingData.weightage;
+//       }
+//     }
+//   });
+
+//   console.log("this is result...", sum);
+
+//   return sum;
+// };
+const countresult = (allData, questions) => {
+  let sum = 0;
+  let temparry = [];
+
+  // Flatten all quizemcqs arrays into a single array
+  allData.forEach((ele) => {
+    temparry = temparry.concat(ele.quizemcqs);
   });
+
+  // Create a Map for quick lookup from temparry
+  const allDataMap = new Map(temparry.map((item) => [item.questionId, item]));
+
+  // Iterate over the questions and check answers
+  questions.forEach((question) => {
+    if (question.isAttempted) {
+      const correspondingData = allDataMap.get(question.questionId);
+      if (correspondingData && correspondingData.ans === question.ans) {
+        sum += correspondingData.weightage;
+      }
+    }
+  });
+
+  console.log("this is result...", sum);
+
   return sum;
 };
+
 module.exports = {
   send,
 };

@@ -7,28 +7,16 @@ const resultSchema = new mongoose.Schema(
     // question:,//quize if require
     questions: [
       {
-        questionId: {
-          type: string,
-        },
-        question: {
-          type: string,
-        },
-        answer: {
-          type: String,
-        },
-        isattamted: {
-          type: Boolean,
-        },
-        weightage: {
-          type: Number,
-        },
+        questionId: { type: String },
+        question: { type: String },
+        answer: { type: String },
+        isAttempted: { type: Boolean },
+        weightage: { type: Number },
       },
     ],
-    result: {
-      type: Number,
-    },
-
-    // perctage
+    result: { type: Number },
+    startTime: { type: Date },
+    endTime: { type: Date },
   },
   {
     timestamps: true,
