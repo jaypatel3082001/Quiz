@@ -1,4 +1,5 @@
 const Section = require('../models/section')
+const Quize = require('../models/Quizearr')
 
 async function create (req,res){
 try{
@@ -50,10 +51,26 @@ async function deletes (req,res){
 async function insertOperation (req,res){
     try{
         const {quizeId} = req.body
+        // const exsitingquize = await Section.findById(req.params.id)
+        // if(exsitingquize){}
+        // console.log("fffff",)
+    //   const abc=  exsitingquize.sectioninfo.some((ele,i) => ele[i]===quizeId)
+        // console.log("fffff",abc)
+     
         const insertQuiz = await Section.findByIdAndUpdate(req.params.id,{
             $push: { sectioninfo: quizeId }
         },{new:true})
+        console.log("hhh",insertQuiz)
         res.status(201).json({data: insertQuiz})
+      
+       
+
+
+        // const { questionId } = req.body;
+        // const quizarr = await Quize.findByIdAndUpdate(req.params.id, {
+        //     $push: { quizemcqs: questionId }
+        // }, { new: true });
+        // res.status(200).json({ data: quizarr });
 
     }catch{
         res.status(500).json("error while inserting section")
@@ -82,7 +99,7 @@ async function getallsectionQuize (req,res){
        
         // const quiz = await Quize.findById(req.params.id).populate('quizemcqs');
       
-        console.log("pop",secData);
+        console.log("pop",secData.sectioninfo);
 
         // const quiii= await quiz
         if (!secData) {
@@ -97,5 +114,43 @@ async function getallsectionQuize (req,res){
     }
 
 }
+async function getallsectiondata (req,res){
+    try{
 
-module.exports={create,update,read,deletes,insertOperation,deleteOperation,getallsectionQuize}
+        const secData = await Section.findById(req.params.id);
+
+        if (!secData) {
+          return res.status(404).send('Section not found');
+        }
+        
+        if (!Array.isArray(secData.sectioninfo)) {
+          return res.status(400).send('sectioninfo is not an array');
+        }
+        
+        try {
+          const allData = await Promise.all(
+            secData.sectioninfo.map(async (ele) => {
+              return await Quize.findById(ele).populate('quizemcqs');
+            })
+          );
+        
+          console.log(allData);
+        
+          // You can send the populated data as a response if needed
+          res.json(allData);
+        } catch (error) {
+          console.error(error);
+          res.status(500).send('Server error');
+        }
+        
+        // res.status(200).json(quiz);
+
+    }catch(err){
+        console.log(err)
+        res.status(500).json(`error reading section ${err}`)
+        
+    }
+
+}
+
+module.exports={create,update,read,deletes,insertOperation,deleteOperation,getallsectionQuize,getallsectiondata}
