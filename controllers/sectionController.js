@@ -149,7 +149,16 @@ async function insertallOperation(req, res) {
     // const {}=req.body
     const exsiting = await Section.findOne({ sectionName });
     if (exsiting) {
-      return res.status(400).json({ message: "Sectionname already exists" });
+      //   return res.status(400).json({ message: "Sectionname already exists" });
+      const insertQuiz = await Section.findByIdAndUpdate(
+        exsiting._id,
+        {
+          $push: { sectioninfo: quizeId },
+        },
+        { new: true }
+      );
+      console.log("hhjjjh", insertQuiz);
+      return res.status(200).json({ data: { insertQuiz } });
     }
     const createsection = await Section.create({ sectionName });
     // res.status(201).json({data: createsection})
@@ -158,7 +167,7 @@ async function insertallOperation(req, res) {
     // console.log("fffff",)
     //   const abc=  exsitingquize.sectioninfo.some((ele,i) => ele[i]===quizeId)
     // console.log("fffff",exsiting)
-
+    // if(quizeId)
     const insertQuiz = await Section.findByIdAndUpdate(
       createsection._id,
       {
@@ -167,7 +176,7 @@ async function insertallOperation(req, res) {
       { new: true }
     );
     console.log("hhh", insertQuiz);
-    res.status(201).json({ data: { insertQuiz } });
+    return res.status(201).json({ data: { insertQuiz } });
 
     // const { questionId } = req.body;
     // const quizarr = await Quize.findByIdAndUpdate(req.params.id, {
