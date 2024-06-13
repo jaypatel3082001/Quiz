@@ -20,6 +20,7 @@ async function send(req, res) {
       })
     );
     const result = countresult(allData, questions);
+    console.log("rrrrrrrrrrrrr", result);
     const allresult = await Result.create({
       userId: req.params.id,
       sectionId,
@@ -95,15 +96,28 @@ const countresult = (allData, questions) => {
     temparry = temparry.concat(ele.quizemcqs);
   });
 
-  // Create a Map for quick lookup from temparry
-  const allDataMap = new Map(temparry.map((item) => [item.questionId, item]));
+  // Ensure that each item has a _id property
+  temparry = temparry.filter((item) => item._id !== undefined);
+
+  // Create a Map for quick lookup from temparry using _id
+  const allDataMap = new Map(
+    temparry.map((item) => [item._id.toString(), item])
+  );
+
+  // Log the Map to ensure correct mapping
+  console.log("mapppp", allDataMap);
 
   // Iterate over the questions and check answers
   questions.forEach((question) => {
     if (question.isAttempted) {
-      const correspondingData = allDataMap.get(question.questionId);
-      if (correspondingData && correspondingData.ans === question.ans) {
+      // Ensure question.questionId is a string for Map lookup
+      const correspondingData = allDataMap.get(question.questionId.toString());
+      console.log("qqqqqqqqqq", correspondingData.answer);
+      console.log("question:", question.answer);
+
+      if (correspondingData.answer === question.answer) {
         sum += correspondingData.weightage;
+        console.log("ffffff", correspondingData.weightage);
       }
     }
   });
