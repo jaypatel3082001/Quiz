@@ -31,6 +31,11 @@ const questionSchema = new mongoose.Schema({
     required: true,
 
   },
+  weightage : {
+    type: Number,
+    Defalut: 1,
+
+  },
 
   createdAt: {
     type: Date,

@@ -5,14 +5,14 @@ const mongoose = require('mongoose');
 
 async function question(req, res) {
     try {
-        const { question, option1, option2, option3, option4,answer } = req.body;
+        const { question, option1, option2, option3, option4,answer,weightage } = req.body;
 
         // Check if username exists using the User model
         // const existingQuestion = await Questions.findOne({ question });
         // if (existingQuestion) {
         //     return res.status(400).json({ message: 'question already exists' });
         // }
-        const questions = await Questions.create({ question, option1, option2, option3, option4, answer });
+        const questions = await Questions.create({ question, option1, option2, option3, option4, answer,weightage });
 
         res.status(201).json({ message: questions});
     } catch (err) {
@@ -22,10 +22,10 @@ async function question(req, res) {
 };
 async function updatequestion(req, res) {
     try {
-        const { question, option1, option2, option3, option4,answer} = req.body;
+        const { question, option1, option2, option3, option4,answer,weightage} = req.body;
     
      
-            const allQuize = await Questions.findByIdAndUpdate(req.params.id, { question, option1, option2, option3, option4,answer }, { new: true });
+            const allQuize = await Questions.findByIdAndUpdate(req.params.id, { question, option1, option2, option3, option4,answer,weightage }, { new: true });
             res.status(200).json({ data: allQuize });
     
         } catch (error) {
