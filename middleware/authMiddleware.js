@@ -1,17 +1,31 @@
-// const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 // // Middleware function for JWT authentication and token expiration
-// function authenticateToken(req, res, next) {
+async function middlewareAuth(req, res, next) {
+  // try {
+  const authHeader = req.header("Authorization");
+  console.log("tokkk", authHeader);
+  if (!authHeader) {
+    res.status(400).send({ message: "toke Invalid" });
+  }
+  const jwttoken = authHeader.replace("Bearrer", "").trim();
+  console.log("llll", jwttoken);
+  try {
+    const isVarified = jwt.verify(jwttoken, "Hs235");
+    console.log("awwdddd", isVarified);
+    next();
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: `somthing wrong here is your  error ${error}` });
+  }
+  // console.log(first)
+  // res.status(200).send({ message: "Success" });
 
-
-//   try{
-//      const token = req.headers['authorization'];
-//     res.status(200).send({ message: 'Success' });
-//     next();
-
-//   }catch(err){
-//     console.log(`the respose has error: ${err}`)
-//   }
+  // } catch (err) {
+  //   console.log(`the respose has error: ${err}`);
+  // }
+}
 //     // Get token from headers, query parameters, or cookies
 //     // const token = req.headers['authorization'];
 //     // console.log("tokkk",req.headers)
@@ -33,8 +47,8 @@
 
 //     //     // If token is valid and not expired, save decoded token to request object
 //     //     req.userId = decoded.id;
-   
+
 //     // });
 // }
 
-// module.exports = {authenticateToken}
+module.exports = { middlewareAuth };

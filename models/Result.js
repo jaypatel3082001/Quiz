@@ -8,10 +8,10 @@ const resultSchema = new mongoose.Schema(
     questions: [
       {
         questionId: { type: String },
-        question: { type: String },
+        qindex: { type: Number },
         answer: { type: String },
         isAttempted: { type: Boolean },
-        weightage: { type: Number },
+        // weightage: { type: Number },
       },
     ],
     result: { type: Number },
