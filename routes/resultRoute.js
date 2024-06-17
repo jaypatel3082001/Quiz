@@ -1,10 +1,11 @@
 const express = require("express");
-const { send } = require("../controllers/resultController");
+const { send, getresult } = require("../controllers/resultController");
 
 const router = express.Router();
 
 // router.post('/question', question);
 router.post("/create/:id", send);
+router.get("/getresult", getresult);
 // router.get('/getall',getAll)
 // router.put('/update/:id',updatequizname)
 // router.delete('/delete/:id',deletequizname)

@@ -2,6 +2,7 @@ const Result = require("../models/Result");
 const Questions = require("../models/questions");
 const Section = require("../models/section");
 const Quize = require("../models/Quizearr");
+const User = require("../models/user");
 
 async function send(req, res) {
   try {
@@ -27,17 +28,6 @@ async function send(req, res) {
       questions,
       result: result,
     });
-    // await user.save();
-    // const existingUser = await Section.findOne({ section });
-    // const user= await User.findById(req.params.id)
-    // if (!selectedSection) {
-    //     return res.status(404).json("not found section")
-
-    // }
-
-    // console.log("ggg",section)
-    // console.log("ggghhhh",user._id.toString())
-    // const crethistory = await History.create({selectedUser: user._id,selectedSection:selectedSection})
 
     res.status(201).json({ data: allresult });
 
@@ -49,44 +39,7 @@ async function send(req, res) {
     res.status(500).json({ err: error });
   }
 }
-// const countresult = (allData, questions) => {
-//   let sum = 0;
-//   let temparry = [];
-//   //   questions.filter((ele)=>ele.isAttemoed);
 
-//   allData.map((ele, ind) => {
-//     // element.quizemcqs.map((que) => {
-//     //   questions.map((ele, i) => {
-//     //     if (ele.questionId === que._id) {
-//     //       if (ele.answer === que.answer) {
-//     //         sum = sum + que.weightage;
-//     //       }
-//     //     }
-//     //   });
-//     // });
-//     // ele.quizemcqs
-//     temparry = temparry.push(ele.quizemcqs);
-//     // const children = ele.quizemcqs.concat(arr2);
-//   });
-//   //   let sum = 0;
-
-//   // Create a Map for quick lookup from allData
-//   const allDataMap = new Map(temparry.map((item) => [item.questionId, item]));
-
-//   // Iterate over the questions and check answers
-//   questions.forEach((question) => {
-//     if (question.isAttempted) {
-//       const correspondingData = allDataMap.get(question.questionId);
-//       if (correspondingData && correspondingData.ans === question.ans) {
-//         sum += correspondingData.weightage;
-//       }
-//     }
-//   });
-
-//   console.log("this is result...", sum);
-
-//   return sum;
-// };
 const countresult = (allData, questions) => {
   let sum = 0;
   let temparry = [];
@@ -127,6 +80,39 @@ const countresult = (allData, questions) => {
   return sum;
 };
 
+async function getresult(req, res) {
+  try {
+    const { sectionId, userId } = req.query;
+    const currentres = await Result.find({ userId });
+    // console.log("jjdqqqdj", currentres);
+    if (!currentres) {
+      return res.status(404).json("User not found");
+    }
+    console.log("jjj", sectionId);
+    const currentsec = await Result.find({ sectionId });
+    // console.log("jrrrrrrrrrrjddj", currentsec);
+    if (!currentsec) {
+      return res.status(404).json("Section not found");
+    }
+    let new_arr = [];
+    currentres.map((element, ind) => {
+      currentsec.map((ele, i) => {
+        if (element._id.toString() === ele._id.toString()) {
+          new_arr = new_arr.concat(ele);
+        }
+      });
+    });
+
+
+    console.log("jjddfhfghj", userId);
+
+    res.status(201).json({ data: new_arr });
+  } catch (err) {
+    res.status(500).json(`error while fetching request ${err}`);
+  }
+}
+
 module.exports = {
   send,
+  getresult,
 };
