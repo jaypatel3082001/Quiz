@@ -14,6 +14,7 @@ const app = express()
 env.config()
 // const user = require('./models/user')
 const bodyParser = require('body-parser');
+// const { middlewareAuth } = require('./middleware/authMiddleware')
 
 const port = process.env.PORT || 3001
 // const mongo = mongoose()

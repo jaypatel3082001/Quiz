@@ -8,11 +8,12 @@ async function middlewareAuth(req, res, next) {
   if (!authHeader) {
     res.status(400).send({ message: "toke Invalid" });
   }
-  const jwttoken = authHeader.replace("Bearrer", "").trim();
+  const jwttoken = authHeader.replace("Bearer", "").trim();
   console.log("llll", jwttoken);
   try {
     const isVarified = jwt.verify(jwttoken, "Hs235");
     console.log("awwdddd", isVarified);
+    req.user = isVarified;
     next();
   } catch (error) {
     res

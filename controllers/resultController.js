@@ -7,6 +7,8 @@ const User = require("../models/user");
 async function send(req, res) {
   try {
     const { sectionId, questions } = req.body; //user=req.params.id
+    const { user } = req.user;
+    console.log("user id....", user);
     const selectedquestion = await Section.findById(sectionId).populate(
       "sectioninfo"
     );
@@ -23,7 +25,7 @@ async function send(req, res) {
     const result = countresult(allData, questions);
     console.log("rrrrrrrrrrrrr", result);
     const allresult = await Result.create({
-      userId: req.params.id,
+      userId: user,
       sectionId,
       questions,
       result: result,
@@ -82,13 +84,16 @@ const countresult = (allData, questions) => {
 
 async function getresult(req, res) {
   try {
-    const { sectionId, userId } = req.query;
-    const currentres = await Result.find({ userId });
+    const { sectionId } = req.query;
+    const { user } = req.user;
+    const currentres = await Result.find({ userId: user });
     // console.log("jjdqqqdj", currentres);
     if (!currentres) {
       return res.status(404).json("User not found");
     }
+    console.log("jjjqqqqqq", currentres);
     console.log("jjj", sectionId);
+    console.log("jjjkkk", user);
     const currentsec = await Result.find({ sectionId });
     // console.log("jrrrrrrrrrrjddj", currentsec);
     if (!currentsec) {
@@ -103,8 +108,7 @@ async function getresult(req, res) {
       });
     });
 
-
-    console.log("jjddfhfghj", userId);
+    // console.log("jjddfhfghj", userId);
 
     res.status(201).json({ data: new_arr });
   } catch (err) {
