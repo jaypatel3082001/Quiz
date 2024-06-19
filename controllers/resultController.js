@@ -69,6 +69,7 @@ const countresult = (allData, questions) => {
       const correspondingData = allDataMap.get(question.questionId.toString());
       console.log("qqqqqqqqqq", correspondingData.answer);
       console.log("question:", question.answer);
+      // console.log("questionid:", question.quizeId);
 
       if (correspondingData.answer === question.answer) {
         sum += correspondingData.weightage;
@@ -95,10 +96,43 @@ async function getresult(req, res) {
     console.log("jjj", sectionId);
     console.log("jjjkkk", user);
     const currentsec = await Result.find({ sectionId });
+
     // console.log("jrrrrrrrrrrjddj", currentsec);
     if (!currentsec) {
       return res.status(404).json("Section not found");
     }
+    const exsistingsec = await Section.findById(sectionId);
+    // let tempvariable;
+    let totalresult = 0;
+    let allanswer = [];
+    // console.log("sec....", exsistingsec);
+    const allDatares = await Promise.all(
+      exsistingsec.sectioninfo.map(async (ele) => {
+        const tempvariable = await Quize.findById(ele).populate("quizemcqs");
+        // return tempvariable.quizemcqs
+        // console.log("datamcq ............", ele);
+        console.log("mcqs ............", tempvariable);
+        tempvariable.quizemcqs.map(async (element) => {
+          console.log("results ............", element.weightage);
+          totalresult = totalresult + parseInt(element.weightage);
+          const obje = {
+            questionId: element._id.toString(),
+            answer: element.answer,
+          };
+          // const obje = id6:`${element.answer}`
+          // const obje = {id6 : `${element.answer}`};
+          allanswer.push(obje);
+
+          console.log("answer....", allanswer);
+          // return allanswer;
+        });
+      })
+    );
+    console.log("results of all data", totalresult);
+
+    console.log("answer", allanswer);
+    // You can send the populated data as a response if needed
+
     let new_arr = [];
     currentres.map((element, ind) => {
       currentsec.map((ele, i) => {
@@ -110,7 +144,7 @@ async function getresult(req, res) {
 
     // console.log("jjddfhfghj", userId);
 
-    res.status(201).json({ data: new_arr });
+    res.status(201).json({ data: { totalresult, allanswer, new_arr } });
   } catch (err) {
     res.status(500).json(`error while fetching request ${err}`);
   }
