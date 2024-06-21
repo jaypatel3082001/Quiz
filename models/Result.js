@@ -19,6 +19,7 @@ const resultSchema = new mongoose.Schema(
     quizewiseResult: { type: Object },
     TotalResult: { type: Number },
     quizewiseTotalResult: { type: Object },
+    rightAnswers: { type: Object },
     startTime: { type: Date },
     endTime: { type: Date },
   },

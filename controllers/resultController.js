@@ -33,6 +33,7 @@ async function send(req, res) {
       quizewiseResult: result.weightageCounter,
       TotalResult: allData.totalresult,
       quizewiseTotalResult: allData.weightageCounter,
+      rightAnswers: allData.allanswer,
     });
     const currentuser = await User.findByIdAndUpdate(
       user,
