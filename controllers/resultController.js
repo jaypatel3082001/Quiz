@@ -100,61 +100,12 @@ const countResult = (allData, questions) => {
   // console.log("Final result:", sum);
   return { sum, weightageCounter };
 };
-const totalquizeResult = (questions) => {
-  let weightageCounter = {};
-
-  // Iterate over new_arr
-
-  // Iterate over questions in each element
-  questions.quizemcqs.forEach((question) => {
-    let qId = question._id;
-    let weightage = parseInt(question.weightage);
-    // console.log("inner wait", weightage);
-
-    // If qId is already in the dictionary, add the weightage
-    if (weightageCounter[qId]) {
-      weightageCounter[qId] += weightage;
-    } else {
-      // If qId is not in the dictionary, initialize it
-      weightageCounter[qId] = weightage;
-      // console.log("inner if...wait", weightageCounter);
-    }
-  });
-
-  return weightageCounter;
-};
-// const findTotalresult = (totalresult, allanswer, tempvariable) => {
-//   // console.log("sec....", exsistingsec);
-//   // const allDatares = await Promise.all(
-//   //   exsistingsec.sectioninfo.map(async (ele) => {
-//   //     const tempvariable = await Quize.findById(ele).populate("quizemcqs");
-//   // return tempvariable.quizemcqs
-//   // console.log("datamcq ............", ele);
-//   console.log("mcqs ............", tempvariable);
-//   tempvariable.quizemcqs.map(async (element) => {
-//     console.log("results ............", element.weightage);
-//     totalresult = totalresult + parseInt(element.weightage);
-//     const obje = {
-//       questionId: element._id.toString(),
-//       answer: element.answer,
-//     };
-//     // const obje = id6:`${element.answer}`
-//     // const obje = {id6 : `${element.answer}`};
-//     allanswer.push(obje);
-
-//     console.log("answer123....", allanswer);
-//     // return allanswer;
-//   });
-//   // })
-//   // );
-//   console.log("results of all data", totalresult);
-//   return totalresult;
-// };
 const DataFun = async (selectedquestion) => {
   let totalresult = 0;
   let allanswer = [];
   let tempvariable = [];
   let weightageCounter = {};
+  let weightagequizename = {};
   // let totalquizeresult;
 
   // Use for...of to handle asynchronous operations
@@ -178,7 +129,8 @@ const DataFun = async (selectedquestion) => {
 
       const obje = {
         questionId: element._id.toString(),
-        answer: element.answer,
+        questionname: element.question,
+        questionAns: element.answer,
       };
 
       allanswer.push(obje);
@@ -196,83 +148,48 @@ async function getresult(req, res) {
     const { sectionId } = req.query;
     const { user } = req.user;
     const currentres = await User.findById(user).populate("result");
+    const currentSection = await Section.findById(sectionId).populate(
+      "sectioninfo"
+    );
+    console.log("username", currentres.username);
     // console.log("jjdqqqdj", currentres);
-    if (!currentres) {
-      return res.status(404).json("User not found");
-    }
     let new_arr = currentres.result;
-    console.log("jjjqqqqqq...hekko", new_arr);
-    console.log("jjj", sectionId);
-    console.log("jjjkkk", user);
-    const currentsec = await Result.find({ sectionId });
+    let temppvar = [];
+    let temppvar2 = [];
+    currentSection.sectioninfo.map((ele) => {
+      new_arr.filter((element) => {
+        if (element.quizewiseResult[ele._id]) {
+          temppvar.push({
+            quizename: ele.quizename,
+            quizeweaitage: element.quizewiseResult[ele._id],
+          });
+        }
+        if (element.quizewiseTotalResult[ele._id]) {
+          temppvar2.push({
+            quizename: ele.quizename,
+            quizeweaitage: element.quizewiseTotalResult[ele._id],
+          });
+        }
+      });
+    });
 
-    console.log("jrrrrrrrrrrjddj", currentsec);
-    // if (!currentsec) {
-    //   return res.status(404).json("Section not found");
-    // }
-    const exsistingsec = await Section.findById(sectionId);
-    // let tempvariable;
+    const quizeWiseRes = temppvar.filter((ele, i, array) => {
+      console.log("elll...", array[i].quizename);
+      console.log("elll22...", array[i - 1]?.quizename);
 
-    // let qId,
-    //   nnnewarr = [],
-    //   qwisemarks = 0;
-    // console.log("answer", allanswer);
-    // const weitageCounter = (qId1, marks) => {
-    //   console.log("quize>>>id", qId);
-    // };
-    // new_arr.map((ele) => {
-    //   nnnewarr = ele.questions.find((elements) => {
+      return array[i].quizename !== array[i - 1]?.quizename;
+    });
+    const quizeWiseTotalRes = temppvar2.filter((ele, i, array) => {
+      console.log("elll...", array[i].quizename);
+      console.log("elll22...", array[i - 1]?.quizename);
 
-    //     if (qId === elements.quizeId) {
-    //       qwisemarks=qwisemarks+elements.weightage
-    //       return elements;
-    //     } else {
-    //       qId = elements.quizeId;
-    //     }
-    //     // qId.push(elements.quizeId);
-    //     // return elements.quizeId
+      return array[i].quizename !== array[i - 1]?.quizename;
+    });
+    // console.log("jwww...hekko", neewaary);
 
-    //     // weitageCounter(elements.quizeId, elements.weightage);
-    //   });
-    // });
-    // let weightageCounter = {};
-
-    // // Iterate over new_arr
-    // new_arr.forEach((ele) => {
-    //   // Iterate over questions in each element
-    //   ele.questions.forEach((question) => {
-    //     let qId = question.quizeId;
-    //     let weightage = parseInt(question.weightage);
-    //     console.log("inner wait", weightage);
-
-    //     // If qId is already in the dictionary, add the weightage
-    //     if (weightageCounter[qId]) {
-    //       weightageCounter[qId] += weightage;
-    //     } else {
-    //       // If qId is not in the dictionary, initialize it
-    //       weightageCounter[qId] = weightage;
-    //       console.log("inner if...wait", weightageCounter);
-    //     }
-    //   });
-    // });
-
-    // console.log("quize id not repe", weightageCounter);
-    // console.log("quize id not iiiiiiiiiii repe", nnnewarr);
-    // console.log("quize id not repe", qwisemarks);
-    // You can send the populated data as a response if needed
-
-    // let new_arr = [];
-    // currentres.map((element, ind) => {
-    //   currentsec.map((ele, i) => {
-    //     if (element._id.toString() === ele._id.toString()) {
-    //       new_arr = new_arr.concat(ele);
-    //     }
-    //   });
-    // });
-
-    // console.log("jjddfhfghj", userId);
-
-    res.status(201).json({ data: { totalresult, allanswer, new_arr } });
+    res
+      .status(201)
+      .json({ data: { new_arr, quizeWiseRes, quizeWiseTotalRes } });
   } catch (err) {
     res.status(500).json(`error while fetching request ${err}`);
   }
