@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const QuestionModel = require("../models/questions"); // Adjust the path as needed
+const QuizeModel = require("../models/Quizearr"); // Adjust the path as needed
 
 async function getsearchAll(req, res) {
   try {
     const {
+      type,
       search,
       limit = 0,
       sortOrder = "asc",
@@ -28,9 +30,12 @@ async function getsearchAll(req, res) {
     }
 
     // Fetching documents
-    const documents = await QuestionModel.find(filter)
-      .sort(sort)
-      .limit(parseInt(limit));
+    console.log("type ", type === "qestion");
+    console.log("type filt", filter);
+    const documents =
+      type == "qestion"
+        ? await QuestionModel.find(filter).sort(sort).limit(parseInt(limit))
+        : await QuizeModel.find(filter).sort(sort).limit(parseInt(limit));
 
     // Return response with data
     return res.status(200).json({
@@ -46,7 +51,9 @@ async function getsearchAll(req, res) {
 async function buildDocumentFilter(search) {
   const filter = {};
   if (search) {
-    filter.question = new RegExp(search, "i"); // Case-insensitive regex search on 'question' field
+    type == "qestion"
+      ? (filter.question = new RegExp(search, "i"))
+      : (filter.quizename = new RegExp(search, "i"));
   }
   return filter;
 }

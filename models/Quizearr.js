@@ -4,18 +4,20 @@
 //     quizemcx:[]
 
 // })
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const quizeSchema = new mongoose.Schema({
-    quizemcqs: [{type:mongoose.Schema.Types.ObjectId, ref:'Questions'}],
-    // id:{
-    //     type:Number
-    // },
-    quizename: {
-        type: String,
-        required: true,
-    }
-
-
+  quizemcqs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Questions" }],
+  // id:{
+  //     type:Number
+  // },
+  quizename: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
 });
-module.exports = mongoose.model('Quize', quizeSchema);
+module.exports = mongoose.model("Quize", quizeSchema);
