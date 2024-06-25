@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const QuestionModel = require("../models/questions"); // Adjust the path as needed
-const QuizeModel = require("../models/Quizearr"); // Adjust the path as needed
+const QuestionModel = require("../models/questions");
+const QuizeModel = require("../models/Quizearr");
+const Sectionmodel = require("../models/section");
 
 async function getsearchAll(req, res) {
   try {
@@ -24,11 +25,20 @@ async function getsearchAll(req, res) {
       buildDateFilter(startDate, endDate, filter);
     }
 
-    const Model = type === "question" ? QuestionModel : QuizeModel;
+    const Model =
+      type === "question"
+        ? QuestionModel
+        : type === "quiz"
+        ? QuizeModel
+        : Sectionmodel;
+
+    console.log("moodel", Model);
 
     const totalCount = await Model.countDocuments(filter);
 
     // Fetching documents without sorting (sorting will be done in application)
+    console.log("ffi", filter);
+    console.log("count", totalCount);
     let documents = await Model.find(filter)
       .limit(parseInt(limit))
       .skip(parseInt(offset));
@@ -67,8 +77,11 @@ async function buildDocumentFilter(search, type) {
       filter.question = new RegExp(search, "i");
     } else if (type === "quiz") {
       filter.quizename = new RegExp(search, "i");
+    } else if (type === "section") {
+      filter.sectionName = new RegExp(search, "i");
     }
   }
+
   return filter;
 }
 

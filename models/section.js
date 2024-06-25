@@ -7,6 +7,7 @@ const sectionSchema = new mongoose.Schema({
   },
   sectioninfo: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quize" }],
   totalTime: { type: Number, default: 2 },
+  createdAt: { type: Date,default: Date.now() },
 });
 
 module.exports = mongoose.model("Section", sectionSchema);
