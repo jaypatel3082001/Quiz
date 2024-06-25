@@ -50,16 +50,16 @@ async function getsearchAll(req, res) {
     // Fetching documents without sorting (sorting will be done in application)
     console.log("ffi", filter);
     console.log("count", totalCount);
-    let documents = await Model.find(filter).sort({
-      [customOrder]: sortOrder === "asc" ? 1 : -1,
-    }).limit(parseInt(limit));
+    let documents = await Model.find(filter)
+      .limit(parseInt(limit))
+      .skip(parseInt(offset));
 
     // Custom sort function
 
     // Perform custom sort
     // documents;
     documents.sort(customSort);
-    documents.skip(parseInt(offset));
+    documents;
     // Return response with data
     return res.status(200).json({
       data: documents,
