@@ -103,6 +103,8 @@ function getSortValue(obj, type) {
     return obj.question;
   } else if (type === "quiz") {
     return obj.quizename;
+  } else if (type === "section") {
+    return obj.sectionName;
   }
   return "";
 }
