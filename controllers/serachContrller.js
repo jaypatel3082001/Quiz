@@ -36,14 +36,6 @@ async function getsearchAll(req, res) {
 
     const totalCount = await Model.countDocuments(filter);
 
-    // Fetching documents without sorting (sorting will be done in application)
-    console.log("ffi", filter);
-    console.log("count", totalCount);
-    let documents = await Model.find(filter)
-      .limit(parseInt(limit))
-      .skip(parseInt(offset));
-
-    // Custom sort function
     const customSort = (a, b) => {
       const aVal = getSortValue(a, type);
       const bVal = getSortValue(b, type);
@@ -55,9 +47,19 @@ async function getsearchAll(req, res) {
       return sortOrder === "asc" ? aIndex - bIndex : bIndex - aIndex;
     };
 
-    // Perform custom sort
-    documents.sort(customSort);
+    // Fetching documents without sorting (sorting will be done in application)
+    console.log("ffi", filter);
+    console.log("count", totalCount);
+    let documents = await Model.find(filter).sort({
+      [customOrder]: sortOrder === "asc" ? 1 : -1,
+    }).limit(parseInt(limit));
 
+    // Custom sort function
+
+    // Perform custom sort
+    // documents;
+    documents.sort(customSort);
+    documents.skip(parseInt(offset));
     // Return response with data
     return res.status(200).json({
       data: documents,
@@ -97,7 +99,6 @@ function buildDateFilter(startDate, endDate, filter) {
   }
 }
 
-// Helper function to get sort value from object based on type
 function getSortValue(obj, type) {
   if (type === "question") {
     return obj.question;
@@ -108,6 +109,8 @@ function getSortValue(obj, type) {
   }
   return "";
 }
+
+// Helper function to get sort value from object based on type
 
 module.exports = {
   getsearchAll,

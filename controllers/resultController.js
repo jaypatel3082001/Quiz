@@ -194,8 +194,68 @@ async function getresult(req, res) {
     res.status(500).json(`error while fetching request ${err}`);
   }
 }
+async function getalluserresultdata(req, res) {
+  try {
+    const { user } = req.user;
+    const currentres = await User.findById(user).populate("result");
+
+    res.status(201).json({ data: currentres.result });
+  } catch (err) {
+    res.status(500).json(`error while fetching request ${err}`);
+  }
+}
+async function getallresultdata(req, res) {
+  try {
+    // const { user } = req.user;
+    const results = await Result.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "sections",
+          localField: "sectionId",
+          foreignField: "_id",
+          as: "section",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $unwind: "$section",
+      },
+      {
+        $project: {
+          _id: 1,
+          user: {
+            _id: "$user._id",
+            username: "$user.username",
+          },
+          section: {
+            _id: "$section._id",
+            name: "$section.sectionName",
+          },
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ]);
+
+    res.status(201).json({ data: results });
+  } catch (err) {
+    res.status(500).json(`error while fetching request ${err}`);
+  }
+}
 
 module.exports = {
   send,
   getresult,
+  getalluserresultdata,
+  getallresultdata,
 };
