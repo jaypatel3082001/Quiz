@@ -32,34 +32,44 @@ async function getsearchAll(req, res) {
         ? QuizeModel
         : Sectionmodel;
 
-    console.log("moodel", Model);
+    console.log("model", Model);
 
     const totalCount = await Model.countDocuments(filter);
 
-    const customSort = (a, b) => {
-      const aVal = getSortValue(a, type);
-      const bVal = getSortValue(b, type);
-      const order = customOrder.split("");
-      const aIndex = order.indexOf(aVal[0]);
-      const bIndex = order.indexOf(bVal[0]);
+    // Build the aggregation pipeline
+    const pipeline = [
+      { $match: filter },
+      {
+        $addFields: {
+          sortField: {
+            $switch: {
+              branches: [
+                { case: { $eq: [type, "question"] }, then: "$question" },
+                { case: { $eq: [type, "quiz"] }, then: "$quizename" },
+                { case: { $eq: [type, "section"] }, then: "$sectionName" },
+              ],
+              default: "",
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          sortIndex: {
+            $indexOfArray: [
+              customOrder.split(""),
+              { $substr: ["$sortField", 0, 1] },
+            ],
+          },
+        },
+      },
+      { $sort: { sortIndex: sortOrder === "asc" ? 1 : -1 } },
+      { $skip: parseInt(offset) },
+      { $limit: parseInt(limit) },
+    ];
 
-      if (aIndex === -1 || bIndex === -1) return 0; // If character not found in custom order
-      return sortOrder === "asc" ? aIndex - bIndex : bIndex - aIndex;
-    };
+    let documents = await Model.aggregate(pipeline);
 
-    // Fetching documents without sorting (sorting will be done in application)
-    console.log("ffi", filter);
-    console.log("count", totalCount);
-    let documents = await Model.find(filter)
-      .limit(parseInt(limit))
-      .skip(parseInt(offset));
-
-    // Custom sort function
-
-    // Perform custom sort
-    // documents;
-    documents.sort(customSort);
-    documents;
     // Return response with data
     return res.status(200).json({
       data: documents,
@@ -98,19 +108,6 @@ function buildDateFilter(startDate, endDate, filter) {
     filter.createdAt = { $gte: start, $lte: end };
   }
 }
-
-function getSortValue(obj, type) {
-  if (type === "question") {
-    return obj.question;
-  } else if (type === "quiz") {
-    return obj.quizename;
-  } else if (type === "section") {
-    return obj.sectionName;
-  }
-  return "";
-}
-
-// Helper function to get sort value from object based on type
 
 module.exports = {
   getsearchAll,
