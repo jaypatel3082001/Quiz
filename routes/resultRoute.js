@@ -4,6 +4,7 @@ const {
   getresult,
   getalluserresultdata,
   getallresultdata,
+  readSection,
 } = require("../controllers/resultController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
 
@@ -14,6 +15,7 @@ router.post("/create", middlewareAuth, send);
 router.get("/getresult", middlewareAuth, getresult);
 router.get("/getalluserdata", middlewareAuth, getalluserresultdata);
 router.get("/getall", getallresultdata);
+router.get("/getresultsection/:id", readSection);
 // router.get("/getall", middlewareAuth, getallresultdata);
 // router.get('/getall',getAll)
 // router.put('/update/:id',updatequizname)

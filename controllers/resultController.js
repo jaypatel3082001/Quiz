@@ -30,9 +30,9 @@ async function send(req, res) {
       sectionId,
       questions,
       result: result.sum,
-      quizewiseResult: result.weightageCounter,
+      quizewiseResult: result.weightageCountername,
       TotalResult: allData.totalresult,
-      quizewiseTotalResult: allData.weightageCounter,
+      quizewiseTotalResult: allData.weightagequizename,
       rightAnswers: allData.allanswer,
     });
     const currentuser = await User.findByIdAndUpdate(
@@ -57,6 +57,7 @@ const countResult = (allData, questions) => {
   let sum = 0;
   let temparry = [];
   let weightageCounter = {};
+  let weightageCountername = [];
 
   // Flatten all quizemcqs arrays into a single array
   allData.forEach((ele) => {
@@ -78,7 +79,7 @@ const countResult = (allData, questions) => {
 
   // Iterate over the questions and check answers
   questions.forEach((question) => {
-    let qId = question.quizeId;
+    let qId = question.quizename;
     if (question.isAttempted) {
       const correspondingData = allDataMap.get(question.questionId);
       // console.log("question............:", question);
@@ -97,25 +98,28 @@ const countResult = (allData, questions) => {
           // console.log("inner if...wait", weightageCounter);
         }
       }
+      if (weightageCounter[qId]) {
+        weightageCountername.push(weightageCounter[qId]);
+      }
     }
   });
 
   // console.log("Final result:", sum);
-  return { sum, weightageCounter };
+  return { sum, weightageCountername };
 };
 const DataFun = async (selectedquestion) => {
   let totalresult = 0;
   let allanswer = [];
   let tempvariable = [];
   let weightageCounter = {};
-  let weightagequizename = {};
+  let weightagequizename = [];
   // let totalquizeresult;
 
   // Use for...of to handle asynchronous operations
   for (const ele of selectedquestion.sectioninfo) {
     tf = await Quize.findById(ele).populate("quizemcqs");
     tempvariable.push(tf);
-    let qId = ele._id;
+    let qId = ele.quizename;
     //  totalquizeresult = totalquizeResult(tf);
     for (const element of tf.quizemcqs) {
       // totalquizeresult = totalquizeResult(element);
@@ -141,12 +145,13 @@ const DataFun = async (selectedquestion) => {
 
       allanswer.push(obje);
     }
+    weightagequizename.push(weightageCounter[qId]);
 
     // console.log("tempvariable ............", tempvariable);
   }
 
   // console.log("results of all data", totalresult);
-  return { totalresult, allanswer, tempvariable, weightageCounter };
+  return { totalresult, allanswer, tempvariable, weightagequizename };
 };
 
 async function getresult(req, res) {
@@ -248,12 +253,12 @@ async function getallresultdata(req, res) {
             _id: "$section._id",
             name: "$section.sectionName",
           },
-          questions:1,
-          result:1,
-          quizewiseResult:1,
-          quizewiseTotalResult:1,
-          rightAnswers:1,
-          TotalResult:1,
+          // questions: 1,
+          result: 1,
+          quizewiseResult: 1,
+          quizewiseTotalResult: 1,
+          rightAnswers: 1,
+          TotalResult: 1,
           createdAt: 1,
           updatedAt: 1,
         },
@@ -267,10 +272,24 @@ async function getallresultdata(req, res) {
     res.status(500).json(`error while fetching request ${err}`);
   }
 }
+async function readSection(req, res) {
+  try {
+    // const {sectionId}=
+    console.log("first", req.params.id);
+    const resSec = await Result.findOne({ sectionId: req.params.id }).populate(
+      "userId"
+    );
+    console.log("ffff", resSec);
+    res.status(201).json({ data: resSec });
+  } catch (error) {
+    res.status(500).json(`error ${error}`);
+  }
+}
 
 module.exports = {
   send,
   getresult,
   getalluserresultdata,
   getallresultdata,
+  readSection,
 };
