@@ -3,7 +3,8 @@ const router = express.Router();
 const QuestionModel = require("../models/questions");
 const QuizeModel = require("../models/Quizearr");
 const Sectionmodel = require("../models/section");
-const Resultmodel = require("../models/section");
+const Resultmodel = require("../models/Result");
+const User = require("../models/user");
 
 async function getsearchAll(req, res) {
   try {
@@ -31,10 +32,13 @@ async function getsearchAll(req, res) {
         ? QuestionModel
         : type === "quiz"
         ? QuizeModel
-        : Sectionmodel;
+        : type === "section"
+        ? Sectionmodel
+        : Resultmodel;
 
     console.log("model", Model);
 
+    // Count the total documents matching the filter
     const totalCount = await Model.countDocuments(filter);
 
     // Build the aggregation pipeline
@@ -48,6 +52,10 @@ async function getsearchAll(req, res) {
                 { case: { $eq: [type, "question"] }, then: "$question" },
                 { case: { $eq: [type, "quiz"] }, then: "$quizename" },
                 { case: { $eq: [type, "section"] }, then: "$sectionName" },
+                {
+                  case: { $eq: [type, "result"] },
+                  then: { $toString: "$userId" },
+                },
               ],
               default: "",
             },
@@ -69,7 +77,18 @@ async function getsearchAll(req, res) {
       { $limit: parseInt(limit) },
     ];
 
-    let documents = await Model.aggregate(pipeline);
+    let documents;
+    if (Model === Resultmodel) {
+      documents = await Model.aggregate(pipeline).exec();
+
+      // Manually populate the userId field after aggregation
+      documents = await Resultmodel.populate(documents, {
+        path: "userId",
+        select: "username email",
+      });
+    } else {
+      documents = await Model.aggregate(pipeline).exec();
+    }
 
     // Return response with data
     return res.status(200).json({
@@ -92,10 +111,21 @@ async function buildDocumentFilter(search, type) {
       filter.quizename = new RegExp(search, "i");
     } else if (type === "section") {
       filter.sectionName = new RegExp(search, "i");
+    } else if (type === "result") {
+      // Using populate means we need to search by userId field
+      filter.userId = await getUserIdByUsername(search);
     }
   }
 
   return filter;
+}
+
+// Helper function to get user ID by username
+async function getUserIdByUsername(username) {
+  const user = await User.findOne({ username: new RegExp(username, "i") })
+    .select("_id")
+    .exec();
+  return user ? user._id : null;
 }
 
 // Helper function to build date filter
