@@ -66,6 +66,11 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // if(userkey){
+    //  const key=req.key
+    //  console.log("key...",key)
+    // }
+
     // Find user by username using the User model
     const user = await User.findOne({ email });
     if (!user) {

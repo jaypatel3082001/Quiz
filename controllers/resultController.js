@@ -87,10 +87,13 @@ const countResult = (allData, questions) => {
         sum = sum + correspondingData.weightage;
         // console.log("ffffff", correspondingData.weightage);
         if (weightageCounter[qId]) {
-          weightageCounter[qId] += correspondingData.weightage;
+          weightageCounter[qId].weitage += correspondingData.weightage;
         } else {
           // If qId is not in the dictionary, initialize it
-          weightageCounter[qId] = correspondingData.weightage;
+          weightageCounter[qId] = {
+            quizename: question.quizename,
+            weitage: correspondingData.weightage,
+          };
           // console.log("inner if...wait", weightageCounter);
         }
       }
@@ -120,10 +123,13 @@ const DataFun = async (selectedquestion) => {
 
       totalresult += parseInt(element.weightage);
       if (weightageCounter[qId]) {
-        weightageCounter[qId] += element.weightage;
+        weightageCounter[qId].weitage += element.weightage;
       } else {
         // If qId is not in the dictionary, initialize it
-        weightageCounter[qId] = element.weightage;
+        weightageCounter[qId] = {
+          quizename: ele.quizename,
+          weitage: element.weightage,
+        };
         // console.log("inner if...wait", weightageCounter);
       }
 
@@ -236,16 +242,25 @@ async function getallresultdata(req, res) {
           user: {
             _id: "$user._id",
             username: "$user.username",
+            email: "$user.email",
           },
           section: {
             _id: "$section._id",
             name: "$section.sectionName",
           },
+          questions:1,
+          result:1,
+          quizewiseResult:1,
+          quizewiseTotalResult:1,
+          rightAnswers:1,
+          TotalResult:1,
           createdAt: 1,
           updatedAt: 1,
         },
       },
     ]);
+
+    console.log("results", results);
 
     res.status(201).json({ data: results });
   } catch (err) {

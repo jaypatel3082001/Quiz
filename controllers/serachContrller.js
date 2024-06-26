@@ -3,6 +3,7 @@ const router = express.Router();
 const QuestionModel = require("../models/questions");
 const QuizeModel = require("../models/Quizearr");
 const Sectionmodel = require("../models/section");
+const Resultmodel = require("../models/section");
 
 async function getsearchAll(req, res) {
   try {

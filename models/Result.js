@@ -10,6 +10,7 @@ const resultSchema = new mongoose.Schema(
         questionId: { type: String },
         qindex: { type: Number },
         quizeId: { type: String },
+        quizename: { type: String },
         answer: { type: String },
         isAttempted: { type: Boolean },
         weightage: { type: Number },

@@ -7,6 +7,7 @@ const quize = require("./routes/quizRoute");
 const section = require("./routes/sectionRoute");
 const history = require("./routes/historyRoute");
 const result = require("./routes/resultRoute");
+const key = require("./routes/keyRoute");
 // const result = require("./routes/resultRoute");
 const cors = require("cors");
 const search = require("./routes/serarchRoute");
@@ -44,6 +45,7 @@ app.use("/section", section);
 app.use("/history", history);
 app.use("/result", result);
 app.use("/search", search);
+app.use("/key", key);
 
 app.listen(port, () => {
   console.log("port is working");
