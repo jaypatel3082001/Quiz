@@ -52,10 +52,6 @@ async function getsearchAll(req, res) {
                 { case: { $eq: [type, "question"] }, then: "$question" },
                 { case: { $eq: [type, "quiz"] }, then: "$quizename" },
                 { case: { $eq: [type, "section"] }, then: "$sectionName" },
-                {
-                  case: { $eq: [type, "result"] },
-                  then: { $toString: "$userId" },
-                },
               ],
               default: "",
             },
@@ -78,17 +74,10 @@ async function getsearchAll(req, res) {
     ];
 
     let documents;
-    if (Model === Resultmodel) {
-      documents = await Model.aggregate(pipeline).exec();
 
-      // Manually populate the userId field after aggregation
-      documents = await Resultmodel.populate(documents, {
-        path: "userId",
-        select: "username email",
-      });
-    } else {
-      documents = await Model.aggregate(pipeline).exec();
-    }
+    documents = await Model.aggregate(pipeline);
+
+    // Manually populate the userId field after aggregation
 
     // Return response with data
     return res.status(200).json({
@@ -113,8 +102,11 @@ async function buildDocumentFilter(search, type) {
       filter.sectionName = new RegExp(search, "i");
     } else if (type === "result") {
       // Using populate means we need to search by userId field
+      // filter.userId.username = new RegExp(search, "i");
+      console.log("i am herw");
       filter.userId = await getUserIdByUsername(search);
     }
+    console.log("w ghgherw");
   }
 
   return filter;
@@ -140,6 +132,76 @@ function buildDateFilter(startDate, endDate, filter) {
   }
 }
 
+async function getsearchSection(req, res) {
+  try {
+    const customOrder =
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    const search = req.query.search;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    const type = req.query.type;
+    const limit = parseInt(req.query.limit) || 0;
+    const offset = parseInt(req.query.offset) || 0;
+    const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
+    console.log(" req.params.id", req.params.id);
+    console.log(" startDate", startDate);
+    console.log(" endDate", endDate);
+    console.log(" type", type);
+
+    const filter = await buildDocumentFilter(search, type);
+    console.log(" type  filter", filter);
+
+    // Add date range filter if both startDate and endDate are provided
+    if (startDate && endDate) {
+      buildDateFilter(startDate, endDate, filter);
+      console.log(" type ,,,,,,,,,, filter", filter);
+    }
+
+    // const Model =
+    //   type === "question"
+    //     ? QuestionModel
+    //     : type === "quiz"
+    //     ? QuizeModel
+    //     : type === "section"
+    //     ? Sectionmodel
+    //     : Resultmodel;
+
+    // console.log("model", Model);
+
+    // Count the total documents matching the filter
+    const getCustomOrderIndex = (char) => customOrder.indexOf(char);
+
+    // // Build the aggregation pipeline
+    // const pipeline = [
+    //   {
+    //     $group: {
+    //       sectionId: req.params.id,
+    //     },
+    //   },
+    // ];
+
+    // // Execute the aggregation pipeline
+    // const documents = await Resultmodel.aggregate(pipeline).exec();
+    const documents = await Resultmodel.find(filter).populate('userId').limit(limit).skip(offset)
+
+    // Count the total documents matching the filter (without limit and offset)
+    const totalCount = await Resultmodel.countDocuments({
+      sectionId: req.params.id,
+      ...filter,
+    });
+
+    return res.status(200).json({
+      data: documents,
+      totalCount,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   getsearchAll,
+  getsearchSection,
 };
