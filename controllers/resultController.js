@@ -97,9 +97,19 @@ const countResult = (allData, questions) => {
           };
           // console.log("inner if...wait", weightageCounter);
         }
-      }
-      if (weightageCounter[qId]) {
-        weightageCountername.push(weightageCounter[qId]);
+      } else {
+        if (weightageCounter[qId]) {
+          weightageCounter[qId].weitage += 0;
+        } else {
+          // If qId is not in the dictionary, initialize it
+          weightageCounter[qId] = {
+            quizename: question.quizename,
+            weitage: 0,
+          };
+        }
+        if (weightageCounter[qId]) {
+          weightageCountername.push(weightageCounter[qId]);
+        }
       }
     }
   });

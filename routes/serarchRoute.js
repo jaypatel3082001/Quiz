@@ -1,5 +1,8 @@
 const express = require("express");
-const { getsearchAll, getsearchSection } = require("../controllers/serachContrller");
+const {
+  getsearchAll,
+  getsearchSection,
+} = require("../controllers/serachContrller");
 
 const router = express.Router();
 
