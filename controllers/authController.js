@@ -53,7 +53,7 @@ exports.signup = async (req, res) => {
       },
       "Hs235",
       {
-        expiresIn: "2m",
+        expiresIn: "20m",
       }
     );
 
@@ -104,7 +104,7 @@ exports.login = async (req, res) => {
       },
       "Hs235",
       {
-        expiresIn: "2m",
+        expiresIn: "20m",
       }
     );
 
