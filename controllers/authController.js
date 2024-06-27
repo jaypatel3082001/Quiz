@@ -45,7 +45,7 @@ exports.signup = async (req, res) => {
     });
     await user.save();
     const token = jwt.sign(
-      { email: user.email, id: user._id, role: user.role },
+      { email: user.email, username: user.username, role: user.role },
       "Hs235",
       {
         expiresIn: "1h",
@@ -90,9 +90,13 @@ exports.login = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ user: user._id }, "Hs235", {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { email: user.email, username: user.username, role: user.role },
+      "Hs235",
+      {
+        expiresIn: "1h",
+      }
+    );
 
     res.status(200).json({ message: "Login successful", token });
   } catch (err) {
