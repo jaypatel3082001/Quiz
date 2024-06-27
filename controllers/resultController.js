@@ -78,8 +78,8 @@ const countResult = (allData, questions) => {
   // console.log("Map:", allDataMap);
 
   // Iterate over the questions and check answers
-  questions.forEach((question) => {
-    let qId = question.quizename;
+  questions.forEach((question, i, arr) => {
+    let qId = question.quizeId;
     if (question.isAttempted) {
       const correspondingData = allDataMap.get(question.questionId);
       // console.log("question............:", question);
@@ -107,13 +107,17 @@ const countResult = (allData, questions) => {
             weitage: 0,
           };
         }
-        if (weightageCounter[qId]) {
-          weightageCountername.push(weightageCounter[qId]);
-        }
       }
     }
+    if (weightageCounter[qId]) {
+      weightageCountername.push(weightageCounter[qId]);
+    }
+  });
+  weightageCountername = weightageCountername.filter((ele, i, arr) => {
+    return arr[i]?.quizename !== arr[i - 1]?.quizename;
   });
 
+  console.log("weightageCounter", weightageCounter);
   // console.log("Final result:", sum);
   return { sum, weightageCountername };
 };
