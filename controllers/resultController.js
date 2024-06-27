@@ -109,14 +109,11 @@ const countResult = (allData, questions) => {
         }
       }
     }
-    if (weightageCounter[qId]) {
-      weightageCountername.push(weightageCounter[qId]);
-    }
   });
-  weightageCountername = weightageCountername.filter((ele, i, arr) => {
-    return arr[i]?.quizename !== arr[i - 1]?.quizename;
-  });
-
+  console.log("weightageCounter", weightageCounter);
+  for (let [key, value] of Object.entries(weightageCounter)) {
+    weightageCountername.push(value);
+  }
   console.log("weightageCounter", weightageCounter);
   // console.log("Final result:", sum);
   return { sum, weightageCountername };
