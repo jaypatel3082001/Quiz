@@ -45,7 +45,12 @@ exports.signup = async (req, res) => {
     });
     await user.save();
     const token = jwt.sign(
-      { email: user.email, username: user.username, role: user.role },
+      {
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        user: user._id,
+      },
       "Hs235",
       {
         expiresIn: "1h",
@@ -91,7 +96,12 @@ exports.login = async (req, res) => {
 
     // Generate a JWT token
     const token = jwt.sign(
-      { email: user.email, username: user.username, role: user.role },
+      {
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        user: user._id,
+      },
       "Hs235",
       {
         expiresIn: "1h",
