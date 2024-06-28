@@ -70,16 +70,7 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password, userkey } = req.body;
-    let existKey;
-    console.log("gfhfg", userkey);
-    if (userkey || userkey === "") {
-      existKey = await Key.findOne({ key: userkey });
-      console.log("gfhffgdfg", existKey);
-      if (!existKey) {
-        return res.status(500).json("Invalid key!");
-      }
-    }
+    const { email, password } = req.body;
 
     // Find user by username using the User model
     const user = await User.findOne({ email });
@@ -113,7 +104,7 @@ exports.login = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: "Login successful", token, existKey });
+    res.status(200).json({ message: "Login successful", token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error logging in" });
@@ -155,16 +146,14 @@ exports.userHandle = async (req, res) => {
 
     // Generate a JWT token
 
-    res
-      .status(201)
-      .json({
-        message: "Login successful",
-        token,
-        firstname,
-        lastname,
-        userEmail,
-        existKey,
-      });
+    res.status(201).json({
+      message: "Login successful",
+      token,
+      firstname,
+      lastname,
+      userEmail,
+      existKey,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error logging in" });
