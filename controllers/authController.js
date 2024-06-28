@@ -3,6 +3,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const tokengen = require("../middleware/authMiddleware");
+const Key = require("../models/randomkey");
 // const express = require('express')
 // const app = express()
 // const bodyParser = require('body-parser');
@@ -71,9 +72,10 @@ exports.login = async (req, res) => {
   try {
     const { email, password, userkey } = req.body;
     let existKey;
-
+    console.log("gfhfg", userkey);
     if (userkey) {
-      existKey = await Key.find({ key: userkey });
+      existKey = await Key.findOne({ key: userkey });
+      console.log("gfhffgdfg", existKey);
       if (!existKey) {
         return res.status(500).json("Invalid key!");
       }
