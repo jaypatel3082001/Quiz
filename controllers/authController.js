@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
     const { email, password, userkey } = req.body;
     let existKey;
     console.log("gfhfg", userkey);
-    if (userkey) {
+    if (userkey || userkey === "") {
       existKey = await Key.findOne({ key: userkey });
       console.log("gfhffgdfg", existKey);
       if (!existKey) {
