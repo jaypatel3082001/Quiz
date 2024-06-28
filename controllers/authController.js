@@ -103,11 +103,10 @@ exports.login = async (req, res) => {
         username: user.username,
         role: user.role,
         user: user._id,
-        key: userkey,
       },
       "Hs235",
       {
-        expiresIn: "10h",
+        expiresIn: "1m",
       }
     );
 
