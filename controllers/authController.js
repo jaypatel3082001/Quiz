@@ -155,7 +155,16 @@ exports.userHandle = async (req, res) => {
 
     // Generate a JWT token
 
-    res.status(201).json({ message: "Login successful", token, existKey });
+    res
+      .status(201)
+      .json({
+        message: "Login successful",
+        token,
+        firstname,
+        lastname,
+        userEmail,
+        existKey,
+      });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error logging in" });
