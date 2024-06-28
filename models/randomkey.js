@@ -1,10 +1,12 @@
-
 const mongoose = require("mongoose");
 
 const keySchema = new mongoose.Schema({
-
   key: {
     type: String,
+  },
+  sectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Section",
   },
   time: {
     type: Number,

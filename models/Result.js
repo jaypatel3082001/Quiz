@@ -4,6 +4,7 @@ const resultSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     sectionId: { type: mongoose.Schema.Types.ObjectId, ref: "Section" }, //quize if require
+    Key: { type: mongoose.Schema.Types.ObjectId, ref: "Key" }, //quize if require
     // question:,//quize if require
     questions: [
       {

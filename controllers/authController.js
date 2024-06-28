@@ -53,7 +53,7 @@ exports.signup = async (req, res) => {
       },
       "Hs235",
       {
-        expiresIn: "20m",
+        expiresIn: "10h",
       }
     );
 
@@ -69,12 +69,14 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, userkey } = req.body;
 
-    // if(userkey){
-    //  const key=req.key
-    //  console.log("key...",key)
-    // }
+    if (userkey) {
+      const existKey = await Key.find({ key: userkey });
+      if (!existKey) {
+        return res.status(500).json("Invalid key!");
+      }
+    }
 
     // Find user by username using the User model
     const user = await User.findOne({ email });
@@ -101,14 +103,15 @@ exports.login = async (req, res) => {
         username: user.username,
         role: user.role,
         user: user._id,
+        key: userkey,
       },
       "Hs235",
       {
-        expiresIn: "20m",
+        expiresIn: "10h",
       }
     );
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token, existKey });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error logging in" });

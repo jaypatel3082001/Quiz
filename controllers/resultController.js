@@ -6,7 +6,7 @@ const User = require("../models/user");
 
 async function send(req, res) {
   try {
-    const { sectionId, questions } = req.body; //user=req.params.id
+    const { sectionId, questions, userkey } = req.body; //user=req.params.id
     const { user } = req.user;
     // console.log("user id....", user);
     const selectedquestion = await Section.findById(sectionId).populate(
@@ -34,6 +34,7 @@ async function send(req, res) {
       TotalResult: allData.totalresult,
       quizewiseTotalResult: allData.weightagequizename,
       rightAnswers: allData.allanswer,
+      Key: userkey,
     });
     const currentuser = await User.findByIdAndUpdate(
       user,
