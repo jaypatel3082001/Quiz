@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 
 const resultSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    // userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    firstname:{type:String},
+    lastname:{type:String},
+    userEmail:{type:String},
     sectionId: { type: mongoose.Schema.Types.ObjectId, ref: "Section" }, //quize if require
     Key: { type: mongoose.Schema.Types.ObjectId, ref: "Key" }, //quize if require
     // question:,//quize if require

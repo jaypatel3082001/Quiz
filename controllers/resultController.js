@@ -7,7 +7,9 @@ const User = require("../models/user");
 async function send(req, res) {
   try {
     const { sectionId, questions, userkey } = req.body; //user=req.params.id
-    const { user } = req.user;
+    const {  firstname,
+      lastname,
+      userEmail } = req.user;
     // console.log("user id....", user);
     const selectedquestion = await Section.findById(sectionId).populate(
       "sectioninfo"
@@ -26,7 +28,9 @@ async function send(req, res) {
     // const totalquizeresult = totalquizeResult(questions);
     console.log("rrrrrrrrrrrrr", result);
     const allresult = await Result.create({
-      userId: user,
+      firstname: firstname,
+      lastname: lastname,
+      userEmail: userEmail,
       sectionId,
       questions,
       result: result.sum,
@@ -36,13 +40,13 @@ async function send(req, res) {
       rightAnswers: allData.allanswer,
       Key: userkey,
     });
-    const currentuser = await User.findByIdAndUpdate(
-      user,
-      {
-        $push: { result: allresult },
-      },
-      { new: true }
-    );
+    // const currentuser = await User.findByIdAndUpdate(
+    //   user,
+    //   {
+    //     $push: { result: allresult },
+    //   },
+    //   { new: true }
+    // );
     res.status(201).json({ data: allresult });
 
     // }
@@ -169,14 +173,18 @@ const DataFun = async (selectedquestion) => {
 async function getresult(req, res) {
   try {
     const { sectionId } = req.query;
-    const { user } = req.user;
-    const currentres = await User.findById(user).populate("result");
+    const {  firstname,
+      lastname,
+      userEmail } = req.user;
+    const currentres = await Result.find({  firstname,
+      lastname,
+      userEmail })
     const currentSection = await Section.findById(sectionId).populate(
       "sectioninfo"
     );
-    console.log("username", currentres.username);
+    // console.log("username", currentres.username);
     // console.log("jjdqqqdj", currentres);
-    let new_arr = currentres.result;
+    let new_arr = currentres;
     let temppvar = [];
     let temppvar2 = [];
     currentSection.sectioninfo.map((ele) => {

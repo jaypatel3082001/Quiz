@@ -127,6 +127,43 @@ exports.handleAdmin = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.userHandle = async (req, res) => {
+  try {
+    const { firstname,lastname, userEmail, userkey } = req.body;
+    // let existKey;
+    console.log("gfhfg", userkey);
+ 
+    const existKey = await Key.findOne({ key: userkey });
+    if (!existKey) {
+      return res.status(500).json("Invalid key!");
+    }
+      console.log("gfhffgdfg", existKey);
+      const token = jwt.sign(
+        {
+          firstname: firstname,
+          lastname: lastname,
+          userEmail: userEmail,
+          key:userkey
+        },
+        "Hs235",
+        {
+          expiresIn: "1m",
+        }
+      );
+     
+    
+
+    // Find user by username using the User model
+   
+    // Generate a JWT token
+   
+
+    res.status(201).json({ message: "Login successful", token, existKey });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error logging in" });
+  }
+};
 exports.userauth = async (req, res) => {
   try {
     // const admins = await User.find().populate('role');

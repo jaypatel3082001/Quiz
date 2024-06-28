@@ -4,6 +4,7 @@ const {
   login,
   handleAdmin,
   userauth,
+  userHandle,
 } = require("../controllers/authController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
 const { KeyAuth } = require("../middleware/keyMiddleware");
@@ -12,6 +13,7 @@ const { KeyAuth } = require("../middleware/keyMiddleware");
 const router = express.Router();
 // router.use(authchreckmid)
 router.post("/signup", signup);
+router.post("/userLogin", userHandle);
 router.post("/login", login);
 router.get("/admins", handleAdmin);
 router.get("/protected", middlewareAuth, userauth);
