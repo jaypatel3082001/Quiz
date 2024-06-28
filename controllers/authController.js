@@ -70,9 +70,10 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password, userkey } = req.body;
+    let existKey;
 
     if (userkey) {
-      const existKey = await Key.find({ key: userkey });
+      existKey = await Key.find({ key: userkey });
       if (!existKey) {
         return res.status(500).json("Invalid key!");
       }
