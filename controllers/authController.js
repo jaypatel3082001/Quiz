@@ -129,34 +129,31 @@ exports.handleAdmin = async (req, res) => {
 };
 exports.userHandle = async (req, res) => {
   try {
-    const { firstname,lastname, userEmail, userkey } = req.body;
+    const { firstname, lastname, userEmail, userkey } = req.body;
     // let existKey;
     console.log("gfhfg", userkey);
- 
+
     const existKey = await Key.findOne({ key: userkey });
     if (!existKey) {
       return res.status(500).json("Invalid key!");
     }
-      console.log("gfhffgdfg", existKey);
-      const token = jwt.sign(
-        {
-          firstname: firstname,
-          lastname: lastname,
-          userEmail: userEmail,
-          key:userkey
-        },
-        "Hs235",
-        {
-          expiresIn: "1m",
-        }
-      );
-     
-    
+    console.log("gfhffgdfg", existKey);
+    const token = jwt.sign(
+      {
+        firstname: firstname,
+        lastname: lastname,
+        userEmail: userEmail,
+        key: existKey,
+      },
+      "Hs235",
+      {
+        expiresIn: "12h",
+      }
+    );
 
     // Find user by username using the User model
-   
+
     // Generate a JWT token
-   
 
     res.status(201).json({ message: "Login successful", token, existKey });
   } catch (err) {
