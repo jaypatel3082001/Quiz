@@ -100,7 +100,7 @@ exports.login = async (req, res) => {
       },
       "Hs235",
       {
-        expiresIn: "1m",
+        expiresIn: "12h",
       }
     );
 
