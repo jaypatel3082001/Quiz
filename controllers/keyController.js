@@ -97,4 +97,16 @@ async function updateKey(req, res) {
   }
 }
 
-module.exports = { generatekey, fetchkey, updateKey };
+async function deleteKey(req,res){
+  try{
+    const deletedKey = await Key.findById(req.params.id)
+    deletedKey.Remaintime=0
+    const updatedData = await deletedKey.save();
+    res.status(201).json("Key is Deleted")
+
+  }catch(error){
+    res.status(500).json(` error hwile fetching ${error}`)
+  }
+}
+
+module.exports = { generatekey, fetchkey, updateKey,deleteKey };

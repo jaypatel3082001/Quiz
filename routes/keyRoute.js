@@ -3,6 +3,7 @@ const {
   generatekey,
   fetchkey,
   updateKey,
+  deleteKey,
 } = require("../controllers/keyController");
 // const { middlewareAuth } = require('../middleware/authMiddleware');
 // const user = require('../models/user');
@@ -12,6 +13,7 @@ const router = express.Router();
 router.post("/generatekey", generatekey);
 router.get("/fetchkey", fetchkey);
 router.get("/update/:id", updateKey);
+router.put("/delete/:id", deleteKey);
 // router.post('/login',login);
 // router.get('/admins', handleAdmin);
 // router.get('/protected', middlewareAuth,userauth);
