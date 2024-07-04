@@ -13,7 +13,7 @@ async function generatekey(req, res) {
     // Check if the section already exists
     const existingSec = await Key.findOne({ sectionId });
     if (existingSec) {
-      if (existingSec.Endtime > Date.now()) {
+      if (existingSec.Remaintime > 0) {
         return res
           .status(400)
           .json("You cannot create a section that is already running");
