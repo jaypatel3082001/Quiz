@@ -29,13 +29,13 @@ async function generatekey(req, res) {
       return res.status(400).json("Start time must be before end time");
     }
 
-    const oneDay = 1000 * 60 * 60 * 24; // Milliseconds in a day
+    const onehours = 1000 * 60 * 60; // Milliseconds in a day
 
     // Calculate the difference in milliseconds
     const differenceInMs = date2.getTime() - date1.getTime();
 
     // Calculate the difference in days
-    const daysDifference = Math.floor(differenceInMs / oneDay);
+    const daysDifference = Math.floor(differenceInMs / onehours);
 
     // Generate a random key
     const randomKey = generateRandomKey(4);
@@ -66,5 +66,35 @@ async function fetchkey(req, res) {
     res.status(500).json(`error ${error}`);
   }
 }
+async function updateKey(req, res) {
+  try {
+    const alldata = await Key.findOne({ sectionId: req.params.id });
 
-module.exports = { generatekey,fetchkey };
+    if (!alldata) {
+      return res.status(404).json("Section not found");
+    }
+
+    console.log("alldata", alldata);
+    console.log("Date.now()", Date.now());
+    console.log("alldata.Endtime.getTime()", alldata.Endtime.getTime());
+
+    const differenceInMs = alldata.Endtime.getTime() - Date.now();
+    const oneHour = 1000 * 60 * 60;
+    console.log("differenceInMs", differenceInMs);
+
+    const hoursDifference = Math.floor(differenceInMs / oneHour);
+
+    if (hoursDifference <= 0) {
+      return res.status(400).json("Your key has expired");
+    }
+
+    alldata.Remaintime = hoursDifference;
+    const updatedData = await alldata.save();
+
+    res.status(200).json({ data: updatedData });
+  } catch (error) {
+    res.status(500).json(`Error: ${error.message}`);
+  }
+}
+
+module.exports = { generatekey, fetchkey, updateKey };
