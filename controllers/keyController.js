@@ -66,12 +66,23 @@ async function fetchkey(req, res) {
     res.status(500).json(`error ${error}`);
   }
 }
+// async function fetchOkey(req, res) {
+//   try {
+//     const alldata = await Key.find({});
+//     res.status(201).json({ data: alldata });
+//   } catch (error) {
+//     res.status(500).json(`error ${error}`);
+//   }
+// }
 async function updateKey(req, res) {
   try {
     const alldata = await Key.findOne({ sectionId: req.params.id });
 
     if (!alldata) {
       return res.status(404).json("Section not found");
+    }
+    if (alldata.Remaintime === 0) {
+      return res.status(404).json("Key is inactive");
     }
 
     console.log("alldata", alldata);
@@ -97,16 +108,15 @@ async function updateKey(req, res) {
   }
 }
 
-async function deleteKey(req,res){
-  try{
-    const deletedKey = await Key.findById(req.params.id)
-    deletedKey.Remaintime=0
+async function deleteKey(req, res) {
+  try {
+    const deletedKey = await Key.findById(req.params.id);
+    deletedKey.Remaintime = 0;
     const updatedData = await deletedKey.save();
-    res.status(201).json("Key is Deleted")
-
-  }catch(error){
-    res.status(500).json(` error hwile fetching ${error}`)
+    res.status(201).json("Key is Deleted");
+  } catch (error) {
+    res.status(500).json(` error hwile fetching ${error}`);
   }
 }
 
-module.exports = { generatekey, fetchkey, updateKey,deleteKey };
+module.exports = { generatekey, fetchkey, updateKey, deleteKey };
