@@ -8,9 +8,14 @@ const keySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Section",
   },
-  time: {
+  Starttime: {
+    type: Date,
+  },
+  Endtime: {
+    type: Date,
+  },
+  Remaintime: {
     type: Number,
-    default: 1,
   },
   createdAt: {
     type: Date,

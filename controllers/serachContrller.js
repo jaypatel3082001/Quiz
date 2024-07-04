@@ -183,7 +183,12 @@ async function getsearchSection(req, res) {
 
     // // Execute the aggregation pipeline
     // const documents = await Resultmodel.aggregate(pipeline).exec();
-    const documents = await Resultmodel.find({sectionId:req.params.id,...filter}).populate('userId').limit(limit).skip(offset)
+    const documents = await Resultmodel.find({
+      sectionId: req.params.id,
+      ...filter,
+    })
+      .limit(limit)
+      .skip(offset);
 
     // Count the total documents matching the filter (without limit and offset)
     const totalCount = await Resultmodel.countDocuments({

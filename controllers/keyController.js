@@ -9,22 +9,62 @@ const secreateKey = "HHls32";
 
 async function generatekey(req, res) {
   try {
-    const { time, sectionId } = req.body;
+    const { starttime, endtime, sectionId } = req.body;
+    // Check if the section already exists
+    const existingSec = await Key.findOne({ sectionId });
+    if (existingSec) {
+      if (existingSec.Endtime > Date.now()) {
+        return res
+          .status(400)
+          .json("You cannot create a section that is already running");
+      }
+    }
 
-    // const {time}=req.body
+    // Parse start and end times
+    const date1 = new Date(starttime);
+    const date2 = new Date(endtime);
+
+    // Ensure date1 is before date2
+    if (date1 > date2) {
+      return res.status(400).json("Start time must be before end time");
+    }
+
+    const oneDay = 1000 * 60 * 60 * 24; // Milliseconds in a day
+
+    // Calculate the difference in milliseconds
+    const differenceInMs = date2.getTime() - date1.getTime();
+
+    // Calculate the difference in days
+    const daysDifference = Math.floor(differenceInMs / oneDay);
+
+    // Generate a random key
     const randomKey = generateRandomKey(4);
+
+    // Create the new section
     const create = await Key.create({
-      time: time,
       key: randomKey,
-      sectionId: sectionId,
+      sectionId,
+      Starttime: starttime,
+      Endtime: endtime,
+      Remaintime: daysDifference,
     });
 
     res.status(201).json({ data: create });
   } catch (error) {
-    res.status(500).json(`error ...${error}`);
+    res.status(500).json(`Error: ${error.message}`);
   }
 }
 function generateRandomKey(length) {
   return crypto.randomBytes(length).toString("hex");
 }
-module.exports = { generatekey };
+
+async function fetchkey(req, res) {
+  try {
+    const alldata = await Key.find({});
+    res.status(201).json({ data: alldata });
+  } catch (error) {
+    res.status(500).json(`error ${error}`);
+  }
+}
+
+module.exports = { generatekey,fetchkey };

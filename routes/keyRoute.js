@@ -1,11 +1,12 @@
-const express = require('express');
-const { generatekey } = require('../controllers/keyController');
+const express = require("express");
+const { generatekey, fetchkey } = require("../controllers/keyController");
 // const { middlewareAuth } = require('../middleware/authMiddleware');
 // const user = require('../models/user');
 // const authchreckmid = ddd;
 const router = express.Router();
 // router.use(authchreckmid)
-router.post('/generatekey',generatekey);
+router.post("/generatekey", generatekey);
+router.get("/fetchkey", fetchkey);
 // router.post('/login',login);
 // router.get('/admins', handleAdmin);
 // router.get('/protected', middlewareAuth,userauth);
