@@ -11,13 +11,17 @@ async function generatekey(req, res) {
   try {
     const { starttime, endtime, sectionId } = req.body;
     // Check if the section already exists
-    const existingSec = await Key.findOne({ sectionId });
-    if (existingSec) {
-      if (existingSec.Remaintime > 0) {
-        return res
-          .status(400)
-          .json("You cannot create a section that is already running");
+    const existingSec = await Key.find({ sectionId });
+    let newArr = [];
+    newArr = existingSec.filter((ele) => {
+      if (ele.Remaintime > 0) {
+        return ele;
       }
+    });
+    if (newArr.length > 0) {
+      return res
+        .status(400)
+        .json("You cannot create a section that is already running");
     }
 
     // Parse start and end times
@@ -61,7 +65,13 @@ function generateRandomKey(length) {
 async function fetchkey(req, res) {
   try {
     const alldata = await Key.find({});
-    res.status(201).json({ data: alldata });
+    let newArr = [];
+    newArr = alldata.filter((ele) => {
+      if (ele.Remaintime > 0) {
+        return ele;
+      }
+    });
+    res.status(201).json({ data: newArr });
   } catch (error) {
     res.status(500).json(`error ${error}`);
   }
@@ -76,20 +86,23 @@ async function fetchkey(req, res) {
 // }
 async function updateKey(req, res) {
   try {
-    const alldata = await Key.findOne({ sectionId: req.params.id });
+    const alldata = await Key.find({ sectionId: req.params.id });
+    let aballdata;
 
-    if (!alldata) {
+    if (alldata.length === 0) {
       return res.status(404).json("Section not found");
     }
-    if (alldata.Remaintime === 0) {
-      return res.status(404).json("Key is inactive");
-    }
+    aballdata = alldata.filter((ele) => {
+      if (ele.Remaintime !== 0) {
+        return { ele };
+      }
+    });
 
-    console.log("alldata", alldata);
+    console.log("alldata", aballdata);
     console.log("Date.now()", Date.now());
-    console.log("alldata.Endtime.getTime()", alldata.Endtime.getTime());
+    console.log("alldata.Endtime.getTime()", aballdata[0].Endtime.getTime());
 
-    const differenceInMs = alldata.Endtime.getTime() - Date.now();
+    const differenceInMs = aballdata[0].Endtime.getTime() - Date.now();
     const oneHour = 1000 * 60 * 60;
     console.log("differenceInMs", differenceInMs);
 
@@ -99,8 +112,8 @@ async function updateKey(req, res) {
       return res.status(400).json("Your key has expired");
     }
 
-    alldata.Remaintime = hoursDifference;
-    const updatedData = await alldata.save();
+    aballdata[0].Remaintime = hoursDifference;
+    const updatedData = await aballdata[0].save();
 
     res.status(200).json({ data: updatedData });
   } catch (error) {
