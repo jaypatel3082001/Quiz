@@ -136,7 +136,7 @@ async function getallsectiondata(req, res) {
       console.log(allData);
 
       // You can send the populated data as a response if needed
-      res.json(allData);
+      res.json({ allData, totalTime: secData.totalTime });
     } catch (error) {
       console.error(error);
       res.status(500).send("Server error");
