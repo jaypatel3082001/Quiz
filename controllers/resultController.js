@@ -7,9 +7,7 @@ const User = require("../models/user");
 async function send(req, res) {
   try {
     const { sectionId, questions, userkey } = req.body; //user=req.params.id
-    const {  firstname,
-      lastname,
-      userEmail } = req.user;
+    const { firstname, lastname, userEmail } = req.user;
     // console.log("user id....", user);
     const selectedquestion = await Section.findById(sectionId).populate(
       "sectioninfo"
@@ -24,7 +22,15 @@ async function send(req, res) {
     const allData = await DataFun(selectedquestion);
     // console.log("jascript.....", allData[0].quizemcqs);
     console.log("all datfun return", allData);
-    const result = countResult(allData.tempvariable, questions);
+    const result = countResult(
+      allData.tempvariable,
+      allData.weightagequizename,
+      allData.totalpassing,
+      questions
+    );
+
+    // let type = selectedquestion.CountResult;
+
     // const totalquizeresult = totalquizeResult(questions);
     console.log("rrrrrrrrrrrrr", result);
     const allresult = await Result.create({
@@ -38,6 +44,8 @@ async function send(req, res) {
       TotalResult: allData.totalresult,
       quizewiseTotalResult: allData.weightagequizename,
       rightAnswers: allData.allanswer,
+      TotalPassing: allData.totalpassing,
+      status: result.status,
       Key: userkey,
     });
     // const currentuser = await User.findByIdAndUpdate(
@@ -58,11 +66,12 @@ async function send(req, res) {
   }
 }
 
-const countResult = (allData, questions) => {
+const countResult = (allData, weightageArr, totalpassing, questions) => {
   let sum = 0;
   let temparry = [];
   let weightageCounter = {};
   let weightageCountername = [];
+  let status;
 
   // Flatten all quizemcqs arrays into a single array
   allData.forEach((ele) => {
@@ -99,6 +108,7 @@ const countResult = (allData, questions) => {
           weightageCounter[qId] = {
             quizename: question.quizename,
             weitage: correspondingData.weightage,
+            status: "pass",
           };
           // console.log("inner if...wait", weightageCounter);
         }
@@ -117,11 +127,24 @@ const countResult = (allData, questions) => {
   });
   console.log("weightageCounter", weightageCounter);
   for (let [key, value] of Object.entries(weightageCounter)) {
+    for (let i of weightageArr) {
+      if (value.weightage >= i.Quisewisepassing) {
+        value.status = "pass";
+      } else {
+        value.status = "fail";
+      }
+    }
     weightageCountername.push(value);
   }
   console.log("weightageCounter", weightageCounter);
   // console.log("Final result:", sum);
-  return { sum, weightageCountername };
+
+  if (sum >= totalpassing) {
+    status = "pass";
+  } else {
+    status = "fail";
+  }
+  return { sum, weightageCountername, status };
 };
 const DataFun = async (selectedquestion) => {
   let totalresult = 0;
@@ -129,13 +152,16 @@ const DataFun = async (selectedquestion) => {
   let tempvariable = [];
   let weightageCounter = {};
   let weightagequizename = [];
-  // let totalquizeresult;
+  let status;
 
+  let totalpassing = selectedquestion.PassingMarks;
+  // let Quisewisepassing = [];
   // Use for...of to handle asynchronous operations
   for (const ele of selectedquestion.sectioninfo) {
     tf = await Quize.findById(ele).populate("quizemcqs");
     tempvariable.push(tf);
     let qId = ele.quizename;
+    // Quisewisepassing.push(ele.Quisewisepassing);
     //  totalquizeresult = totalquizeResult(tf);
     for (const element of tf.quizemcqs) {
       // totalquizeresult = totalquizeResult(element);
@@ -149,6 +175,7 @@ const DataFun = async (selectedquestion) => {
         weightageCounter[qId] = {
           quizename: ele.quizename,
           weitage: element.weightage,
+          qizewisePassing: ele.Quisewisepassing,
         };
         // console.log("inner if...wait", weightageCounter);
       }
@@ -161,24 +188,27 @@ const DataFun = async (selectedquestion) => {
 
       allanswer.push(obje);
     }
+
     weightagequizename.push(weightageCounter[qId]);
 
     // console.log("tempvariable ............", tempvariable);
   }
 
   // console.log("results of all data", totalresult);
-  return { totalresult, allanswer, tempvariable, weightagequizename };
+  return {
+    totalresult,
+    allanswer,
+    tempvariable,
+    weightagequizename,
+    totalpassing,
+  };
 };
 
 async function getresult(req, res) {
   try {
     const { sectionId } = req.query;
-    const {  firstname,
-      lastname,
-      userEmail } = req.user;
-    const currentres = await Result.find({  firstname,
-      lastname,
-      userEmail })
+    const { firstname, lastname, userEmail } = req.user;
+    const currentres = await Result.find({ firstname, lastname, userEmail });
     const currentSection = await Section.findById(sectionId).populate(
       "sectioninfo"
     );
