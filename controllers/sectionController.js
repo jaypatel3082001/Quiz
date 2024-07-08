@@ -3,12 +3,12 @@ const Quize = require("../models/Quizearr");
 
 async function create(req, res) {
   try {
-    const { sectionName,PassingMarks } = req.body;
+    const { sectionName,PassingMarks,CountResult } = req.body;
     const exsiting = await Section.findOne({ sectionName });
     if (exsiting) {
       return res.status(400).json({ message: "Sectionname already exists" });
     }
-    const createsection = await Section.create({ sectionName,PassingMarks });
+    const createsection = await Section.create({ sectionName,PassingMarks,CountResult });
     res.status(201).json({ data: createsection });
   } catch {
     res.status(500).json({ message: "Error while creating" });
@@ -17,10 +17,10 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    const { sectionName,PassingMarks } = req.body;
+    const { sectionName,PassingMarks,CountResult } = req.body;
     const upsection = await Section.findByIdAndUpdate(
       req.params.id,
-      { sectionName,PassingMarks },
+      { sectionName,PassingMarks,CountResult },
       { new: true }
     );
     res.status(201).json({ data: upsection });
