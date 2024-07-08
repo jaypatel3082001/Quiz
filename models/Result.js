@@ -13,11 +13,11 @@ const resultSchema = new mongoose.Schema(
       {
         questionId: { type: String },
         qindex: { type: Number },
-        quizeId: { type: String },
+        quizeId: { type: String }, // 2 - 3
         quizename: { type: String },
         answer: { type: String },
         isAttempted: { type: Boolean },
-        weightage: { type: Number },
+        weightage: { type: Number }, // 2 - 3
       },
     ],
     result: { type: Number },

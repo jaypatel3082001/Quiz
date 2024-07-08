@@ -5,8 +5,7 @@ const mongoose = require("mongoose");
 
 async function question(req, res) {
   try {
-    const { question, option1, option2, option3, option4, answer, weightage } =
-      req.body;
+    const { question, option1, option2, option3, option4, answer } = req.body;
 
     // Check if username exists using the User model
     // const existingQuestion = await Questions.findOne({ question });
@@ -20,7 +19,6 @@ async function question(req, res) {
       option3,
       option4,
       answer,
-      weightage,
     });
 
     res.status(201).json({ message: questions });

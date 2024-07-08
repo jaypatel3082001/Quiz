@@ -15,6 +15,9 @@ const quizeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  quizepassingMarks: {
+    type: Number,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
