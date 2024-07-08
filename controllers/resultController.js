@@ -73,6 +73,9 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
   let weightageCountername = [];
   let status;
 
+  console.log("Arrayofweightage", weightageArr);
+  console.log("PAssing", totalpassing);
+
   // Flatten all quizemcqs arrays into a single array
   allData.forEach((ele) => {
     if (ele && ele.quizemcqs) {
@@ -108,7 +111,6 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
           weightageCounter[qId] = {
             quizename: question.quizename,
             weitage: correspondingData.weightage,
-            status: "pass",
           };
           // console.log("inner if...wait", weightageCounter);
         }
@@ -126,14 +128,29 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
     }
   });
   console.log("weightageCounter", weightageCounter);
+  // for (let [key, value] of Object.entries(weightageCounter)) {
+  //   for (let i of weightageArr) {
+  //     if (value.weightage >= i.Quisewisepassing) {
+  //       value.status = "pass";
+  //     } else {
+  //       value.status = "fail";
+  //     }
+  //   }
+  //   weightageCountername.push(value);
+  // }
   for (let [key, value] of Object.entries(weightageCounter)) {
+    // Initialize status to 'fail'
+    value.status = "fail";
+
+    // Check if the value's weightage meets or exceeds any of the passing criteria
     for (let i of weightageArr) {
-      if (value.weightage >= i.Quisewisepassing) {
+      if (value.weitage >= i.qizewisePassing) {
         value.status = "pass";
-      } else {
-        value.status = "fail";
+        break; // If it passes one criteria, no need to check further
       }
     }
+
+    // Push the updated value into weightageCountername
     weightageCountername.push(value);
   }
   console.log("weightageCounter", weightageCounter);
@@ -175,7 +192,7 @@ const DataFun = async (selectedquestion) => {
         weightageCounter[qId] = {
           quizename: ele.quizename,
           weitage: element.weightage,
-          qizewisePassing: ele.Quisewisepassing,
+          qizewisePassing: ele.quizepassingMarks,
         };
         // console.log("inner if...wait", weightageCounter);
       }
