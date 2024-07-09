@@ -135,9 +135,10 @@ function buildDateFilter(startDate, endDate, filter) {
 
 async function getsearchSection(req, res) {
   try {
-    const customOrder = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const customOrder =
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    const search = req.query.search || '';
+    const search = req.query.search || "";
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
     const type = req.query.type;
@@ -196,6 +197,9 @@ async function getsearchSection(req, res) {
           lastname: { $first: "$lastname" },
           userEmail: { $first: "$userEmail" },
           Status: { $first: "$status" },
+          result: { $first: "$result" },
+          TotalResult: { $first: "$TotalResult" },
+          Key: { $first: "$Key" },
           passResults: {
             $push: {
               $cond: {
@@ -252,7 +256,6 @@ async function getsearchSection(req, res) {
     console.error("Error:", error);
     return res.status(500).json({ error: error.message });
   }
-
 }
 
 // Helper function to build the document filter
