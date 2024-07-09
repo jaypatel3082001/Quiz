@@ -125,6 +125,16 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
           };
         }
       }
+    } else {
+      if (weightageCounter[qId]) {
+        weightageCounter[qId].weitage += 0;
+      } else {
+        // If qId is not in the dictionary, initialize it
+        weightageCounter[qId] = {
+          quizename: question.quizename,
+          weitage: 0,
+        };
+      }
     }
   });
   console.log("weightageCounter", weightageCounter);
