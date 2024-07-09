@@ -199,6 +199,7 @@ async function getsearchSection(req, res) {
           Status: { $first: "$status" },
           result: { $first: "$result" },
           TotalResult: { $first: "$TotalResult" },
+          quizewiseTotalResult: { $first: "$quizewiseTotalResult" },
           Key: { $first: "$Key" },
           passResults: {
             $push: {
