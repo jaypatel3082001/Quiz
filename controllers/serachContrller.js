@@ -135,10 +135,9 @@ function buildDateFilter(startDate, endDate, filter) {
 
 async function getsearchSection(req, res) {
   try {
-    const customOrder =
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const customOrder = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    const search = req.query.search || "";
+    const search = req.query.search || '';
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
     const type = req.query.type;
@@ -169,6 +168,7 @@ async function getsearchSection(req, res) {
         $match: {
           sectionId: new ObjectId(req.params.id),
           ...filter,
+          ...(mainStatus && { status: mainStatus }),
         },
       },
       {
@@ -185,8 +185,35 @@ async function getsearchSection(req, res) {
       },
       {
         $match: {
-          "quizewiseResult.status": status,
-          status: mainStatus,
+          ...(status && { "quizewiseResult.status": status }),
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          sectionId: { $first: "$sectionId" },
+          firstname: { $first: "$firstname" },
+          lastname: { $first: "$lastname" },
+          userEmail: { $first: "$userEmail" },
+          Status: { $first: "$status" },
+          passResults: {
+            $push: {
+              $cond: {
+                if: { $eq: ["$quizewiseResult.status", "pass"] },
+                then: "$quizewiseResult",
+                else: "$$REMOVE",
+              },
+            },
+          },
+          failResults: {
+            $push: {
+              $cond: {
+                if: { $eq: ["$quizewiseResult.status", "fail"] },
+                then: "$quizewiseResult",
+                else: "$$REMOVE",
+              },
+            },
+          },
         },
       },
       {
@@ -207,8 +234,14 @@ async function getsearchSection(req, res) {
 
     // Count the total documents matching the filter (without limit and offset)
     const totalCount = await Resultmodel.countDocuments({
-      sectionId: req.params.id,
+      sectionId: new ObjectId(req.params.id),
       ...filter,
+      ...(mainStatus && { status: mainStatus }),
+      $or: [
+        { firstname: { $regex: search, $options: "i" } },
+        { lastname: { $regex: search, $options: "i" } },
+        { userEmail: { $regex: search, $options: "i" } },
+      ],
     });
 
     return res.status(200).json({
@@ -219,6 +252,7 @@ async function getsearchSection(req, res) {
     console.error("Error:", error);
     return res.status(500).json({ error: error.message });
   }
+
 }
 
 // Helper function to build the document filter
