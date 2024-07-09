@@ -138,38 +138,65 @@ async function getsearchSection(req, res) {
     const customOrder =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    const search = req.query.search || "";
+    const search = req.query.search;
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
     const type = req.query.type;
     const status = req.query.status;
-    const mainStatus = req.query.mainstatus;
+    const mainstatus = req.query.mainstatus;
     const limit = parseInt(req.query.limit) || 0;
     const offset = parseInt(req.query.offset) || 0;
     const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
-
     console.log(" req.params.id", req.params.id);
     console.log(" startDate", startDate);
     console.log(" endDate", endDate);
     console.log(" type", type);
 
     const filter = await buildDocumentFilter(search, type);
+    console.log(" type  filter", filter);
 
     // Add date range filter if both startDate and endDate are provided
     if (startDate && endDate) {
-      filter.createdAt = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      };
+      buildDateFilter(startDate, endDate, filter);
+      console.log(" type ,,,,,,,,,, filter", filter);
     }
 
-    // Build the aggregation pipeline
-    const pipeline = [
+    // const Model =
+    //   type === "question"
+    //     ? QuestionModel
+    //     : type === "quiz"
+    //     ? QuizeModel
+    //     : type === "section"
+    //     ? Sectionmodel
+    //     : Resultmodel;
+
+    // console.log("model", Model);
+
+    // Count the total documents matching the filter
+    const getCustomOrderIndex = (char) => customOrder.indexOf(char);
+
+    // // Build the aggregation pipeline
+    // const pipeline = [
+    //   {
+    //     $group: {
+    //       sectionId: req.params.id,
+    //     },
+    //   },
+    // ];
+
+    // // Execute the aggregation pipeline
+    // const documents = await Resultmodel.aggregate(pipeline).exec();
+    // const documents = await Resultmodel.find({
+    //   sectionId: req.params.id,
+    //   ...filter,
+    // })
+    //   .limit(limit)
+    //   .skip(offset);
+    const documents = await Resultmodel.aggregate([
       {
         $match: {
-          sectionId: new ObjectId(req.params.id),
+          sectionId: new ObjectId(`${req.params.id}`),
           ...filter,
-          ...(mainStatus && { status: mainStatus }),
         },
       },
       {
@@ -191,16 +218,13 @@ async function getsearchSection(req, res) {
       },
       {
         $group: {
-          _id: "$_id",
+          _id: "$status",
           sectionId: { $first: "$sectionId" },
           firstname: { $first: "$firstname" },
           lastname: { $first: "$lastname" },
           userEmail: { $first: "$userEmail" },
           Status: { $first: "$status" },
-          result: { $first: "$result" },
-          TotalResult: { $first: "$TotalResult" },
-          quizewiseTotalResult: { $first: "$quizewiseTotalResult" },
-          Key: { $first: "$Key" },
+          quizewiseResult: { $first: "$quizewiseResult" },
           passResults: {
             $push: {
               $cond: {
@@ -232,21 +256,11 @@ async function getsearchSection(req, res) {
       {
         $limit: limit,
       },
-    ];
-
-    // Execute the aggregation pipeline
-    const documents = await Resultmodel.aggregate(pipeline).exec();
-
+    ]);
     // Count the total documents matching the filter (without limit and offset)
     const totalCount = await Resultmodel.countDocuments({
-      sectionId: new ObjectId(req.params.id),
+      sectionId: req.params.id,
       ...filter,
-      ...(mainStatus && { status: mainStatus }),
-      $or: [
-        { firstname: { $regex: search, $options: "i" } },
-        { lastname: { $regex: search, $options: "i" } },
-        { userEmail: { $regex: search, $options: "i" } },
-      ],
     });
 
     return res.status(200).json({
@@ -257,17 +271,6 @@ async function getsearchSection(req, res) {
     console.error("Error:", error);
     return res.status(500).json({ error: error.message });
   }
-}
-
-// Helper function to build the document filter
-async function buildDocumentFilter(search, type) {
-  const filter = {};
-  // Add any specific filters based on type or other criteria
-  // For example:
-  // if (type) {
-  //   filter.type = type;
-  // }
-  return filter;
 }
 
 module.exports = {
