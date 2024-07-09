@@ -5,6 +5,7 @@ const QuizeModel = require("../models/Quizearr");
 const Sectionmodel = require("../models/section");
 const Resultmodel = require("../models/Result");
 const User = require("../models/user");
+const { ObjectId } = require("mongodb");
 
 async function getsearchAll(req, res) {
   try {
@@ -137,58 +138,72 @@ async function getsearchSection(req, res) {
     const customOrder =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    const search = req.query.search;
+    const search = req.query.search || "";
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
     const type = req.query.type;
+    const status = req.query.status;
+    const mainStatus = req.query.mainstatus;
     const limit = parseInt(req.query.limit) || 0;
     const offset = parseInt(req.query.offset) || 0;
     const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
+
     console.log(" req.params.id", req.params.id);
     console.log(" startDate", startDate);
     console.log(" endDate", endDate);
     console.log(" type", type);
 
     const filter = await buildDocumentFilter(search, type);
-    console.log(" type  filter", filter);
 
     // Add date range filter if both startDate and endDate are provided
     if (startDate && endDate) {
-      buildDateFilter(startDate, endDate, filter);
-      console.log(" type ,,,,,,,,,, filter", filter);
+      filter.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
     }
 
-    // const Model =
-    //   type === "question"
-    //     ? QuestionModel
-    //     : type === "quiz"
-    //     ? QuizeModel
-    //     : type === "section"
-    //     ? Sectionmodel
-    //     : Resultmodel;
+    // Build the aggregation pipeline
+    const pipeline = [
+      {
+        $match: {
+          sectionId: new ObjectId(req.params.id),
+          ...filter,
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { firstname: { $regex: search, $options: "i" } },
+            { lastname: { $regex: search, $options: "i" } },
+            { userEmail: { $regex: search, $options: "i" } },
+          ],
+        },
+      },
+      {
+        $unwind: "$quizewiseResult",
+      },
+      {
+        $match: {
+          "quizewiseResult.status": status,
+          status: mainStatus,
+        },
+      },
+      {
+        $sort: {
+          createdAt: sortOrder,
+        },
+      },
+      {
+        $skip: offset,
+      },
+      {
+        $limit: limit,
+      },
+    ];
 
-    // console.log("model", Model);
-
-    // Count the total documents matching the filter
-    const getCustomOrderIndex = (char) => customOrder.indexOf(char);
-
-    // // Build the aggregation pipeline
-    // const pipeline = [
-    //   {
-    //     $group: {
-    //       sectionId: req.params.id,
-    //     },
-    //   },
-    // ];
-
-    // // Execute the aggregation pipeline
-    // const documents = await Resultmodel.aggregate(pipeline).exec();
-    const documents = await Resultmodel.find({
-      sectionId: req.params.id,
-      ...filter,
-    })
-      .limit(limit)
-      .skip(offset);
+    // Execute the aggregation pipeline
+    const documents = await Resultmodel.aggregate(pipeline).exec();
 
     // Count the total documents matching the filter (without limit and offset)
     const totalCount = await Resultmodel.countDocuments({
@@ -204,6 +219,17 @@ async function getsearchSection(req, res) {
     console.error("Error:", error);
     return res.status(500).json({ error: error.message });
   }
+}
+
+// Helper function to build the document filter
+async function buildDocumentFilter(search, type) {
+  const filter = {};
+  // Add any specific filters based on type or other criteria
+  // For example:
+  // if (type) {
+  //   filter.type = type;
+  // }
+  return filter;
 }
 
 module.exports = {
