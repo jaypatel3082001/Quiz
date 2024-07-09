@@ -218,30 +218,44 @@ async function getsearchSection(req, res) {
       },
       {
         $group: {
-          _id: "$status",
+          _id: "$_id",
           sectionId: { $first: "$sectionId" },
           firstname: { $first: "$firstname" },
           lastname: { $first: "$lastname" },
           userEmail: { $first: "$userEmail" },
-          Status: { $first: "$status" },
-          quizewiseResult: { $first: "$quizewiseResult" },
-          passResults: {
-            $push: {
-              $cond: {
-                if: { $eq: ["$quizewiseResult.status", "pass"] },
-                then: "$quizewiseResult",
-                else: "$$REMOVE",
-              },
+          quizewiseResult: { $push: "$quizewiseResult" },
+          quizewiseTotalResult: { $first: "$quizewiseTotalResult" },
+          TotalPassing: { $first: "$TotalPassing" },
+          createdAt: { $first: "$createdAt" },
+          result: { $first: "$result" },
+        },
+      },
+      {
+        $addFields: {
+          QuizeStatus: {
+            $cond: {
+              if: { $in: ["fail", "$quizewiseResult.status"] },
+              then: "fail",
+              else: "pass",
             },
           },
-          failResults: {
-            $push: {
-              $cond: {
-                if: { $eq: ["$quizewiseResult.status", "fail"] },
-                then: "$quizewiseResult",
-                else: "$$REMOVE",
+          Status: {
+            $arrayElemAt: [
+              {
+                $map: {
+                  input: "$quizewiseResult",
+                  as: "result",
+                  in: {
+                    $cond: {
+                      if: { $eq: ["$$result.status", "fail"] },
+                      then: "fail",
+                      else: "$$result.status",
+                    },
+                  },
+                },
               },
-            },
+              0,
+            ],
           },
         },
       },
