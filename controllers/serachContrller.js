@@ -143,7 +143,8 @@ async function getsearchSection(req, res) {
     const endDate = req.query.endDate;
     const type = req.query.type;
     const sortStatus = req.query.status === "asc" ? 1 : -1;
-    const mainstatus = req.query.mainstatus;
+    const resultBy = req.query.resultBy;
+    // const mainstatus = req.query.mainstatus;
     const limit = parseInt(req.query.limit) || 0;
     const offset = parseInt(req.query.offset) || 0;
     const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
@@ -265,14 +266,12 @@ async function getsearchSection(req, res) {
 
             {
               $sort: {
-                finalStatus: sortStatus,
+                ...(resultBy === "Quiz"
+                  ? { finalStatus: sortStatus }
+                  : { quizeWiseStatus: sortStatus }),
               },
             },
-            {
-              $sort: {
-                quizeWiseStatus: sortStatus,
-              },
-            },
+
             {
               $skip: offset,
             },
