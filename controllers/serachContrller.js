@@ -142,7 +142,7 @@ async function getsearchSection(req, res) {
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
     const type = req.query.type;
-    const status = req.query.status;
+    const sortStatus = req.query.status === "asc" ? 1 : -1;
     const mainstatus = req.query.mainstatus;
     const limit = parseInt(req.query.limit) || 0;
     const offset = parseInt(req.query.offset) || 0;
@@ -193,8 +193,6 @@ async function getsearchSection(req, res) {
     //   .limit(limit)
     //   .skip(offset);
 
-
-
     const documents = await Resultmodel.aggregate([
       {
         $match: {
@@ -214,11 +212,7 @@ async function getsearchSection(req, res) {
       {
         $unwind: "$quizewiseResult",
       },
-      {
-        $match: {
-          ...(status && { "quizewiseResult.status": status }),
-        },
-      },
+
       {
         $group: {
           _id: "$_id",
@@ -259,12 +253,19 @@ async function getsearchSection(req, res) {
           },
         },
       },
+
       {
         $facet: {
           data: [
             {
               $sort: {
                 createdAt: sortOrder,
+              },
+            },
+
+            {
+              $sort: {
+                finalStatus: sortStatus,
               },
             },
             {
@@ -282,12 +283,13 @@ async function getsearchSection(req, res) {
         },
       },
     ]).exec();
-    
+
     const data = documents[0].data;
-    const totalCount = documents[0].totalCount[0] ? documents[0].totalCount[0].count : 0;
-    
+    const totalCount = documents[0].totalCount[0]
+      ? documents[0].totalCount[0].count
+      : 0;
+
     console.log({ data, totalCount });
-    
 
     return res.status(200).json({
       data: data,
