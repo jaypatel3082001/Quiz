@@ -192,10 +192,11 @@ async function getsearchSection(req, res) {
     // })
     //   .limit(limit)
     //   .skip(offset);
+
     const documents = await Resultmodel.aggregate([
       {
         $match: {
-          sectionId: new ObjectId(`${req.params.id}`),
+          sectionId: new ObjectId(req.params.id),
           ...filter,
         },
       },
@@ -228,34 +229,30 @@ async function getsearchSection(req, res) {
           TotalPassing: { $first: "$TotalPassing" },
           createdAt: { $first: "$createdAt" },
           result: { $first: "$result" },
+          status: { $first: "$status" },
         },
       },
       {
         $addFields: {
-          QuizeStatus: {
+          quizeWiseStatus: {
             $cond: {
-              if: { $in: ["fail", "$quizewiseResult.status"] },
+              if: {
+                $in: ["fail", "$quizewiseResult.status"],
+              },
               then: "fail",
               else: "pass",
             },
           },
-          Status: {
-            $arrayElemAt: [
-              {
-                $map: {
-                  input: "$quizewiseResult",
-                  as: "result",
-                  in: {
-                    $cond: {
-                      if: { $eq: ["$$result.status", "fail"] },
-                      then: "fail",
-                      else: "$$result.status",
-                    },
-                  },
-                },
-              },
-              0,
-            ],
+        },
+      },
+      {
+        $addFields: {
+          finalStatus: {
+            $cond: {
+              if: { $eq: ["$quizeWiseStatus", "fail"] },
+              then: "fail",
+              else: "$status",
+            },
           },
         },
       },
@@ -270,7 +267,8 @@ async function getsearchSection(req, res) {
       {
         $limit: limit,
       },
-    ]);
+    ]).exec();
+
     // Count the total documents matching the filter (without limit and offset)
     const totalCount = await Resultmodel.countDocuments({
       sectionId: req.params.id,
