@@ -193,10 +193,12 @@ async function getsearchSection(req, res) {
     //   .limit(limit)
     //   .skip(offset);
 
+
+
     const documents = await Resultmodel.aggregate([
       {
         $match: {
-          sectionId: new ObjectId(req.params.id),
+          sectionId: new ObjectId(`${req.params.id}`),
           ...filter,
         },
       },
@@ -258,26 +260,37 @@ async function getsearchSection(req, res) {
         },
       },
       {
-        $sort: {
-          createdAt: sortOrder,
+        $facet: {
+          data: [
+            {
+              $sort: {
+                createdAt: sortOrder,
+              },
+            },
+            {
+              $skip: offset,
+            },
+            {
+              $limit: limit,
+            },
+          ],
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
         },
       },
-      {
-        $skip: offset,
-      },
-      {
-        $limit: limit,
-      },
     ]).exec();
-
-    // Count the total documents matching the filter (without limit and offset)
-    const totalCount = await Resultmodel.countDocuments({
-      sectionId: req.params.id,
-      ...filter,
-    });
+    
+    const data = documents[0].data;
+    const totalCount = documents[0].totalCount[0] ? documents[0].totalCount[0].count : 0;
+    
+    console.log({ data, totalCount });
+    
 
     return res.status(200).json({
-      data: documents,
+      data: data,
       totalCount,
     });
   } catch (error) {
