@@ -7,6 +7,7 @@ const {
   readSection,
 } = require("../controllers/resultController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
+const { recentResult, topTenResult } = require("../controllers/dashBordController");
 
 const router = express.Router();
 
@@ -16,17 +17,16 @@ router.get("/getresult", middlewareAuth, getresult);
 router.get("/getalluserdata", middlewareAuth, getalluserresultdata);
 router.get("/getall", getallresultdata);
 router.get("/getresultsection/:id", readSection);
-// router.get("/getall", middlewareAuth, getallresultdata);
-// router.get('/getall',getAll)
-// router.put('/update/:id',updatequizname)
-// router.delete('/delete/:id',deletequizname)
-// router.get('/read/:id',getallquizequestion)
-// router.put('/insert-questions/:id',insertOrupdateQuestionsToQuiz)
-// // router.put('/updatequestion/:id', updatequestion )
-// // router.delete('/deletequestion/:id', deletequestion )
-// // router.get('/quizemcqs/:quizename',getallquizequestion)
-// router.put('/deletequize-question/:id',deletionofquestionIntoquize)
-// // router.get('/getallquestion',getallquestion)
-// // router.post('/login', login);
+
+
+
+
+
+
+
+
+router.get("/recentResults", recentResult);
+router.get("/topTenResults", topTenResult);
+
 
 module.exports = router;

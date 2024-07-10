@@ -24,5 +24,60 @@ async function recentResult(req, res) {
     res.status(500).json(`error fetching ${error}`);
   }
 }
+async function topTenResult(req, res) {
+  try {
+    const Alldata = await Result.aggregate([
+      {
+        $lookup: {
+          from: "sections", // The collection containing section details
+          localField: "sectionId", // Field from the input documents
+          foreignField: "_id", // Field from the 'sections' collection
+          as: "sectionDetails", // Output array field
+        },
+      },
+      {
+        $unwind: "$sectionDetails", // Unwind the sectionDetails array
+      },
+      {
+        $group:{
+          _id:"$_id",
+          firstname:{
+            $first:"$firstname"
+          },
+          lastname:{
+            $first:"$lastname"
+          },
+          email:{
+            $first:"$userEmail"
+          },
+          result:{
+          $first:"$result"
+          },
+          TotalResult:{
+          $first:"$TotalResult"
+          },
+          sectionName:{
+          $first:"$sectionDetails.sectionName"
+          },
+        }
+      
+      },
+  {
+    $sort: {
+      result: -1
+    }
+  },
+    
+      {
+        // Limit the result to the last 3 documents
+        $limit: 10,
+      },
+    ]);
 
-module.exports = { recentResult };
+    res.status(201).json({ data: Alldata });
+  } catch (error) {
+    res.status(500).json(`error fetching ${error}`);
+  }
+}
+
+module.exports = { recentResult,topTenResult };
