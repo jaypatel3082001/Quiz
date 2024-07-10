@@ -269,6 +269,11 @@ async function getsearchSection(req, res) {
               },
             },
             {
+              $sort: {
+                quizeWiseStatus: sortStatus,
+              },
+            },
+            {
               $skip: offset,
             },
             {
