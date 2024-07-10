@@ -229,6 +229,7 @@ async function getsearchSection(req, res) {
           TotalPassing: { $first: "$TotalPassing" },
           createdAt: { $first: "$createdAt" },
           result: { $first: "$result" },
+          totalResult: { $first: "$TotalResult" },
           status: { $first: "$status" },
         },
       },
