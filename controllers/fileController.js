@@ -32,6 +32,12 @@ async function UploadquestionFile(req, res) {
       data: myFile,
     });
 
+    const downloadOpts = {
+      bucketId: bucketId,
+      fileName: "upload" + "/" + fileName,
+    };
+    const downloadResponse = await b2.downloadFileByName(downloadOpts);
+
     // // Upload file to Backblaze B2
     // const uploadResponse = await b2.uploadFile({
     //   uploadUrl,
@@ -41,24 +47,26 @@ async function UploadquestionFile(req, res) {
     // });
 
     // Construct the file download URL
-    const fileDownloadUrl = `https://f000.backblazeb2.com/file/${bucketName}/upload/${fileName}`;
+    // const fileDownloadUrl = `https://f000.backblazeb2.com/file/${bucketName}/upload/${fileName}`;
 
     // Fetch the file from the download URL
-    const response = await fetch(fileDownloadUrl);
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
 
-    // Process the file using xlsx
-    const workbook = xlsx.read(buffer);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const data = xlsx.utils.sheet_to_json(sheet);
-
-    res.status(201).json({ data: data });
+    res.status(201).json({ data: downloadResponse });
   } catch (err) {
     console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
   }
 }
+// async function downloadFile(fileName, targetPath) {
+//   try {
+
+//     fs.writeFileSync(targetPath, downloadResponse.data);
+
+//     console.log("File downloaded successfully:", targetPath);
+//   } catch (err) {
+//     console.error("Error downloading file:", err);
+//     throw err;
+//   }
+// }
 
 module.exports = { UploadquestionFile };
