@@ -41,20 +41,20 @@ async function UploadquestionFile(req, res) {
     // });
 
     // Construct the file download URL
-    // const fileDownloadUrl = `https://f000.backblazeb2.com/file/${bucketName}/upload/${fileName}`;
+    const fileDownloadUrl = `https://f000.backblazeb2.com/file/${bucketName}/upload/${fileName}`;
 
-    // // Fetch the file from the download URL
-    // const response = await fetch(fileDownloadUrl);
-    // const arrayBuffer = await response.arrayBuffer();
-    // const buffer = Buffer.from(arrayBuffer);
+    // Fetch the file from the download URL
+    const response = await fetch(fileDownloadUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    // // Process the file using xlsx
-    // const workbook = xlsx.read(buffer);
-    // const sheetName = workbook.SheetNames[0];
-    // const sheet = workbook.Sheets[sheetName];
-    // const data = xlsx.utils.sheet_to_json(sheet);
+    // Process the file using xlsx
+    const workbook = xlsx.read(buffer);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
 
-    res.status(201).json("sucess");
+    res.status(201).json({ data: data });
   } catch (err) {
     console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
