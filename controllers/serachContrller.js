@@ -267,7 +267,7 @@ async function getsearchSection(req, res) {
             {
               $sort: {
                 ...(resultBy === "Quiz"
-                  ? { finalStatus: sortStatus }
+                  ? { status: sortStatus }
                   : { quizeWiseStatus: sortStatus }),
               },
             },
