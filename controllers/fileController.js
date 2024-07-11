@@ -78,63 +78,63 @@ async function UploadquestionFile(req, res) {
 //     res.status(500).send(`Error uploading file ${err}`);
 //   }
 // }
-async function getFileBackblazeByName(req, res) {
-  try {
-    const { fileName } = req.params;
-    if (!fileName) {
-      return responseHandler.ResponseUnsuccess(res, "File not provided");
-    }
-    // Fetch the file from Backblaze B2 using the fileId
-    const downloadResponse = await backblazeService.generateDownloadLink(
-      fileName
-    );
-    // Handle potential errors (e.g., file not found, permission issues)
-    if (!downloadResponse) {
-      return responseHandler.ResponseUnsuccess(res, "File not found");
-    }
+// async function getFileBackblazeByName(req, res) {
+//   try {
+//     const { fileName } = req.params;
+//     if (!fileName) {
+//       return responseHandler.ResponseUnsuccess(res, "File not provided");
+//     }
+//     // Fetch the file from Backblaze B2 using the fileId
+//     const downloadResponse = await backblazeService.generateDownloadLink(
+//       fileName
+//     );
+//     // Handle potential errors (e.g., file not found, permission issues)
+//     if (!downloadResponse) {
+//       return responseHandler.ResponseUnsuccess(res, "File not found");
+//     }
 
-    return responseHandler.ResponseSuccessMessageWithData(
-      res,
-      downloadResponse,
-      "File fetched"
-    );
-  } catch (error) {
-    // console.error("Error fetching file:", error);
-    return responseHandler.ResponseUnsuccess(res, "Error fetching file");
-  }
-}
-async function generateDownloadLink(fileName) {
-  try {
-    const authResponse = await b2.authorize();
-    // console.log("Authorization response:", authResponse.data);
+//     return responseHandler.ResponseSuccessMessageWithData(
+//       res,
+//       downloadResponse,
+//       "File fetched"
+//     );
+//   } catch (error) {
+//     // console.error("Error fetching file:", error);
+//     return responseHandler.ResponseUnsuccess(res, "Error fetching file");
+//   }
+// }
+// async function generateDownloadLink(fileName) {
+//   try {
+//     const authResponse = await b2.authorize();
+//     // console.log("Authorization response:", authResponse.data);
 
-    const bucketId = B2_BUCKET_ID;
-    const bucketName = B2_BUCKET_NAME;
+//     const bucketId = B2_BUCKET_ID;
+//     const bucketName = B2_BUCKET_NAME;
 
-    const fileNamePrefix = "sourceid/"; // Ensure this is set correctly, example: 'sourceid/'
-    const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
+//     const fileNamePrefix = "sourceid/"; // Ensure this is set correctly, example: 'sourceid/'
+//     const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
 
-    const downloadAuth = await b2.getDownloadAuthorization({
-      bucketId,
-      fileNamePrefix,
-      validDurationInSeconds: 3600, // Valid for 1 hour
-      //b2ContentDisposition: 'inline'
-    });
+//     const downloadAuth = await b2.getDownloadAuthorization({
+//       bucketId,
+//       fileNamePrefix,
+//       validDurationInSeconds: 3600, // Valid for 1 hour
+//       //b2ContentDisposition: 'inline'
+//     });
 
-    // console.log("Download authorization response:", downloadAuth);
+//     // console.log("Download authorization response:", downloadAuth);
 
-    if (!downloadAuth.data.authorizationToken) {
-      throw new Error("Authorization token is undefined.");
-    }
+//     if (!downloadAuth.data.authorizationToken) {
+//       throw new Error("Authorization token is undefined.");
+//     }
 
-    const baseUrl = authResponse.data.downloadUrl + "/file/" + bucketName + "/";
-    const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
+//     const baseUrl = authResponse.data.downloadUrl + "/file/" + bucketName + "/";
+//     const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
 
-    return presignedUrl;
-  } catch (error) {
-    console.error("Error generating presigned URL:", error);
-    return null;
-  }
-}
+//     return presignedUrl;
+//   } catch (error) {
+//     console.error("Error generating presigned URL:", error);
+//     return null;
+//   }
+// }
 
-module.exports = { UploadquestionFile, downloadFile };
+module.exports = { UploadquestionFile };

@@ -8,6 +8,6 @@ const {
 const router = express.Router();
 
 router.post("/questionupload", upload.single("file"), UploadquestionFile);
-router.post("/questioread", downloadFile);
+// router.post("/questioread", downloadFile);
 
 module.exports = router;
