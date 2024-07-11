@@ -1,6 +1,7 @@
 const xlsx = require("xlsx");
 const fetch = require("node-fetch"); // If not already installed, install it
 const { b2 } = require("../middleware/multerMiddle");
+// const { generateDownloadLink } = require("./linkControllert");
 const fs = require("fs");
 const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
@@ -78,63 +79,66 @@ async function UploadquestionFile(req, res) {
 //     res.status(500).send(`Error uploading file ${err}`);
 //   }
 // }
-// async function getFileBackblazeByName(req, res) {
-//   try {
-//     const { fileName } = req.params;
-//     if (!fileName) {
-//       return responseHandler.ResponseUnsuccess(res, "File not provided");
-//     }
-//     // Fetch the file from Backblaze B2 using the fileId
-//     const downloadResponse = await backblazeService.generateDownloadLink(
-//       fileName
-//     );
-//     // Handle potential errors (e.g., file not found, permission issues)
-//     if (!downloadResponse) {
-//       return responseHandler.ResponseUnsuccess(res, "File not found");
-//     }
+async function generateDownloadLink(fileName) {
+  try {
+    const authResponse = await b2.authorize();
+    // console.log("Authorization response:", authResponse.data);
 
-//     return responseHandler.ResponseSuccessMessageWithData(
-//       res,
-//       downloadResponse,
-//       "File fetched"
-//     );
-//   } catch (error) {
-//     // console.error("Error fetching file:", error);
-//     return responseHandler.ResponseUnsuccess(res, "Error fetching file");
-//   }
-// }
-// async function generateDownloadLink(fileName) {
-//   try {
-//     const authResponse = await b2.authorize();
-//     // console.log("Authorization response:", authResponse.data);
+    // const bucketId = B2_BUCKET_ID;
+    // const bucketName = B2_BUCKET_NAME;
+    const bucketId = "947d64b3985929e583fc0f12";
+    const bucketName = "KT-developer";
 
-//     const bucketId = B2_BUCKET_ID;
-//     const bucketName = B2_BUCKET_NAME;
+    const fileNamePrefix = "sourceid/"; // Ensure this is set correctly, example: 'sourceid/'
+    const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
 
-//     const fileNamePrefix = "sourceid/"; // Ensure this is set correctly, example: 'sourceid/'
-//     const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
+    const downloadAuth = await b2.getDownloadAuthorization({
+      bucketId,
+      fileNamePrefix,
+      validDurationInSeconds: 3600, // Valid for 1 hour
+      //b2ContentDisposition: 'inline'
+    });
 
-//     const downloadAuth = await b2.getDownloadAuthorization({
-//       bucketId,
-//       fileNamePrefix,
-//       validDurationInSeconds: 3600, // Valid for 1 hour
-//       //b2ContentDisposition: 'inline'
-//     });
+    // console.log("Download authorization response:", downloadAuth);
 
-//     // console.log("Download authorization response:", downloadAuth);
+    if (!downloadAuth.data.authorizationToken) {
+      throw new Error("Authorization token is undefined.");
+    }
 
-//     if (!downloadAuth.data.authorizationToken) {
-//       throw new Error("Authorization token is undefined.");
-//     }
+    const baseUrl =
+      authResponse.data.downloadUrl + "/upload/" + bucketName + "/";
+    const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
 
-//     const baseUrl = authResponse.data.downloadUrl + "/file/" + bucketName + "/";
-//     const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
+    return presignedUrl;
+  } catch (error) {
+    console.error("Error generating presigned URL:", error);
+    return null;
+  }
+}
+async function getFileBackblazeByName(req, res) {
+  try {
+    const { fileName } = req.params;
+    if (!fileName) {
+      res.status(404).json("File not provided");
+      // return responseHandler.ResponseUnsuccess(res, "File not provided");
+    }
+    // Fetch the file from Backblaze B2 using the fileId
+    const downloadResponse = await generateDownloadLink(fileName);
+    // Handle potential errors (e.g., file not found, permission issues)
+    if (!downloadResponse) {
+      return responseHandler.ResponseUnsuccess(res, "File not found");
+    }
 
-//     return presignedUrl;
-//   } catch (error) {
-//     console.error("Error generating presigned URL:", error);
-//     return null;
-//   }
-// }
+    res.status(201).json({ data: downloadResponse });
+    // return responseHandler.ResponseSuccessMessageWithData(
+    //   res,
+    //   downloadResponse,
+    //   "File fetched"
+    // );
+  } catch (error) {
+    // console.error("Error fetching file:", error);
+    return res.status(500).json(`error fetching while ${error}`);
+  }
+}
 
-module.exports = { UploadquestionFile };
+module.exports = { UploadquestionFile, getFileBackblazeByName };
