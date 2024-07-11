@@ -119,17 +119,27 @@ async function getFileBackblazeByName(req, res) {
   try {
     const { fileName } = req.params;
     if (!fileName) {
-      res.status(404).json("File not provided");
+      return res.status(404).json("File not provided");
       // return responseHandler.ResponseUnsuccess(res, "File not provided");
     }
     // Fetch the file from Backblaze B2 using the fileId
     const downloadResponse = await generateDownloadLink(fileName);
     // Handle potential errors (e.g., file not found, permission issues)
     if (!downloadResponse) {
-      return responseHandler.ResponseUnsuccess(res, "File not found");
+    return  res.status(404).json("File not provided");
     }
 
-    res.status(201).json({ data: downloadResponse });
+    const response = await fetch(downloadResponse);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Process the file using xlsx
+    const workbook = xlsx.read(buffer);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
+
+    res.status(201).json({ data: data });
     // return responseHandler.ResponseSuccessMessageWithData(
     //   res,
     //   downloadResponse,
