@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
-
+const Questions = require("../models/questions");
 async function UploadquestionFile(req, res) {
   try {
     const file = req.file; // Extract file information from request
@@ -89,7 +89,7 @@ async function generateDownloadLink(fileName) {
     const bucketId = "947d64b3985929e583fc0f12";
     const bucketName = "KT-developer";
 
-    const fileNamePrefix = "sourceid/"; // Ensure this is set correctly, example: 'sourceid/'
+    const fileNamePrefix = "upload/"; // Ensure this is set correctly, example: 'sourceid/'
     const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
 
     const downloadAuth = await b2.getDownloadAuthorization({
@@ -104,9 +104,8 @@ async function generateDownloadLink(fileName) {
     if (!downloadAuth.data.authorizationToken) {
       throw new Error("Authorization token is undefined.");
     }
-
-    const baseUrl =
-      authResponse.data.downloadUrl + "/upload/" + bucketName + "/";
+    console.log("authResponse.data.downloadUrl", authResponse.data.downloadUrl);
+    const baseUrl = authResponse.data.downloadUrl + "/file/" + bucketName + "/";
     const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
 
     return presignedUrl;
@@ -126,7 +125,7 @@ async function getFileBackblazeByName(req, res) {
     const downloadResponse = await generateDownloadLink(fileName);
     // Handle potential errors (e.g., file not found, permission issues)
     if (!downloadResponse) {
-    return  res.status(404).json("File not provided");
+      return res.status(404).json("File not provided");
     }
 
     const response = await fetch(downloadResponse);
@@ -139,7 +138,19 @@ async function getFileBackblazeByName(req, res) {
     const sheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(sheet);
 
-    res.status(201).json({ data: data });
+    const NewData = data.filter(async (ele) => {
+      return await Questions.create({
+        question: ele.question,
+        option1: ele.option1,
+        option2: ele.option2,
+        option3: ele.option3,
+        option4: ele.option4,
+        answer: ele.answer,
+      });
+    });
+    // const questions = await
+
+    res.status(201).json({ data: NewData });
     // return responseHandler.ResponseSuccessMessageWithData(
     //   res,
     //   downloadResponse,
