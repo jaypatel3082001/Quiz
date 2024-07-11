@@ -8,6 +8,6 @@ const {
 const router = express.Router();
 
 router.post("/questionupload", upload.single("file"), UploadquestionFile);
-router.post("/questioread", getFileBackblazeByName);
+router.get("/questioread/:fileName", getFileBackblazeByName);
 
 module.exports = router;
