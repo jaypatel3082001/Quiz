@@ -37,6 +37,7 @@ async function UploadquestionFile(req, res) {
       fileName: "upload" + "/" + fileName,
     };
     const downloadResponse = await b2.downloadFileByName(downloadOpts);
+    fs.writeFileSync(targetPath, downloadResponse.data);
 
     // // Upload file to Backblaze B2
     // const uploadResponse = await b2.uploadFile({
@@ -51,7 +52,7 @@ async function UploadquestionFile(req, res) {
 
     // Fetch the file from the download URL
 
-    res.status(201).json({ data: downloadResponse });
+    res.status(201).json({ data: targetPath });
   } catch (err) {
     console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
