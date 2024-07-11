@@ -2,7 +2,7 @@ const xlsx = require("xlsx");
 const fetch = require("node-fetch"); // If not already installed, install it
 const { b2 } = require("../middleware/multerMiddle");
 const fs = require("fs");
-
+const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 
@@ -32,22 +32,6 @@ async function UploadquestionFile(req, res) {
       data: myFile,
     });
 
-    const downloadOpts = {
-      bucketId: bucketId,
-      fileName: "upload" + "/" + fileName,
-    };
-    const downloadResponse = await b2.downloadFileByName(downloadOpts);
-
-    // Save the downloaded file to a temporary path
-    const tempFilePath = path.join(__dirname, "temp", fileName);
-    fs.writeFileSync(tempFilePath, downloadResponse.data);
-
-    // Read the Excel file
-    const workbook = xlsx.readFile(tempFilePath);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const data = xlsx.utils.sheet_to_json(sheet);
-
     // // Upload file to Backblaze B2
     // const uploadResponse = await b2.uploadFile({
     //   uploadUrl,
@@ -61,22 +45,38 @@ async function UploadquestionFile(req, res) {
 
     // Fetch the file from the download URL
 
-    res.status(201).json({ data: data });
+    res.status(201).json("Sucsee");
   } catch (err) {
     console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
   }
 }
-// async function downloadFile(fileName, targetPath) {
-//   try {
+async function downloadFile(req, res) {
+  try {
+    const file = req.file; // Extract file information from request
+    const fileName = req.file.originalname;
+    const filePath = req.file.path;
+    const downloadOpts = {
+      bucketId: bucketId,
+      fileName: "upload" + "/" + fileName,
+    };
+    const downloadResponse = await b2.downloadFileByName(downloadOpts);
 
-//     fs.writeFileSync(targetPath, downloadResponse.data);
+    // Save the downloaded file to a temporary path
+    const tempFilePath = path.join(__dirname, "tmp", fileName);
+    fs.writeFileSync(tempFilePath, downloadResponse.data);
 
-//     console.log("File downloaded successfully:", targetPath);
-//   } catch (err) {
-//     console.error("Error downloading file:", err);
-//     throw err;
-//   }
-// }
+    // Read the Excel file
+    const workbook = xlsx.readFile(tempFilePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
 
-module.exports = { UploadquestionFile };
+    // console.log("File downloaded successfully:", targetPath);
+    res.status(201).json({ data: data });
+  } catch (err) {
+    res.status(500).send(`Error uploading file ${err}`);
+  }
+}
+
+module.exports = { UploadquestionFile, downloadFile };
