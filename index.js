@@ -37,8 +37,6 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-
-
 // app.post("/file/upload", upload.single("file"), (req, res) => {
 //   try {
 //     const filePath = req.file.path;
