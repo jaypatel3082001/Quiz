@@ -8,19 +8,19 @@ const section = require("./routes/sectionRoute");
 const history = require("./routes/historyRoute");
 const result = require("./routes/resultRoute");
 const key = require("./routes/keyRoute");
-// const result = require("./routes/resultRoute");
+const file = require("./routes/fileRoute");
+const multer = require("multer");
+const xlsx = require("xlsx");
+const path = require("path");
+const fs = require("fs");
 const cors = require("cors");
 const search = require("./routes/serarchRoute");
-// const mongoose = require('mongoose')
-const app = express();
 
+const app = express();
 env.config();
-// const user = require('./models/user')
 const bodyParser = require("body-parser");
-// const { middlewareAuth } = require('./middleware/authMiddleware')
 
 const port = process.env.PORT || 3001;
-// const mongo = mongoose()
 
 mongoose
   .connect(
@@ -34,9 +34,25 @@ mongoose
   });
 
 app.use(bodyParser.json());
-// app.use(cors());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+
+
+
+// app.post("/file/upload", upload.single("file"), (req, res) => {
+//   try {
+//     const filePath = req.file.path;
+//     const workbook = xlsx.readFile(filePath);
+//     const sheetName = workbook.SheetNames[0];
+//     const sheet = workbook.Sheets[sheetName];
+//     const data = xlsx.utils.sheet_to_json(sheet);
+
+//     res.json({ data: data });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).send("Error uploading file");
+//   }
+// });
 
 app.use("/auth", authRoute);
 app.use("/questions", question);
@@ -46,8 +62,8 @@ app.use("/history", history);
 app.use("/result", result);
 app.use("/search", search);
 app.use("/key", key);
+app.use("/file", file);
 
 app.listen(port, () => {
-  console.log("port is working");
+  console.log("Server is running on port", port);
 });
-// module.exports = app;
