@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "b2-cloud-storage": "^1.0.5",
+    "backblaze-b2": "^1.7.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",

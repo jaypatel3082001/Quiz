@@ -1,29 +1,19 @@
 const multer = require("multer");
-const xlsx = require("xlsx");
-const path = require("path");
-const fs = require("fs");
-const express = require("express");
-const app = express();
+const B2 = require("backblaze-b2");
 
-const uploadsDir = path.join(__dirname, "public/images");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
-
-app.use("/images", express.static(uploadsDir));
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
+const b2 = new B2({
+  applicationKeyId: "0054d4389953cf20000000001",
+  applicationKey: "K005LmVnh1gEcuZbjYFoPe2RlgrwhAw",
 });
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "/tmp"); // Set destination to /tmp directory
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // You can customize the filename if needed
+  },
+});
 const upload = multer({ storage: storage });
 
-module.exports = { upload };
+module.exports = { b2, upload };
