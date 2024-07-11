@@ -37,7 +37,16 @@ async function UploadquestionFile(req, res) {
       fileName: "upload" + "/" + fileName,
     };
     const downloadResponse = await b2.downloadFileByName(downloadOpts);
-    fs.writeFileSync(targetPath, downloadResponse.data);
+
+    // Save the downloaded file to a temporary path
+    const tempFilePath = path.join(__dirname, "temp", fileName);
+    fs.writeFileSync(tempFilePath, downloadResponse.data);
+
+    // Read the Excel file
+    const workbook = xlsx.readFile(tempFilePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
 
     // // Upload file to Backblaze B2
     // const uploadResponse = await b2.uploadFile({
@@ -52,7 +61,7 @@ async function UploadquestionFile(req, res) {
 
     // Fetch the file from the download URL
 
-    res.status(201).json({ data: targetPath });
+    res.status(201).json({ data: data });
   } catch (err) {
     console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
