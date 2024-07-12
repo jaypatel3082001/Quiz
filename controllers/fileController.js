@@ -25,7 +25,10 @@ async function UploadquestionFile(req, res) {
     } = await b2.getUploadUrl({
       bucketId: bucketId,
     });
-
+    const downloadResponse = await generateDownloadLink(fileName);
+    if (downloadResponse) {
+      res.status(400).json("Errr file already exsist");
+    }
     const myFile = fs.readFileSync(filePath);
     await b2.uploadFile({
       uploadUrl: uploadUrl,
