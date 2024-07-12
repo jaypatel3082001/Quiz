@@ -10,9 +10,11 @@ const Questions = require("../models/questions");
 const Quize = require("../models/Quizearr");
 async function UploadquestionFile(req, res) {
   try {
-    const file = req.file; // Extract file information from request
+    const file = req.file;
+    console.log("req.file", req.file); // Extract file information from request
     const fileName = req.file.originalname;
     const filePath = req.file.path;
+    console.log("fileName", fileName);
     // const fileName = `${file.fieldname}-${Date.now()}${path.extname(
     //   file.originalname
     // )}`;
@@ -26,9 +28,10 @@ async function UploadquestionFile(req, res) {
       bucketId: bucketId,
     });
     const downloadResponse = await generateDownloadLink(fileName);
-    if (downloadResponse) {
-      res.status(400).json("Errr file already exsist");
-    }
+    // console.log("downloadResponse", downloadResponse);
+    // if (downloadResponse) {
+    //   res.status(400).json("Errr file already exsist");
+    // }
     const myFile = fs.readFileSync(filePath);
     await b2.uploadFile({
       uploadUrl: uploadUrl,
@@ -50,9 +53,9 @@ async function UploadquestionFile(req, res) {
 
     // Fetch the file from the download URL
 
-    res.status(201).json("Success");
+    res.status(201).json(`Success ${downloadResponse}`);
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
   }
 }
