@@ -21,7 +21,7 @@ async function generatekey(req, res) {
       const differenceInMs = ele.Endtime.getTime() - now;
       const hoursDifference = Math.floor(differenceInMs / oneHour);
 
-      if (hoursDifference > 0) {
+      if (hoursDifference > 0 && ele.Remaintime>0) {
         newArr.push(ele);
       } else {
         ele.Remaintime = 0;

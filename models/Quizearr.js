@@ -15,6 +15,10 @@ const quizeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  uniqsecid:{
+    type: Number,
+    required: true,
+  },
   quizepassingMarks: {
     type: Number,
   },

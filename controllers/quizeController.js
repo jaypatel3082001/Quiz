@@ -5,11 +5,24 @@ async function quuiz(req, res) {
     const { quizename, quizepassingMarks } = req.body;
 
     // Check if username exists using the User model
-    const existingQuestion = await questions.findOne({ quizename });
+    const existingQuestion = await Quize.findOne({ quizename });
     if (existingQuestion) {
       return res.status(400).json({ message: "quize already exists" });
     }
-    const quizarr = new Quize({ quizename, quizepassingMarks });
+
+    let uniqsecid;
+    let isUnique = false;
+
+    while (!isUnique) {
+      uniqsecid = parseInt(RandomGenerator());
+      const existingNum = await Quize.findOne({ uniqsecid });
+      if (!existingNum) {
+        isUnique = true;
+      }
+    }
+
+    // if()
+    const quizarr = new Quize({ quizename, quizepassingMarks, uniqsecid });
     await quizarr.save();
 
     res.status(201).json({ data: quizarr });
@@ -104,7 +117,14 @@ async function getallquizequestion(req, res) {
     console.log(error);
   }
 }
-
+function RandomGenerator() {
+  let RandomNum = "";
+  for (let i = 0; i < 6; i++) {
+    const numr = Math.floor(Math.random() * 10);
+    RandomNum = RandomNum + `${numr}`;
+  }
+  return RandomNum;
+}
 module.exports = {
   getAll,
   quuiz,
