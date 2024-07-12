@@ -47,6 +47,7 @@ async function deletequizname(req, res) {
 async function updatequizname(req, res) {
   try {
     const { quizename, quizepassingMarks } = req.body;
+
     const allQuize = await Quize.findByIdAndUpdate(
       req.params.id,
       { quizename, quizepassingMarks },
@@ -55,6 +56,7 @@ async function updatequizname(req, res) {
     res.status(200).json({ data: allQuize });
   } catch (error) {}
 }
+
 
 async function insertOrupdateQuestionsToQuiz(req, res) {
   try {

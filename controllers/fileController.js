@@ -7,6 +7,7 @@ const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
+const Quize = require("../models/Quizearr");
 async function UploadquestionFile(req, res) {
   try {
     const file = req.file; // Extract file information from request
@@ -159,6 +160,34 @@ async function getFileBackblazeByName(req, res) {
           option4: ele.option4,
           answer: ele.answer,
         });
+      } else if (
+        ele.uniqsecid &&
+        ele.question &&
+        ele.option1 &&
+        ele.option2 &&
+        ele.option3 &&
+        ele.option4 &&
+        (ele.answer === "option1" ||
+          ele.answer === "option2" ||
+          ele.answer === "option3" ||
+          ele.answer === "option4")
+      ) {
+        const questions = await Questions.create({
+          question: ele.question,
+          option1: ele.option1,
+          option2: ele.option2,
+          option3: ele.option3,
+          option4: ele.option4,
+          answer: ele.answer,
+        });
+
+        return await Quize.findOneAndUpdate(
+          ele.uniqsecid,
+          {
+            $push: { quizemcqs: questions._id },
+          },
+          { new: true }
+        );
       } else {
         return res.status(400).json(`error Invalid Data`);
       }
