@@ -22,7 +22,9 @@ async function UploadquestionFile(req, res) {
     await b2.authorize();
     const downloadResponse = await generateDownloadLink(fileName);
     if (downloadResponse) {
-      return res.status(400).json("Errr file already exsist");
+      return res
+        .status(400)
+        .json(`Errr file already exsist ${downloadResponse}`);
     }
     // Get upload URL
     const {
