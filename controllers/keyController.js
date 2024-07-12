@@ -10,23 +10,25 @@ const secreateKey = "HHls32";
 async function generatekey(req, res) {
   try {
     const { starttime, endtime, sectionId } = req.body;
+
     // Check if the section already exists
     const existingSec = await Key.find({ sectionId });
-    let newArr = [];
     const oneHour = 1000 * 60 * 60;
-    newArr = existingSec.filter(async (ele) => {
-      const differenceInMs = ele.Endtime.getTime() - Date.now();
+    const now = Date.now();
 
-      // console.log("differenceInMs", differenceInMs);
-
+    let newArr = [];
+    for (const ele of existingSec) {
+      const differenceInMs = ele.Endtime.getTime() - now;
       const hoursDifference = Math.floor(differenceInMs / oneHour);
+
       if (hoursDifference > 0) {
-        return ele;
+        newArr.push(ele);
       } else {
         ele.Remaintime = 0;
         await Key.findByIdAndUpdate(ele._id, { Remaintime: ele.Remaintime });
       }
-    });
+    }
+
     if (newArr.length > 0) {
       return res
         .status(400)
@@ -42,13 +44,15 @@ async function generatekey(req, res) {
       return res.status(400).json("Start time must be before end time");
     }
 
-    // const onehours = 1000 * 60 * 60; // Milliseconds in a day
-
     // Calculate the difference in milliseconds
     const differenceInMs = date2.getTime() - date1.getTime();
+    const hoursDifference = Math.floor(differenceInMs / oneHour);
 
-    // Calculate the difference in days
-    const daysDifference = Math.floor(differenceInMs / oneHour);
+    if (hoursDifference <= 0) {
+      return res
+        .status(400)
+        .json("End time must be at least one hour after start time");
+    }
 
     // Generate a random key
     const randomKey = generateRandomKey(4);
@@ -57,9 +61,9 @@ async function generatekey(req, res) {
     const create = await Key.create({
       key: randomKey,
       sectionId,
-      Starttime: starttime,
-      Endtime: endtime,
-      Remaintime: daysDifference,
+      Starttime: date1,
+      Endtime: date2,
+      Remaintime: hoursDifference,
     });
 
     res.status(201).json({ data: create });
