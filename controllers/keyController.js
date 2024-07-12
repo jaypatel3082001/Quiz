@@ -14,7 +14,7 @@ async function generatekey(req, res) {
     const existingSec = await Key.find({ sectionId });
     let newArr = [];
     const oneHour = 1000 * 60 * 60;
-    newArr = existingSec.filter((ele) => {
+    newArr = existingSec.filter(async (ele) => {
       const differenceInMs = ele.Endtime.getTime() - Date.now();
 
       // console.log("differenceInMs", differenceInMs);
@@ -22,6 +22,9 @@ async function generatekey(req, res) {
       const hoursDifference = Math.floor(differenceInMs / oneHour);
       if (hoursDifference > 0) {
         return ele;
+      } else {
+        ele.Remaintime = 0;
+        await Key.findByIdAndUpdate(ele._id, { Remaintime: ele.Remaintime });
       }
     });
     if (newArr.length > 0) {
