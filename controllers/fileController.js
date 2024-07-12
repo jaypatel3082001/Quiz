@@ -20,14 +20,17 @@ async function UploadquestionFile(req, res) {
     // )}`;
     // Authorize with Backblaze B2
     await b2.authorize();
-
+    const downloadResponse = await generateDownloadLink(fileName);
+    if (downloadResponse) {
+      return res.status(400).json("Errr file already exsist");
+    }
     // Get upload URL
     const {
       data: { uploadUrl, authorizationToken },
     } = await b2.getUploadUrl({
       bucketId: bucketId,
     });
-    const downloadResponse = await generateDownloadLink(fileName);
+
     // console.log("downloadResponse", downloadResponse);
     // if (downloadResponse) {
     //   res.status(400).json("Errr file already exsist");
@@ -53,9 +56,7 @@ async function UploadquestionFile(req, res) {
 
     // Fetch the file from the download URL
 
-    res
-      .status(201)
-      .json(`Success ${downloadResponse} ${req.file.originalname}`);
+    res.status(201).json(`Success ${downloadResponse}`);
   } catch (err) {
     // console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
