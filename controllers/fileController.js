@@ -55,7 +55,7 @@ async function UploadquestionFile(req, res) {
 
     res
       .status(201)
-      .json(`Success ${downloadResponse} ${req.file.originalname} ${data}`);
+      .json(`Success ${downloadResponse} ${req.file.originalname}`);
   } catch (err) {
     // console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
