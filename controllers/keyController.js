@@ -13,8 +13,14 @@ async function generatekey(req, res) {
     // Check if the section already exists
     const existingSec = await Key.find({ sectionId });
     let newArr = [];
+    const oneHour = 1000 * 60 * 60;
     newArr = existingSec.filter((ele) => {
-      if (ele.Remaintime > 0) {
+      const differenceInMs = ele.Endtime.getTime() - Date.now();
+
+      // console.log("differenceInMs", differenceInMs);
+
+      const hoursDifference = Math.floor(differenceInMs / oneHour);
+      if (hoursDifference > 0) {
         return ele;
       }
     });
@@ -33,13 +39,13 @@ async function generatekey(req, res) {
       return res.status(400).json("Start time must be before end time");
     }
 
-    const onehours = 1000 * 60 * 60; // Milliseconds in a day
+    // const onehours = 1000 * 60 * 60; // Milliseconds in a day
 
     // Calculate the difference in milliseconds
     const differenceInMs = date2.getTime() - date1.getTime();
 
     // Calculate the difference in days
-    const daysDifference = Math.floor(differenceInMs / onehours);
+    const daysDifference = Math.floor(differenceInMs / oneHour);
 
     // Generate a random key
     const randomKey = generateRandomKey(4);

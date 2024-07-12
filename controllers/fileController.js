@@ -46,7 +46,7 @@ async function UploadquestionFile(req, res) {
 
     // Fetch the file from the download URL
 
-    res.status(201).json("Sucsee");
+    res.status(201).json("Success");
   } catch (err) {
     console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
