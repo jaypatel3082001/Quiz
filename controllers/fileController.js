@@ -139,14 +139,29 @@ async function getFileBackblazeByName(req, res) {
     const data = xlsx.utils.sheet_to_json(sheet);
 
     const NewData = data.filter(async (ele) => {
-      return await Questions.create({
-        question: ele.question,
-        option1: ele.option1,
-        option2: ele.option2,
-        option3: ele.option3,
-        option4: ele.option4,
-        answer: ele.answer,
-      });
+      if (
+        ele.question &&
+        ele.option1 &&
+        ele.option2 &&
+        ele.option3 &&
+        ele.option4 &&
+        (ele.answer === "option1" ||
+          ele.answer === "option2" ||
+          ele.answer === "option3" ||
+          ele.answer === "option4")
+      ) {
+        // return item;
+        return await Questions.create({
+          question: ele.question,
+          option1: ele.option1,
+          option2: ele.option2,
+          option3: ele.option3,
+          option4: ele.option4,
+          answer: ele.answer,
+        });
+      } else {
+        return res.status(400).json(`error Invalid Data`);
+      }
     });
     // const questions = await
 
