@@ -130,7 +130,10 @@ exports.userHandle = async (req, res) => {
     }
     const currentDate = new Date();
     const formattedDate = formatDatew(currentDate);
-    if(existKey.Starttime>formattedDate &&  existKey.Endtime<formattedDate){
+    if (
+      existKey.Starttime > formattedDate &&
+      existKey.Endtime < formattedDate
+    ) {
       res.status(404).json("Exam Has NOt started");
     }
     console.log("gfhffgdfg", existKey);
@@ -171,17 +174,15 @@ exports.userauth = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-  const formatDatew = (date) => {
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + date.getDate()).slice(-2);
-    const hours = ('0' + date.getHours()).slice(-2);
-    const minutes = ('0' + date.getMinutes()).slice(-2);
-    const seconds = ('0' + date.getSeconds()).slice(-2);
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
-  
+
   // Get the current date and time
- 
-  
+};
+const formatDatew = (date) => {
+  const year = date.getFullYear();
+  const month = ("0" + (date.getMonth() + 1)).slice(-2);
+  const day = ("0" + date.getDate()).slice(-2);
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
+  const seconds = ("0" + date.getSeconds()).slice(-2);
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
