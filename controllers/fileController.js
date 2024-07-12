@@ -128,7 +128,6 @@ async function getFileBackblazeByName(req, res) {
     if (!downloadResponse) {
       return res.status(404).json("File not provided");
     }
-
     const response = await fetch(downloadResponse);
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -138,8 +137,9 @@ async function getFileBackblazeByName(req, res) {
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(sheet);
+    const NewData = [];
 
-    const NewData = data.filter(async (ele) => {
+    for (const ele of data) {
       if (
         ele.question &&
         ele.option1 &&
@@ -151,28 +151,7 @@ async function getFileBackblazeByName(req, res) {
           ele.answer === "option3" ||
           ele.answer === "option4")
       ) {
-        // return item;
-        return await Questions.create({
-          question: ele.question,
-          option1: ele.option1,
-          option2: ele.option2,
-          option3: ele.option3,
-          option4: ele.option4,
-          answer: ele.answer,
-        });
-      } else if (
-        ele.uniqsecid &&
-        ele.question &&
-        ele.option1 &&
-        ele.option2 &&
-        ele.option3 &&
-        ele.option4 &&
-        (ele.answer === "option1" ||
-          ele.answer === "option2" ||
-          ele.answer === "option3" ||
-          ele.answer === "option4")
-      ) {
-        const questions = await Questions.create({
+        const question = await Questions.create({
           question: ele.question,
           option1: ele.option1,
           option2: ele.option2,
@@ -181,18 +160,23 @@ async function getFileBackblazeByName(req, res) {
           answer: ele.answer,
         });
 
-        return await Quize.findOneAndUpdate(
-          ele.uniqsecid,
-          {
-            $push: { quizemcqs: questions._id },
-          },
-          { new: true }
-        );
+        if (ele.uniqsecid) {
+          const ABf = await Quize.findOneAndUpdate(
+            { uniqsecid: ele.uniqsecid },
+            {
+              $push: { quizemcqs: question._id },
+            },
+            { new: true }
+          );
+          console.log("quize data..", ABf);
+          NewData.push(ABf);
+        } else {
+          NewData.push(question);
+        }
       } else {
         return res.status(400).json(`error Invalid Data`);
       }
-    });
-    // const questions = await
+    }
 
     res.status(201).json({ data: NewData });
     // return responseHandler.ResponseSuccessMessageWithData(
