@@ -8,22 +8,22 @@ async function create(req, res) {
     if (exsiting) {
       return res.status(400).json({ message: "Sectionname already exists" });
     }
-    let uniqquizid;
-    let isUnique = false;
+    // let uniqquizid;
+    // let isUnique = false;
 
-    while (!isUnique) {
-      uniqquizid = parseInt(RandomGenerator());
-      const existingNum = await Section.findOne({ uniqsecid });
-      if (!existingNum) {
-        isUnique = true;
-      }
-    }
+    // while (!isUnique) {
+    //   uniqquizid = parseInt(RandomGenerator());
+    //   const existingNum = await Section.findOne({ uniqsecid });
+    //   if (!existingNum) {
+    //     isUnique = true;
+    //   }
+    // }
     const createsection = await Section.create({
       sectionName,
       PassingMarks,
       CountResult,
       totalTime,
-      uniqquizid
+      // uniqquizid
     });
     res.status(201).json({ data: createsection });
   } catch {

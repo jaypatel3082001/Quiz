@@ -99,6 +99,7 @@ async function generateDownloadLink(fileName) {
       validDurationInSeconds: 3600, // Valid for 1 hour
       //b2ContentDisposition: 'inline'
     });
+    console.log("downloadAuth", downloadAuth);
 
     // console.log("Download authorization response:", downloadAuth);
 
@@ -108,6 +109,7 @@ async function generateDownloadLink(fileName) {
     console.log("authResponse.data.downloadUrl", authResponse.data.downloadUrl);
     const baseUrl = authResponse.data.downloadUrl + "/file/" + bucketName + "/";
     const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
+    console.log("presignedUrl", presignedUrl);
 
     return presignedUrl;
   } catch (error) {
