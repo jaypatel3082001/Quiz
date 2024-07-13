@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const QuestionModel = require("../models/questions");
-const QuizeModel = require("../models/Quizearr");
-const Sectionmodel = require("../models/section");
+const Sectionmodel = require("../models/Quizearr");
+const QuizeModel = require("../models/section");
 const Resultmodel = require("../models/Result");
 const User = require("../models/user");
 const { ObjectId } = require("mongodb");
@@ -51,8 +51,8 @@ async function getsearchAll(req, res) {
             $switch: {
               branches: [
                 { case: { $eq: [type, "question"] }, then: "$question" },
-                { case: { $eq: [type, "quiz"] }, then: "$quizename" },
-                { case: { $eq: [type, "section"] }, then: "$sectionName" },
+                { case: { $eq: [type, "section"] }, then: "$sectionname" },
+                { case: { $eq: [type, "quiz"] }, then: "$quizName" },
               ],
               default: "",
             },
@@ -211,7 +211,7 @@ async function getsearchSection(req, res) {
         },
       },
       {
-        $unwind: "$quizewiseResult",
+        $unwind: "$sectionwiseResult",
       },
 
       {
@@ -221,8 +221,8 @@ async function getsearchSection(req, res) {
           firstname: { $first: "$firstname" },
           lastname: { $first: "$lastname" },
           userEmail: { $first: "$userEmail" },
-          quizewiseResult: { $push: "$quizewiseResult" },
-          quizewiseTotalResult: { $first: "$quizewiseTotalResult" },
+          quizewiseResult: { $push: "$sectionwiseResult" },
+          quizewiseTotalResult: { $first: "$sectionwiseTotalResult" },
           TotalPassing: { $first: "$TotalPassing" },
           createdAt: { $first: "$createdAt" },
           result: { $first: "$result" },
@@ -235,7 +235,7 @@ async function getsearchSection(req, res) {
           quizeWiseStatus: {
             $cond: {
               if: {
-                $in: ["fail", "$quizewiseResult.status"],
+                $in: ["fail", "$sectionwiseResult.status"],
               },
               then: "fail",
               else: "pass",
@@ -247,7 +247,7 @@ async function getsearchSection(req, res) {
         $addFields: {
           finalStatus: {
             $cond: {
-              if: { $eq: ["$quizeWiseStatus", "fail"] },
+              if: { $eq: ["$sectionwiseResult", "fail"] },
               then: "fail",
               else: "$status",
             },
