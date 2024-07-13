@@ -9,10 +9,10 @@ const secreateKey = "HHls32";
 
 async function generatekey(req, res) {
   try {
-    const { starttime, endtime, sectionId } = req.body;
+    const { starttime, endtime, quizId } = req.body;
 
     // Check if the section already exists
-    const existingSec = await Key.find({ sectionId });
+    const existingSec = await Key.find({ quizId });
     const oneHour = 1000 * 60 * 60;
     const now = Date.now();
 
@@ -32,7 +32,7 @@ async function generatekey(req, res) {
     if (newArr.length > 0) {
       return res
         .status(400)
-        .json("You cannot create a section that is already running");
+        .json("You cannot create a Quiz that is already running");
     }
 
     // Parse start and end times
@@ -60,7 +60,7 @@ async function generatekey(req, res) {
     // Create the new section
     const create = await Key.create({
       key: randomKey,
-      sectionId,
+      quizId,
       Starttime: date1,
       Endtime: date2,
       Remaintime: hoursDifference,
@@ -99,7 +99,7 @@ async function fetchkey(req, res) {
 // }
 async function updateKey(req, res) {
   try {
-    const alldata = await Key.find({ sectionId: req.params.id });
+    const alldata = await Key.find({ quizId: req.params.id });
     let aballdata;
 
     if (alldata.length === 0) {

@@ -1,12 +1,12 @@
-const Section = require("../models/section");
+const Quiz = require("../models/section");
 const Quize = require("../models/Quizearr");
 
 async function create(req, res) {
   try {
-    const { sectionName, PassingMarks, CountResult, totalTime } = req.body;
-    const exsiting = await Section.findOne({ sectionName });
+    const { quizName, PassingMarks, CountResult, totalTime } = req.body;
+    const exsiting = await Quiz.findOne({ quizName });
     if (exsiting) {
-      return res.status(400).json({ message: "Sectionname already exists" });
+      return res.status(400).json({ message: "quizname already exists" });
     }
     // let uniqquizid;
     // let isUnique = false;
@@ -18,14 +18,14 @@ async function create(req, res) {
     //     isUnique = true;
     //   }
     // }
-    const createsection = await Section.create({
-      sectionName,
+    const createquiz = await Quiz.create({
+      quizName,
       PassingMarks,
       CountResult,
       totalTime,
       // uniqquizid
     });
-    res.status(201).json({ data: createsection });
+    res.status(201).json({ data: createquiz });
   } catch {
     res.status(500).json({ message: "Error while creating" });
   }
@@ -33,48 +33,48 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    const { sectionName, PassingMarks, CountResult, totalTime } = req.body;
-    const upsection = await Section.findByIdAndUpdate(
+    const { quizName, PassingMarks, CountResult, totalTime } = req.body;
+    const upquiz = await Quiz.findByIdAndUpdate(
       req.params.id,
-      { sectionName, PassingMarks, CountResult, totalTime },
+      { quizName, PassingMarks, CountResult, totalTime },
       { new: true }
     );
-    res.status(201).json({ data: upsection });
+    res.status(201).json({ data: upquiz });
   } catch {
     res.status(500).json({ message: "Error while creating" });
   }
 }
 async function read(req, res) {
   try {
-    const secData = await Section.find({}).populate("sectioninfo");
+    const secData = await Quiz.find({}).populate("quizinfo");
     res.status(201).json({ data: secData });
   } catch {
-    res.status(500).json("error reading section");
+    res.status(500).json("error reading quiz");
   }
 }
 async function deletes(req, res) {
   try {
-    const deletesection = await Section.findByIdAndDelete({
+    const deletequiz = await Quiz.findByIdAndDelete({
       _id: req.params.id,
     });
-    res.status(201).json("section deleted!");
+    res.status(201).json("quiz deleted!");
   } catch {
-    res.status(500).json("error while deleting section");
+    res.status(500).json("error while deleting quiz");
   }
 }
 async function insertOperation(req, res) {
   try {
-    const { quizeId } = req.body;
+    const { sectionId } = req.body;
     // const exsitingquize = await Section.findById(req.params.id)
     // if(exsitingquize){}
     // console.log("fffff",)
     //   const abc=  exsitingquize.sectioninfo.some((ele,i) => ele[i]===quizeId)
     // console.log("fffff",abc)
 
-    const insertQuiz = await Section.findByIdAndUpdate(
+    const insertQuiz = await Quiz.findByIdAndUpdate(
       req.params.id,
       {
-        $push: { sectioninfo: quizeId },
+        $push: { quizinfo: sectionId },
       },
       { new: true }
     );
@@ -87,60 +87,60 @@ async function insertOperation(req, res) {
     // }, { new: true });
     // res.status(200).json({ data: quizarr });
   } catch {
-    res.status(500).json("error while inserting section");
+    res.status(500).json("error while inserting quiz");
   }
 }
 async function deleteOperation(req, res) {
   try {
-    const { quizeId } = req.body;
-    const insertQuiz = await Section.findByIdAndUpdate(
+    const { sectionId } = req.body;
+    const insertQuiz = await Quiz.findByIdAndUpdate(
       req.params.id,
       {
-        $pull: { sectioninfo: quizeId },
+        $pull: { quizinfo: sectionId },
       },
       { new: true }
     );
     res.status(201).json("quize deleted");
   } catch {
-    res.status(500).json("error while inserting section");
+    res.status(500).json("error while inserting quiz");
   }
 }
-async function getallsectionQuize(req, res) {
+async function getallquizQuize(req, res) {
   try {
-    const secData = await Section.findById(req.params.id).populate(
-      "sectioninfo"
+    const secData = await Quiz.findById(req.params.id).populate(
+      "quizinfo"
     );
 
     // const quiz = await Quize.findById(req.params.id).populate('quizemcqs');
 
-    console.log("pop", secData.sectioninfo);
+    console.log("pop", secData.quizinfo);
 
     // const quiii= await quiz
     if (!secData) {
-      return res.status(404).json({ error: "Section not found" });
+      return res.status(404).json({ error: "quiz not found" });
     }
     res.status(201).json({ data: secData });
     // res.status(200).json(quiz);
   } catch (err) {
-    res.status(500).json(`error reading section ${err}`);
+    res.status(500).json(`error reading quiz ${err}`);
   }
 }
-async function getallsectiondata(req, res) {
+async function getallquizdata(req, res) {
   try {
-    const secData = await Section.findById(req.params.id);
+    const secData = await Quiz.findById(req.params.id);
 
     if (!secData) {
-      return res.status(404).send("Section not found");
+      return res.status(404).send("quiz not found");
     }
 
-    if (!Array.isArray(secData.sectioninfo)) {
-      return res.status(400).send("sectioninfo is not an array");
+    if (!Array.isArray(secData.quizinfo)) {
+      return res.status(400).send("quizinfo is not an array");
     }
 
     try {
       const allData = await Promise.all(
-        secData.sectioninfo.map(async (ele) => {
-          return await Quize.findById(ele).populate("quizemcqs");
+        secData.quizinfo.map(async (ele) => {
+          return await Section.findById(ele).populate("sectionmcqs");
         })
       );
 
@@ -156,38 +156,38 @@ async function getallsectiondata(req, res) {
     // res.status(200).json(quiz);
   } catch (err) {
     console.log(err);
-    res.status(500).json(`error reading section ${err}`);
+    res.status(500).json(`error reading quiz ${err}`);
   }
 }
 async function insertallOperation(req, res) {
   try {
-    const { quizeId, sectionName } = req.body;
+    const { sectionId, quizName } = req.body;
     // const {}=req.body
-    const exsiting = await Section.findOne({ sectionName });
+    const exsiting = await Quiz.findOne({ quizName });
     if (exsiting) {
       //   return res.status(400).json({ message: "Sectionname already exists" });
-      const insertQuiz = await Section.findByIdAndUpdate(
+      const insertQuiz = await Quiz.findByIdAndUpdate(
         exsiting._id,
         {
-          $push: { sectioninfo: quizeId },
+          $push: { quizinfo: sectionId },
         },
         { new: true }
       );
       console.log("hhjjjh", insertQuiz);
       return res.status(200).json({ data: { insertQuiz } });
     }
-    const createsection = await Section.create({ sectionName });
+    const createquiz = await Quiz.create({ quizName });
     // res.status(201).json({data: createsection})
     // const exsitingquize = await Section.findById(req.params.id)
     // if(exsitingquize){}
     // console.log("fffff",)
-    //   const abc=  exsitingquize.sectioninfo.some((ele,i) => ele[i]===quizeId)
+    //   const abc=  exsitingquize.sectioninfo.some((ele,i) => ele[i]===sectionId)
     // console.log("fffff",exsiting)
-    // if(quizeId)
-    const insertQuiz = await Section.findByIdAndUpdate(
-      createsection._id,
+    // if(sectionId)
+    const insertQuiz = await Quiz.findByIdAndUpdate(
+      createquiz._id,
       {
-        $push: { sectioninfo: quizeId },
+        $push: { quizinfo: sectionId },
       },
       { new: true }
     );
@@ -200,7 +200,7 @@ async function insertallOperation(req, res) {
     // }, { new: true });
     // res.status(200).json({ data: quizarr });
   } catch (err) {
-    res.status(500).json(`error while inserting section ${err}`);
+    res.status(500).json(`error while inserting quiz ${err}`);
   }
 }
 
@@ -219,7 +219,7 @@ module.exports = {
   deletes,
   insertOperation,
   deleteOperation,
-  getallsectionQuize,
-  getallsectiondata,
+  getallquizQuize,
+  getallquizdata,
   insertallOperation,
 };

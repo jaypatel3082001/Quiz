@@ -7,7 +7,7 @@ const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
-const Quize = require("../models/Quizearr");
+const Section = require("../models/Quizearr");
 async function UploadquestionFile(req, res) {
   try {
     const file = req.file;
@@ -27,6 +27,7 @@ async function UploadquestionFile(req, res) {
     //     .json(`Errr file already exsist ${downloadResponse}`);
     // }
     // Get upload URL
+    const ExsitFile = await getFileInfo(fileName);
     const {
       data: { uploadUrl, authorizationToken },
     } = await b2.getUploadUrl({
@@ -62,6 +63,25 @@ async function UploadquestionFile(req, res) {
   } catch (err) {
     // console.error(err);
     res.status(500).send(`Error uploading file ${err}`);
+  }
+}
+async function getFileInfo(fileName) {
+  try {
+    const response = await b2.listFileNames({
+      bucketId: "947d64b3985929e583fc0f12",
+      fileNamePrefix: fileName,
+      maxFileCount: 1, // Limit to one file to retrieve info for a specific file
+    });
+
+    if (response.data.files.length > 0) {
+      const fileInfo = response.data.files[0]; // Assuming only one file matches the prefix
+      return fileInfo;
+    } else {
+      throw new Error("File not found");
+    }
+  } catch (error) {
+    console.error("Error getting file info:", error);
+    throw error;
   }
 }
 // async function downloadFile(req, res) {
@@ -174,14 +194,14 @@ async function getFileBackblazeByName(req, res) {
         });
 
         if (ele.uniqsecid) {
-          const ABf = await Quize.findOneAndUpdate(
+          const ABf = await Section.findOneAndUpdate(
             { uniqsecid: ele.uniqsecid },
             {
-              $push: { quizemcqs: question._id },
+              $push: { sectionmcqs: question._id },
             },
             { new: true }
           );
-          console.log("quize data..", ABf);
+          console.log("section data..", ABf);
           NewData.push(ABf);
         } else {
           NewData.push(question);

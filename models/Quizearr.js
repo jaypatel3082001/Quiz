@@ -1,17 +1,17 @@
 // const mongoose = require('mongoose')
 
-// const QuizeSchema = new mongoose.Schema({
-//     quizemcx:[]
+// const sectionSchema = new mongoose.Schema({
+//     sectionmcx:[]
 
 // })
 const mongoose = require("mongoose");
 
-const quizeSchema = new mongoose.Schema({
-  quizemcqs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Questions" }],
+const sectionSchema = new mongoose.Schema({
+  sectionmcqs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Questions" }],
   // id:{
   //     type:Number
   // },
-  quizename: {
+  sectionname: {
     type: String,
     required: true,
   },
@@ -19,7 +19,7 @@ const quizeSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  quizepassingMarks: {
+  sectionpassingMarks: {
     type: Number,
   },
   createdAt: {
@@ -27,4 +27,4 @@ const quizeSchema = new mongoose.Schema({
     default: Date.now(),
   },
 });
-module.exports = mongoose.model("Quize", quizeSchema);
+module.exports = mongoose.model("Section", sectionSchema);

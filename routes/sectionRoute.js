@@ -6,8 +6,8 @@ const {
   deletes,
   insertOperation,
   deleteOperation,
-  getallsectionQuize,
-  getallsectiondata,
+  getallquizQuize,
+  getallquizdata,
   insertallOperation,
 } = require("../controllers/sectionController");
 const router = express.Router();
@@ -17,8 +17,8 @@ router.post("/create", create);
 router.put("/update/:id", update);
 router.delete("/delete/:id", deletes);
 router.get("/read", read);
-router.get("/read/:id", getallsectionQuize);
-router.get("/getall/:id", getallsectiondata);
+router.get("/read/:id", getallquizQuize);
+router.get("/getall/:id", getallquizdata);
 router.put("/insertquiz/:id", insertOperation);
 router.post("/insertall", insertallOperation);
 router.put("/deletetquiz/:id", deleteOperation);

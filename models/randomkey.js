@@ -4,9 +4,9 @@ const keySchema = new mongoose.Schema({
   key: {
     type: String,
   },
-  sectionId: {
+  quizId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Section",
+    ref: "Quiz",
   },
   Starttime: {
     type: Date,

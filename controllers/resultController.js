@@ -1,21 +1,21 @@
 const Result = require("../models/Result");
 const Questions = require("../models/questions");
-const Section = require("../models/section");
-const Quize = require("../models/Quizearr");
+const Quiz = require("../models/section");
+const Section = require("../models/Quizearr");
 const User = require("../models/user");
 
 async function send(req, res) {
   try {
-    const { sectionId, questions, keyid } = req.body; //user=req.params.id
+    const { quizId, questions, keyid } = req.body; //user=req.params.id
     const { firstname, lastname, userEmail } = req.user;
     // console.log("user id....", user);
-    const selectedquestion = await Section.findById(sectionId).populate(
-      "sectioninfo"
+    const selectedquestion = await Quiz.findById(quizId).populate(
+      "quizinfo"
     );
     // let Totalres;
     // currentuser.result
     // let result=0
-    if (!Array.isArray(selectedquestion.sectioninfo)) {
+    if (!Array.isArray(selectedquestion.quizinfo)) {
       return res.status(400).send("sectioninfo is not an array");
     }
 
@@ -37,7 +37,7 @@ async function send(req, res) {
       firstname: firstname,
       lastname: lastname,
       userEmail: userEmail,
-      sectionId,
+      quizId,
       questions,
       result: result.sum,
       quizewiseResult: result.weightageCountername,
@@ -78,8 +78,8 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
 
   // Flatten all quizemcqs arrays into a single array
   allData.forEach((ele) => {
-    if (ele && ele.quizemcqs) {
-      temparry = temparry.concat(ele.quizemcqs);
+    if (ele && ele.sectionmcqs) {
+      temparry = temparry.concat(ele.sectionmcqs);
     }
   });
 
@@ -96,7 +96,7 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
 
   // Iterate over the questions and check answers
   questions.forEach((question, i, arr) => {
-    let qId = question.quizeId;
+    let qId = question.sectionId;
     if (question.isAttempted) {
       const correspondingData = allDataMap.get(question.questionId);
       // console.log("question............:", question);
@@ -109,7 +109,7 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
         } else {
           // If qId is not in the dictionary, initialize it
           weightageCounter[qId] = {
-            quizename: question.quizename,
+            sectionname: question.sectionname,
             weitage: correspondingData.weightage,
           };
           // console.log("inner if...wait", weightageCounter);
@@ -120,7 +120,7 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
         } else {
           // If qId is not in the dictionary, initialize it
           weightageCounter[qId] = {
-            quizename: question.quizename,
+            sectionname: question.sectionname,
             weitage: 0,
           };
         }
@@ -131,7 +131,7 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
       } else {
         // If qId is not in the dictionary, initialize it
         weightageCounter[qId] = {
-          quizename: question.quizename,
+          sectionname: question.sectionname,
           weitage: 0,
         };
       }
@@ -154,7 +154,7 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
 
     // Check if the value's weightage meets or exceeds any of the passing criteria
     for (let i of weightageArr) {
-      if (value.weitage >= i.qizewisePassing) {
+      if (value.weitage >= i.sectionwisePassing) {
         value.status = "pass";
         break; // If it passes one criteria, no need to check further
       }
@@ -185,12 +185,12 @@ const DataFun = async (selectedquestion) => {
   // let Quisewisepassing = [];
   // Use for...of to handle asynchronous operations
   for (const ele of selectedquestion.sectioninfo) {
-    tf = await Quize.findById(ele).populate("quizemcqs");
+    tf = await Section.findById(ele).populate("sectionmcqs");
     tempvariable.push(tf);
-    let qId = ele.quizename;
+    let qId = ele.sectionname;
     // Quisewisepassing.push(ele.Quisewisepassing);
     //  totalquizeresult = totalquizeResult(tf);
-    for (const element of tf.quizemcqs) {
+    for (const element of tf.sectionmcqs) {
       // totalquizeresult = totalquizeResult(element);
       console.log("results ............", element.weightage);
 
@@ -200,9 +200,9 @@ const DataFun = async (selectedquestion) => {
       } else {
         // If qId is not in the dictionary, initialize it
         weightageCounter[qId] = {
-          quizename: ele.quizename,
+          sectionname: ele.sectionname,
           weitage: element.weightage,
-          qizewisePassing: ele.quizepassingMarks,
+          sectionwisePassing: ele.sectionpassingMarks,
         };
         // console.log("inner if...wait", weightageCounter);
       }
@@ -233,10 +233,10 @@ const DataFun = async (selectedquestion) => {
 
 async function getresult(req, res) {
   try {
-    const { sectionId } = req.query;
+    const { quizId } = req.query;
     const { firstname, lastname, userEmail } = req.user;
     const currentres = await Result.find({ firstname, lastname, userEmail });
-    const currentSection = await Section.findById(sectionId).populate(
+    const currentSection = await Quiz.findById(quizId).populate(
       "sectioninfo"
     );
     // console.log("username", currentres.username);
@@ -244,34 +244,34 @@ async function getresult(req, res) {
     let new_arr = currentres;
     let temppvar = [];
     let temppvar2 = [];
-    currentSection.sectioninfo.map((ele) => {
+    currentSection.quizinfo.map((ele) => {
       new_arr.filter((element) => {
-        if (element.quizewiseResult[ele._id]) {
+        if (element.sectionwiseResult[ele._id]) {
           temppvar.push({
-            quizename: ele.quizename,
-            quizeweaitage: element.quizewiseResult[ele._id],
+            sectionname: ele.sectionname,
+            sectionweaitage: element.sectionwiseResult[ele._id],
           });
         }
-        if (element.quizewiseTotalResult[ele._id]) {
+        if (element.sectionwiseTotalResult[ele._id]) {
           temppvar2.push({
-            quizename: ele.quizename,
-            quizeweaitage: element.quizewiseTotalResult[ele._id],
+            sectionname: ele.sectionname,
+            sectionweaitage: element.sectionwiseTotalResult[ele._id],
           });
         }
       });
     });
 
     const quizeWiseRes = temppvar.filter((ele, i, array) => {
-      console.log("elll...", array[i].quizename);
-      console.log("elll22...", array[i - 1]?.quizename);
+      console.log("elll...", array[i].sectionname);
+      console.log("elll22...", array[i - 1]?.sectionname);
 
-      return array[i].quizename !== array[i - 1]?.quizename;
+      return array[i].sectionname !== array[i - 1]?.sectionname;
     });
     const quizeWiseTotalRes = temppvar2.filter((ele, i, array) => {
-      console.log("elll...", array[i].quizename);
-      console.log("elll22...", array[i - 1]?.quizename);
+      console.log("elll...", array[i].sectionname);
+      console.log("elll22...", array[i - 1]?.sectionname);
 
-      return array[i].quizename !== array[i - 1]?.quizename;
+      return array[i].sectionname !== array[i - 1]?.sectionname;
     });
     // console.log("jwww...hekko", neewaary);
 
@@ -293,67 +293,67 @@ async function getalluserresultdata(req, res) {
   }
 }
 async function getallresultdata(req, res) {
-  try {
-    // const { user } = req.user;
-    const results = await Result.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      {
-        $lookup: {
-          from: "sections",
-          localField: "sectionId",
-          foreignField: "_id",
-          as: "section",
-        },
-      },
-      {
-        $unwind: "$user",
-      },
-      {
-        $unwind: "$section",
-      },
-      {
-        $project: {
-          _id: 1,
-          user: {
-            _id: "$user._id",
-            username: "$user.username",
-            email: "$user.email",
-          },
-          section: {
-            _id: "$section._id",
-            name: "$section.sectionName",
-          },
-          // questions: 1,
-          result: 1,
-          quizewiseResult: 1,
-          quizewiseTotalResult: 1,
-          rightAnswers: 1,
-          TotalResult: 1,
-          createdAt: 1,
-          updatedAt: 1,
-        },
-      },
-    ]);
+  // try {
+  //   // const { user } = req.user;
+  //   const results = await Result.aggregate([
+  //     {
+  //       $lookup: {
+  //         from: "users",
+  //         localField: "userId",
+  //         foreignField: "_id",
+  //         as: "user",
+  //       },
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: "sections",
+  //         localField: "sectionId",
+  //         foreignField: "_id",
+  //         as: "section",
+  //       },
+  //     },
+  //     {
+  //       $unwind: "$user",
+  //     },
+  //     {
+  //       $unwind: "$section",
+  //     },
+  //     {
+  //       $project: {
+  //         _id: 1,
+  //         user: {
+  //           _id: "$user._id",
+  //           username: "$user.username",
+  //           email: "$user.email",
+  //         },
+  //         section: {
+  //           _id: "$section._id",
+  //           name: "$section.sectionName",
+  //         },
+  //         // questions: 1,
+  //         result: 1,
+  //         quizewiseResult: 1,
+  //         quizewiseTotalResult: 1,
+  //         rightAnswers: 1,
+  //         TotalResult: 1,
+  //         createdAt: 1,
+  //         updatedAt: 1,
+  //       },
+  //     },
+  //   ]);
 
-    console.log("results", results);
+  //   console.log("results", results);
 
-    res.status(201).json({ data: results });
-  } catch (err) {
-    res.status(500).json(`error while fetching request ${err}`);
-  }
+  //   res.status(201).json({ data: results });
+  // } catch (err) {
+  //   res.status(500).json(`error while fetching request ${err}`);
+  // }
 }
 async function readSection(req, res) {
   try {
     // const {sectionId}=
     console.log("first", req.params.id);
-    const resSec = await Result.findOne({ sectionId: req.params.id }).populate(
+    const resSec = await Result.findOne({ quizId: req.params.id }).populate(
       "userId"
     );
     console.log("ffff", resSec);

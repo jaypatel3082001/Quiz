@@ -1,7 +1,7 @@
 const Result = require("../models/Result");
 const Questions = require("../models/questions");
-const Section = require("../models/section");
-const Quize = require("../models/Quizearr");
+const Quiz = require("../models/section");
+const Section = require("../models/Quizearr");
 const User = require("../models/user");
 
 async function recentResult(req, res) {
@@ -29,14 +29,14 @@ async function topTenResult(req, res) {
     const Alldata = await Result.aggregate([
       {
         $lookup: {
-          from: "sections", // The collection containing section details
-          localField: "sectionId", // Field from the input documents
-          foreignField: "_id", // Field from the 'sections' collection
-          as: "sectionDetails", // Output array field
+          from: "Quizzes", // The collection containing Quiz details
+          localField: "QuizId", // Field from the input documents
+          foreignField: "_id", // Field from the 'Quizs' collection
+          as: "QuizDetails", // Output array field
         },
       },
       {
-        $unwind: "$sectionDetails", // Unwind the sectionDetails array
+        $unwind: "$QuizDetails", // Unwind the QuizDetails array
       },
       {
         $group:{
@@ -56,8 +56,8 @@ async function topTenResult(req, res) {
           TotalResult:{
           $first:"$TotalResult"
           },
-          sectionName:{
-          $first:"$sectionDetails.sectionName"
+          QuizName:{
+          $first:"$QuizDetails.QuizName"
           },
         }
       

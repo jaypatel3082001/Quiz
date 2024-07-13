@@ -54,8 +54,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/auth", authRoute);
 app.use("/questions", question);
-app.use("/quize", quize);
-app.use("/section", section);
+app.use("/section", quize);
+app.use("/quiz", section);
 app.use("/history", history);
 app.use("/result", result);
 app.use("/search", search);

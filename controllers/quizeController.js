@@ -1,13 +1,13 @@
-const Quize = require("../models/Quizearr");
+const Section = require("../models/Quizearr");
 const questions = require("../models/questions");
 async function quuiz(req, res) {
   try {
-    const { quizename, quizepassingMarks } = req.body;
+    const { sectionname, sectionpassingMarks } = req.body;
 
     // Check if username exists using the User model
-    const existingQuestion = await Quize.findOne({ quizename });
+    const existingQuestion = await Section.findOne({ sectionname });
     if (existingQuestion) {
-      return res.status(400).json({ message: "quize already exists" });
+      return res.status(400).json({ message: "section already exists" });
     }
 
     let uniqsecid;
@@ -15,14 +15,14 @@ async function quuiz(req, res) {
 
     while (!isUnique) {
       uniqsecid = parseInt(RandomGenerator());
-      const existingNum = await Quize.findOne({ uniqsecid });
+      const existingNum = await Section.findOne({ uniqsecid });
       if (!existingNum) {
         isUnique = true;
       }
     }
 
     // if()
-    const quizarr = new Quize({ quizename, quizepassingMarks, uniqsecid });
+    const quizarr = new Section({ sectionname, sectionpassingMarks, uniqsecid });
     await quizarr.save();
 
     res.status(201).json({ data: quizarr });
@@ -34,26 +34,26 @@ async function quuiz(req, res) {
 
 async function getAll(req, res) {
   try {
-    const allQuize = await Quize.find({}).populate("quizemcqs");
-    res.status(200).json({ data: allQuize });
+    const allsection = await Section.find({}).populate("sectionmcqs");
+    res.status(200).json({ data: allsection });
   } catch (error) {}
 }
 async function deletequizname(req, res) {
   try {
-    const allQuize = await Quize.findOneAndDelete({ _id: req.params.id });
+    const allsection = await Section.findOneAndDelete({ _id: req.params.id });
     res.status(200).json("data deleted!");
   } catch (error) {}
 }
 async function updatequizname(req, res) {
   try {
-    const { quizename, quizepassingMarks } = req.body;
+    const { sectionname, sectionpassingMarks } = req.body;
 
-    const allQuize = await Quize.findByIdAndUpdate(
+    const allsection = await Section.findByIdAndUpdate(
       req.params.id,
-      { quizename, quizepassingMarks },
+      { sectionname, sectionpassingMarks },
       { new: true }
     );
-    res.status(200).json({ data: allQuize });
+    res.status(200).json({ data: allsection });
   } catch (error) {}
 }
 
@@ -63,35 +63,35 @@ async function insertOrupdateQuestionsToQuiz(req, res) {
     console.log(req.parmas);
 
     const { questionId } = req.body;
-    const quizarr = await Quize.findByIdAndUpdate(
+    const quizarr = await Section.findByIdAndUpdate(
       req.params.id,
       {
-        $push: { quizemcqs: questionId },
+        $push: { sectionmcqs: questionId },
       },
       { new: true }
     );
-    // let totalQuestion = quizarr.quizemcqs.length;
+    // let totalQuestion = quizarr.sectionmcqs.length;
     res.status(200).json({ data: quizarr });
   } catch (error) {
     console.error(error);
   }
 }
-async function deletionofquestionIntoquize(req, res) {
+async function deletionofquestionIntosection(req, res) {
   try {
     const { questionId } = req.body;
 
-    const exsitingques = await Quize.findById(req.params.id).populate(
-      "quizemcqs"
+    const exsitingques = await Section.findById(req.params.id).populate(
+      "sectionmcqs"
     );
     const tempid = await questions.findById(questionId);
 
-    const foundMCQs = exsitingques.quizemcqs.filter(
+    const foundMCQs = exsitingques.sectionmcqs.filter(
       (mcq) => mcq._id.toString() === tempid._id.toString()
     );
 
     if (tempid._id.toString() === foundMCQs[0]?._id.toString()) {
-      const updatedquestions = await Quize.findByIdAndUpdate(req.params.id, {
-        $pull: { quizemcqs: questionId },
+      const updatedquestions = await Section.findByIdAndUpdate(req.params.id, {
+        $pull: { sectionmcqs: questionId },
       });
       res.status(200).json("question is deleted");
     } else {
@@ -101,12 +101,12 @@ async function deletionofquestionIntoquize(req, res) {
     console.log(err);
   }
 }
-async function getallquizequestion(req, res) {
+async function getallsectionquestion(req, res) {
   try {
     // const { questionid } = req.body;
 
-    // const allQuize = await Questions.find({}).populate('quizemcqs');
-    const quiz = await Quize.findById(req.params.id).populate("quizemcqs");
+    // const allsection = await Questions.find({}).populate('sectionmcqs');
+    const quiz = await Section.findById(req.params.id).populate("sectionmcqs");
 
     console.log("pop", quiz);
 
@@ -133,6 +133,6 @@ module.exports = {
   updatequizname,
   deletequizname,
   insertOrupdateQuestionsToQuiz,
-  deletionofquestionIntoquize,
-  getallquizequestion,
+  deletionofquestionIntosection,
+  getallsectionquestion,
 };
