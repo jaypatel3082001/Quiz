@@ -70,7 +70,7 @@ async function getFileInfo(fileName) {
     const response = await b2.listFileNames({
       bucketId: "947d64b3985929e583fc0f12",
       fileNamePrefix: fileName,
-      maxFileCount: 1, // Limit to one file to retrieve info for a specific file
+      maxFileCount: 10, // Limit to one file to retrieve info for a specific file
     });
 
     if (response.data.files.length > 0) {
