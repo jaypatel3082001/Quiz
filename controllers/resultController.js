@@ -293,61 +293,61 @@ async function getalluserresultdata(req, res) {
   }
 }
 async function getallresultdata(req, res) {
-  // try {
-  //   // const { user } = req.user;
-  //   const results = await Result.aggregate([
-  //     {
-  //       $lookup: {
-  //         from: "users",
-  //         localField: "userId",
-  //         foreignField: "_id",
-  //         as: "user",
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: "sections",
-  //         localField: "sectionId",
-  //         foreignField: "_id",
-  //         as: "section",
-  //       },
-  //     },
-  //     {
-  //       $unwind: "$user",
-  //     },
-  //     {
-  //       $unwind: "$section",
-  //     },
-  //     {
-  //       $project: {
-  //         _id: 1,
-  //         user: {
-  //           _id: "$user._id",
-  //           username: "$user.username",
-  //           email: "$user.email",
-  //         },
-  //         section: {
-  //           _id: "$section._id",
-  //           name: "$section.sectionName",
-  //         },
-  //         // questions: 1,
-  //         result: 1,
-  //         quizewiseResult: 1,
-  //         quizewiseTotalResult: 1,
-  //         rightAnswers: 1,
-  //         TotalResult: 1,
-  //         createdAt: 1,
-  //         updatedAt: 1,
-  //       },
-  //     },
-  //   ]);
+  try {
+    const { user } = req.user;
+    const results = await Result.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "quizzes",
+          localField: "quizId",
+          foreignField: "_id",
+          as: "quiz",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $unwind: "$quiz",
+      },
+      {
+        $project: {
+          _id: 1,
+          user: {
+            _id: "$user._id",
+            username: "$user.username",
+            email: "$user.email",
+          },
+          section: {
+            _id: "$quiz._id",
+            name: "$quiz.quizName",
+          },
+          // questions: 1,
+          result: 1,
+          sectionwiseResult: 1,
+          sectionwiseTotalResult: 1,
+          rightAnswers: 1,
+          TotalResult: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ]);
 
-  //   console.log("results", results);
+    console.log("results", results);
 
-  //   res.status(201).json({ data: results });
-  // } catch (err) {
-  //   res.status(500).json(`error while fetching request ${err}`);
-  // }
+    res.status(201).json({ data: results });
+  } catch (err) {
+    res.status(500).json(`error while fetching request ${err}`);
+  }
 }
 async function readSection(req, res) {
   try {
