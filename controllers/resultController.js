@@ -3,6 +3,7 @@ const Questions = require("../models/questions");
 const Quiz = require("../models/section");
 const Section = require("../models/Quizearr");
 const User = require("../models/user");
+const { ObjectId } = require("mongodb");
 
 async function send(req, res) {
   try {
@@ -361,6 +362,91 @@ async function readSection(req, res) {
     res.status(500).json(`error ${error}`);
   }
 }
+async function readOneresult(req, res) {
+  try {
+    // const {sectionId}=
+    // console.log("first", req.params.id);
+    const resSec = await Result.aggregate([
+      {
+        $match: {
+          _id: new ObjectId(`${req.params.id}`),
+        },
+      },
+      {
+        $lookup: {
+          from: "quizzes",
+          localField: "quizId",
+          foreignField: "_id",
+          as: "quizDetails",
+        },
+      },
+
+      {
+        $unwind: "$sectionwiseResult",
+      },
+      {
+        $unwind: "$quizDetails",
+      },
+      {
+        $group: {
+          _id: "$_id",
+          username: {
+            $first: { $concat: ["$firstname", " ", "$lastname"] },
+          },
+          email: {
+            $first: "$userEmail",
+          },
+          date: {
+            $first: "$createdAt",
+          },
+          QuizName: {
+            $first: "$quizDetails.quizName",
+          },
+          TotalMarks: {
+            $first: "$TotalResult",
+          },
+          TotalPassing: {
+            $first: "$TotalPassing",
+          },
+          result: {
+            $first: "$result",
+          },
+          sectionwiseResult: { $push: "$sectionwiseResult" },
+          sectionwiseTotalResult: { $first: "$sectionwiseTotalResult" },
+          status: { $first: "$status" },
+        },
+      },
+      {
+        $addFields: {
+          sectionWiseStatus: {
+            $cond: {
+              if: {
+                $in: ["fail", "$sectionwiseResult.status"],
+              },
+              then: "fail",
+              else: "pass",
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          finalStatus: {
+            $cond: {
+              if: { $eq: ["$sectionwiseResult", "fail"] },
+              then: "fail",
+              else: "$status",
+            },
+          },
+        },
+      },
+    ]);
+    console.log("ffff", resSec);
+    res.status(201).json({ data: resSec });
+  } catch (error) {
+    res.status(500).json(`error ${error}`);
+  }
+}
 
 module.exports = {
   send,
@@ -368,4 +454,5 @@ module.exports = {
   getalluserresultdata,
   getallresultdata,
   readSection,
+  readOneresult,
 };

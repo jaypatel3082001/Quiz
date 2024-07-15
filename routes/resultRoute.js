@@ -5,6 +5,7 @@ const {
   getalluserresultdata,
   getallresultdata,
   readSection,
+  readOneresult,
 } = require("../controllers/resultController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
 const { recentResult, topTenResult } = require("../controllers/dashBordController");
@@ -17,6 +18,7 @@ router.get("/getresult", middlewareAuth, getresult);
 router.get("/getalluserdata", middlewareAuth, getalluserresultdata);
 router.get("/getall", getallresultdata);
 router.get("/getresultsection/:id", readSection);
+router.get("/read/:id", readOneresult);
 
 
 
