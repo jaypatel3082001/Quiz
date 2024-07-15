@@ -98,9 +98,9 @@ async function buildDocumentFilter(search, type) {
     if (type === "question") {
       filter.question = new RegExp(search, "i");
     } else if (type === "quiz") {
-      filter.quizename = new RegExp(search, "i");
+      filter.quizName = new RegExp(search, "i");
     } else if (type === "section") {
-      filter.sectionName = new RegExp(search, "i");
+      filter.sectionname = new RegExp(search, "i");
     } else if (type === "result") {
       // Using populate means we need to search by userId field
       // filter.userId.username = new RegExp(search, "i");
