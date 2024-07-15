@@ -197,7 +197,7 @@ async function getsearchSection(req, res) {
     const documents = await Resultmodel.aggregate([
       {
         $match: {
-          sectionId: new ObjectId(`${req.params.id}`),
+          quizId: new ObjectId(`${req.params.id}`),
           ...filter,
         },
       },
@@ -217,12 +217,12 @@ async function getsearchSection(req, res) {
       {
         $group: {
           _id: "$_id",
-          sectionId: { $first: "$sectionId" },
+          quizId: { $first: "$quizId" },
           firstname: { $first: "$firstname" },
           lastname: { $first: "$lastname" },
           userEmail: { $first: "$userEmail" },
-          quizewiseResult: { $push: "$sectionwiseResult" },
-          quizewiseTotalResult: { $first: "$sectionwiseTotalResult" },
+          sectionwiseResult: { $push: "$sectionwiseResult" },
+          sectionwiseTotalResult: { $first: "$sectionwiseTotalResult" },
           TotalPassing: { $first: "$TotalPassing" },
           createdAt: { $first: "$createdAt" },
           result: { $first: "$result" },
@@ -232,7 +232,7 @@ async function getsearchSection(req, res) {
       },
       {
         $addFields: {
-          quizeWiseStatus: {
+          sectionWiseStatus: {
             $cond: {
               if: {
                 $in: ["fail", "$sectionwiseResult.status"],
@@ -268,7 +268,7 @@ async function getsearchSection(req, res) {
               $sort: {
                 ...(resultBy === "Quiz"
                   ? { status: sortStatus }
-                  : { quizeWiseStatus: sortStatus }),
+                  : { sectionWiseStatus: sortStatus }),
               },
             },
 
@@ -294,6 +294,7 @@ async function getsearchSection(req, res) {
       : 0;
 
     console.log({ data, totalCount });
+    console.log("documents", documents);
 
     return res.status(200).json({
       data: data,
