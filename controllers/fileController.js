@@ -27,7 +27,12 @@ async function UploadquestionFile(req, res) {
     //     .json(`Errr file already exsist ${downloadResponse}`);
     // }
     // Get upload URL
-    const ExsitFile = await getFileInfo(fileName);
+   // Check if a file with the same name already exists
+   const existingFile = await getFileInfo(fileName);
+   if (existingFile) {
+     return res.status(400).json({ error: `File already exists: ${existingFile.fileName}` });
+   }
+    // if(Date.now()-ExsitFile.uploadTimestamp)
     const {
       data: { uploadUrl, authorizationToken },
     } = await b2.getUploadUrl({
@@ -69,15 +74,17 @@ async function getFileInfo(fileName) {
   try {
     const response = await b2.listFileNames({
       bucketId: "947d64b3985929e583fc0f12",
-      fileNamePrefix: fileName,
-      maxFileCount: 1, // Limit to one file to retrieve info for a specific file
+      fileNamePrefix: "upload/",
+      maxFileCount: 1000, // Adjust as necessary for your needs
     });
 
-    if (response.data.files.length > 0) {
-      const fileInfo = response.data.files[0]; // Assuming only one file matches the prefix
+    // Find the file with the matching name
+    const fileInfo = response.data.files.find(file => file.fileName === "upload/" + fileName);
+
+    if (fileInfo) {
       return fileInfo;
     } else {
-      throw new Error("File not found");
+      return null; // File not found
     }
   } catch (error) {
     console.error("Error getting file info:", error);
