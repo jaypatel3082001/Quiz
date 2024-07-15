@@ -6,15 +6,15 @@ const User = require("../models/user");
 
 async function send(req, res) {
   try {
+    console.log("req.body", req.body);
     const { quizId, questions, keyid } = req.body; //user=req.params.id
     const { firstname, lastname, userEmail } = req.user;
     // console.log("user id....", user);
-    const selectedquestion = await Quiz.findById(quizId).populate(
-      "quizinfo"
-    );
+    const selectedquestion = await Quiz.findById(quizId).populate("quizinfo");
     // let Totalres;
     // currentuser.result
     // let result=0
+    console.log("selectedquestion", selectedquestion);
     if (!Array.isArray(selectedquestion.quizinfo)) {
       return res.status(400).send("sectioninfo is not an array");
     }
@@ -184,7 +184,8 @@ const DataFun = async (selectedquestion) => {
   let totalpassing = selectedquestion.PassingMarks;
   // let Quisewisepassing = [];
   // Use for...of to handle asynchronous operations
-  for (const ele of selectedquestion.sectioninfo) {
+  console.log("first", selectedquestion);
+  for (const ele of selectedquestion.quizinfo) {
     tf = await Section.findById(ele).populate("sectionmcqs");
     tempvariable.push(tf);
     let qId = ele.sectionname;
@@ -236,9 +237,7 @@ async function getresult(req, res) {
     const { quizId } = req.query;
     const { firstname, lastname, userEmail } = req.user;
     const currentres = await Result.find({ firstname, lastname, userEmail });
-    const currentSection = await Quiz.findById(quizId).populate(
-      "sectioninfo"
-    );
+    const currentSection = await Quiz.findById(quizId).populate("sectioninfo");
     // console.log("username", currentres.username);
     // console.log("jjdqqqdj", currentres);
     let new_arr = currentres;
