@@ -29,8 +29,8 @@ async function topTenResult(req, res) {
     const Alldata = await Result.aggregate([
       {
         $lookup: {
-          from: "Quizzes", // The collection containing Quiz details
-          localField: "QuizId", // Field from the input documents
+          from: "quizzes", // The collection containing Quiz details
+          localField: "quizId", // Field from the input documents
           foreignField: "_id", // Field from the 'Quizs' collection
           as: "QuizDetails", // Output array field
         },
@@ -39,35 +39,34 @@ async function topTenResult(req, res) {
         $unwind: "$QuizDetails", // Unwind the QuizDetails array
       },
       {
-        $group:{
-          _id:"$_id",
-          firstname:{
-            $first:"$firstname"
+        $group: {
+          _id: "$_id",
+          firstname: {
+            $first: "$firstname",
           },
-          lastname:{
-            $first:"$lastname"
+          lastname: {
+            $first: "$lastname",
           },
-          email:{
-            $first:"$userEmail"
+          email: {
+            $first: "$userEmail",
           },
-          result:{
-          $first:"$result"
+          result: {
+            $first: "$result",
           },
-          TotalResult:{
-          $first:"$TotalResult"
+          TotalResult: {
+            $first: "$TotalResult",
           },
-          QuizName:{
-          $first:"$QuizDetails.QuizName"
+          QuizName: {
+            $first: "$QuizDetails.quizName",
           },
-        }
-      
+        },
       },
-  {
-    $sort: {
-      result: -1
-    }
-  },
-    
+      {
+        $sort: {
+          result: -1,
+        },
+      },
+
       {
         // Limit the result to the last 3 documents
         $limit: 10,
@@ -80,4 +79,4 @@ async function topTenResult(req, res) {
   }
 }
 
-module.exports = { recentResult,topTenResult };
+module.exports = { recentResult, topTenResult };
