@@ -1,5 +1,6 @@
 const Quiz = require("../models/section");
-const Quize = require("../models/Quizearr");
+// const Quize = require("../models/Quizearr");
+const Section = require("../models/Quizearr");
 
 async function create(req, res) {
   try {
@@ -107,9 +108,7 @@ async function deleteOperation(req, res) {
 }
 async function getallquizQuize(req, res) {
   try {
-    const secData = await Quiz.findById(req.params.id).populate(
-      "quizinfo"
-    );
+    const secData = await Quiz.findById(req.params.id).populate("quizinfo");
 
     // const quiz = await Quize.findById(req.params.id).populate('quizemcqs');
 
