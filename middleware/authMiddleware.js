@@ -6,7 +6,7 @@ async function middlewareAuth(req, res, next) {
   const authHeader = req.header("Authorization");
   console.log("tokkk", authHeader);
   if (!authHeader) {
-    res.status(400).send({ message: "toke Invalid" });
+    res.status(400).send({ message: "token Invalid" });
   }
   const jwttoken = authHeader.replace("Bearer", "").trim();
   console.log("llll", jwttoken);
@@ -16,7 +16,7 @@ async function middlewareAuth(req, res, next) {
       req.user = isVarified;
       next();
     } else {
-      return res.status(400).json("user is Unauthorised");
+      return res.status(400).json({ message: "User is Unauthorised" });
     }
     console.log("awwdddd", isVarified.role);
   } catch (error) {
