@@ -3,7 +3,7 @@ const { quuiz,getAll,updatequizname,deletequizname,insertOrupdateQuestionsToQuiz
 const { middlewareAuth } = require('../middleware/authMiddleware');
 
 const router = express.Router();
-router.use(middlewareAuth);
+router.use(middlewareAuth)
 // router.post('/question', question);
 router.post('/create', quuiz);
 router.get('/getall',getAll)
