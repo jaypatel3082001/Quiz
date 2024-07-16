@@ -8,27 +8,22 @@ const {
   readOneresult,
 } = require("../controllers/resultController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
-const { recentResult, topTenResult } = require("../controllers/dashBordController");
+const {
+  recentResult,
+  topTenResult,
+} = require("../controllers/dashBordController");
 
 const router = express.Router();
-
+router.use(middlewareAuth);
 // router.post('/question', question);
-router.post("/create", middlewareAuth, send);
-router.get("/getresult", middlewareAuth, getresult);
+router.post("/create", send);
+router.get("/getresult", getresult);
 router.get("/getalluserdata", middlewareAuth, getalluserresultdata);
 router.get("/getall", getallresultdata);
 router.get("/getresultsection/:id", readSection);
 router.get("/read/:id", readOneresult);
 
-
-
-
-
-
-
-
 router.get("/recentResults", recentResult);
 router.get("/topTenResults", topTenResult);
-
 
 module.exports = router;

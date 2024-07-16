@@ -1,8 +1,9 @@
 const express = require('express');
 const { quuiz,getAll,updatequizname,deletequizname,insertOrupdateQuestionsToQuiz, deletionofquestionIntosection, getallsectionquestion} = require('../controllers/quizeController');
+const { middlewareAuth } = require('../middleware/authMiddleware');
 
 const router = express.Router();
-
+router.use(middlewareAuth);
 // router.post('/question', question);
 router.post('/create', quuiz);
 router.get('/getall',getAll)

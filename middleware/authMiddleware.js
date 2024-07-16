@@ -12,9 +12,13 @@ async function middlewareAuth(req, res, next) {
   console.log("llll", jwttoken);
   try {
     const isVarified = jwt.verify(jwttoken, "Hs235");
-    console.log("awwdddd", isVarified);
-    req.user = isVarified;
-    next();
+    if (isVarified.role && isVarified.user) {
+      req.user = isVarified;
+      next();
+    } else {
+      return res.status(400).json("user is Unauthorised");
+    }
+    console.log("awwdddd", isVarified.role);
   } catch (error) {
     res
       .status(500)

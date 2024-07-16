@@ -2,10 +2,11 @@ const express = require('express');
 const { question, updatequestion, deletequestion, getallquestion,getonequestion } = require('../controllers/questionController');
 // const {  } = require('../controllers/questionController');
 const { checkRole } = require('../middleware/hadlePath');
+const { middlewareAuth } = require('../middleware/authMiddleware');
 // const { quuiz,getAll,updatequizname,deletequizname,insertOrupdateQuestionsToQuiz, deletionofquestionIntoquize} = require('../controllers/quizeController');
 
 const router = express.Router();
-
+router.use(middlewareAuth);
 router.post('/create',question);
 // router.post('/quiz', quuiz);
 // router.get('/getall',getAll)

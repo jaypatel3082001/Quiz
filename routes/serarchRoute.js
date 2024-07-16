@@ -3,13 +3,14 @@ const {
   getsearchAll,
   getsearchSection,
 } = require("../controllers/serachContrller");
+const { middlewareAuth } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 // router.post('/question', question);
 
-router.get("/getsearchAll", getsearchAll);
-router.get("/getsearchsection/:id", getsearchSection);
+router.get("/getsearchAll", middlewareAuth, getsearchAll);
+router.get("/getsearchsection/:id", middlewareAuth, getsearchSection);
 
 // router.get('/getallquestion',getallquestion)
 // router.post('/login', login);

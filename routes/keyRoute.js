@@ -5,11 +5,13 @@ const {
   updateKey,
   deleteKey,
 } = require("../controllers/keyController");
+const { middlewareAuth } = require("../middleware/authMiddleware");
 // const { middlewareAuth } = require('../middleware/authMiddleware');
 // const user = require('../models/user');
 // const authchreckmid = ddd;
 const router = express.Router();
 // router.use(authchreckmid)
+router.use(middlewareAuth);
 router.post("/generatekey", generatekey);
 router.get("/fetchkey", fetchkey);
 router.get("/update/:id", updateKey);
