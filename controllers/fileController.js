@@ -27,11 +27,13 @@ async function UploadquestionFile(req, res) {
     //     .json(`Errr file already exsist ${downloadResponse}`);
     // }
     // Get upload URL
-   // Check if a file with the same name already exists
-   const existingFile = await getFileInfo(fileName);
-   if (existingFile) {
-     return res.status(400).json({ error: `File already exists: ${existingFile.fileName}` });
-   }
+    // Check if a file with the same name already exists
+    const existingFile = await getFileInfo(fileName);
+    if (existingFile) {
+      return res
+        .status(400)
+        .json({ error: `File already exists: ${existingFile.fileName}` });
+    }
     // if(Date.now()-ExsitFile.uploadTimestamp)
     const {
       data: { uploadUrl, authorizationToken },
@@ -64,7 +66,7 @@ async function UploadquestionFile(req, res) {
 
     // Fetch the file from the download URL
 
-    res.status(201).json({ data: ExsitFile });
+    res.status(201).json("Success");
   } catch (err) {
     // console.error(err);
     res.status(500).send(`Error uploading file ${err} ${ExsitFile}`);
@@ -79,7 +81,9 @@ async function getFileInfo(fileName) {
     });
 
     // Find the file with the matching name
-    const fileInfo = response.data.files.find(file => file.fileName === "upload/" + fileName);
+    const fileInfo = response.data.files.find(
+      (file) => file.fileName === "upload/" + fileName
+    );
 
     if (fileInfo) {
       return fileInfo;
