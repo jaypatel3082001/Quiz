@@ -155,10 +155,10 @@ const countResult = (allData, weightageArr, totalpassing, questions) => {
 
     // Check if the value's weightage meets or exceeds any of the passing criteria
     for (let i of weightageArr) {
-      if (value.weitage >= i.sectionwisePassing ) {
+      if (value.weitage >= i.sectionwisePassing) {
         value.status = "pass";
         break; // If it passes one criteria, no need to check further
-      }else if(value.weitage < i.sectionwisePassing){
+      } else if (i.weitage < i.sectionwisePassing) {
         value.status = "Invalid";
         break;
       }
