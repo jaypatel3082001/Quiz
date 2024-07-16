@@ -4,25 +4,24 @@ const jwt = require("jsonwebtoken");
 async function middlewareAuth(req, res, next) {
   // try {
   const authHeader = req.header("Authorization");
-  console.log("tokkk", authHeader);
+
   if (!authHeader) {
-    res.status(400).send({ message: "token Invalid" });
+    return res.status(400).send({ message: "Token Invalid" });
   }
+
   const jwttoken = authHeader.replace("Bearer", "").trim();
-  console.log("llll", jwttoken);
+
   try {
-    const isVarified = jwt.verify(jwttoken, "Hs235");
-    if (isVarified.role && isVarified.user) {
-      req.user = isVarified;
-      next();
-    } else {
-      return res.status(400).json({ message: "User is Unauthorised" });
+    const isVerified = jwt.verify(jwttoken, "Hs235");
+
+    if (isVerified.role && isVerified.user) {
+      req.user = isVerified;
+      return next();
     }
-    console.log("awwdddd", isVarified.role);
+
+    return res.status(400).json({ message: "User is Unauthorised" });
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: `somthing wrong here is your  error ${error}` });
+    return res.status(500).send({ message: `Something went wrong: ${error}` });
   }
   // console.log(first)
   // res.status(200).send({ message: "Success" });
