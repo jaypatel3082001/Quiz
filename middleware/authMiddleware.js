@@ -14,7 +14,7 @@ async function middlewareAuth(req, res, next) {
   try {
     const isVerified = jwt.verify(jwttoken, "Hs235");
 
-    if (isVerified.role && isVerified.user) {
+    if ((isVerified.role && isVerified.user) || isVerified.userEmail) {
       req.user = isVerified;
       return next();
     }
