@@ -19,7 +19,7 @@ router.put("/update/:id", middlewareAuth, update);
 router.delete("/delete/:id", middlewareAuth, deletes);
 router.get("/read", middlewareAuth, read);
 router.get("/read/:id", middlewareAuth, getallquizQuize);
-router.get("/getall/:id", getallquizdata);
+router.get("/getall/:id",middlewareAuth, getallquizdata);
 router.put("/insertquiz/:id", middlewareAuth, insertOperation);
 router.post("/insertall", middlewareAuth, insertallOperation);
 router.put("/deletetquiz/:id", middlewareAuth, deleteOperation);
