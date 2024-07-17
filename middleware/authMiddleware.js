@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 // // Middleware function for JWT authentication and token expiration
 async function middlewareAuth(req, res, next) {
@@ -14,7 +15,15 @@ async function middlewareAuth(req, res, next) {
   try {
     const isVerified = jwt.verify(jwttoken, "Hs235");
 
+  
+
     if ((isVerified.role && isVerified.user) || isVerified.userEmail) {
+      if(isVerified.role && isVerified.user){
+        const exsistinguser = await User.findById(isVerified.user)
+        if(!exsistinguser){
+          return res.status(400).json({ message: "User is not found" });
+        }
+      }
       req.user = isVerified;
       return next();
     }

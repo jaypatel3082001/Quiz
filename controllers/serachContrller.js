@@ -41,7 +41,7 @@ async function getsearchAll(req, res) {
 
     // Count the total documents matching the filter
     const totalCount = await Model.countDocuments(filter);
-    console.log("filter..",filter)
+    console.log("filter..", filter);
 
     // Build the aggregation pipeline
     const pipeline = [
@@ -60,19 +60,25 @@ async function getsearchAll(req, res) {
           },
         },
       },
-      {
-        $addFields: {
-          sortIndex: {
-            $indexOfArray: [
-              customOrder.split(""),
-              { $substr: ["$sortField", 0, 1] }, // Get the first character of sortField
-            ],
-          },
-        },
-      },
+      // {
+      //   $addFields: {
+      //     sortKey: {
+      //       $map: {
+      //         input: { $range: [0, { $strLenCP: "$sortField" }] },
+      //         as: "index",
+      //         in: {
+      //           $indexOfArray: [
+      //             customOrder.split(""),
+      //             { $substrCP: ["$sortField", "$$index", 1] },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
       {
         $sort: {
-          sortIndex: sortOrder === "asc" ? 1 : -1,
+          sortField: sortOrder === "asc" ? 1 : -1,
         },
       },
       {
