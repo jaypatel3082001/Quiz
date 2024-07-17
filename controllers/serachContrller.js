@@ -69,9 +69,9 @@ async function getsearchAll(req, res) {
       //     },
       //   },
       // },
-      { $limit: parseInt(limit) },
       { $sort: { sortField: sortOrder === "asc" ? 1 : -1 } },
       { $skip: parseInt(offset) },
+      { $limit: parseInt(limit) },
     ];
 
     let documents;
