@@ -41,6 +41,7 @@ async function getsearchAll(req, res) {
 
     // Count the total documents matching the filter
     const totalCount = await Model.countDocuments(filter);
+    console.log("filter..",filter)
 
     // Build the aggregation pipeline
     const pipeline = [
@@ -64,12 +65,27 @@ async function getsearchAll(req, res) {
           sortIndex: {
             $indexOfArray: [
               customOrder.split(""),
-              { $substr: ["$sortField", 0, 1] },
+              { $substr: ["$sortField", 0, 1] }, // Get the first character of sortField
             ],
           },
         },
       },
-      { $sort: { sortIndex: sortOrder === "asc" ? 1 : -1 } },
+      {
+        $sort: {
+          sortIndex: sortOrder === "asc" ? 1 : -1,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id", // Group by the unique identifier to remove duplicates
+          document: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$document",
+        },
+      },
       { $skip: parseInt(offset) },
       { $limit: parseInt(limit) },
     ];
