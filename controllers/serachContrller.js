@@ -17,7 +17,7 @@ async function getsearchAll(req, res) {
       startDate,
       endDate,
       type,
-      customOrder = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+      customOrder = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789",
     } = req.query;
 
     // Build filter object based on search criteria
