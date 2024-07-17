@@ -17,7 +17,7 @@ async function getsearchAll(req, res) {
       startDate,
       endDate,
       type,
-      customOrder = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789",
+      customOrder = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
     } = req.query;
 
     // Build filter object based on search criteria
@@ -41,7 +41,6 @@ async function getsearchAll(req, res) {
 
     // Count the total documents matching the filter
     const totalCount = await Model.countDocuments(filter);
-    console.log("filter..", filter);
 
     // Build the aggregation pipeline
     const pipeline = [
@@ -62,38 +61,17 @@ async function getsearchAll(req, res) {
       },
       // {
       //   $addFields: {
-      //     sortKey: {
-      //       $map: {
-      //         input: { $range: [0, { $strLenCP: "$sortField" }] },
-      //         as: "index",
-      //         in: {
-      //           $indexOfArray: [
-      //             customOrder.split(""),
-      //             { $substrCP: ["$sortField", "$$index", 1] },
-      //           ],
-      //         },
-      //       },
+      //     sortIndex: {
+      //       $indexOfArray: [
+      //         customOrder.split(""),
+      //         { $substr: ["$sortField", 0, 1] },
+      //       ],
       //     },
       //   },
       // },
-      {
-        $sort: {
-          sortField: sortOrder === "asc" ? 1 : -1,
-        },
-      },
-      {
-        $group: {
-          _id: "$_id", // Group by the unique identifier to remove duplicates
-          document: { $first: "$$ROOT" },
-        },
-      },
-      {
-        $replaceRoot: {
-          newRoot: "$document",
-        },
-      },
-      { $skip: parseInt(offset) },
       { $limit: parseInt(limit) },
+      { $sort: { sortField: sortOrder === "asc" ? 1 : -1 } },
+      { $skip: parseInt(offset) },
     ];
 
     let documents;
