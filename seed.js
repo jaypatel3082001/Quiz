@@ -71,7 +71,7 @@ async function seedAdminAndRole() {
         // const adminRole = await Role.findOne({ name: 'Admin' });
   
         // Create the admin user with the 'Admin' role
-        const hashedPassword = await bcrypt.hash('admin123', 10);
+        const hashedPassword = await bcrypt.hash('admin@123##@', 10);
         await User.create({
           username: 'admin',
           email:'admin@123.com',

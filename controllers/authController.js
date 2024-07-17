@@ -23,18 +23,18 @@ exports.signup = async (req, res) => {
 
     // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
-    const hashedPassword2 = await bcrypt.hash("admin123", 10);
-    let adminemail = "admin@123.com";
-    if (email === adminemail) {
-      // const user = await User.findOne({ email });
-      const isMatch = await bcrypt.compare(hashedPassword2, hashedPassword);
-      if (isMatch) {
-        role1 = "Admin";
-      }
-      //  role1='User'
-    } else {
-      role1 = "User";
-    }
+    // const hashedPassword2 = await bcrypt.hash("admin123", 10);
+    // let adminemail = "admin@123.com";
+    // if (email === adminemail) {
+    //   // const user = await User.findOne({ email });
+    //   const isMatch = await bcrypt.compare(hashedPassword2, hashedPassword);
+    //   if (isMatch) {
+    //     role1 = "Admin";
+    //   }
+    //   //  role1='User'
+    // } else {
+    //   role1 = "User";
+    // }
     //  const isadminRole = await Role.findOne({ name: role1 });
 
     // Create a new user using the User model
@@ -89,7 +89,9 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
+    if(user.role!=="Admin"){
+      return res.status(401).json({ message: "Admin can Only access" });
+    }
     // Generate a JWT token
     const token = jwt.sign(
       {
