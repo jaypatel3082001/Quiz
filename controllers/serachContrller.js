@@ -218,8 +218,9 @@ async function getsearchSection(req, res) {
         $group: {
           _id: "$_id",
           quizId: { $first: "$quizId" },
-          firstname: { $first: "$firstname" },
-          lastname: { $first: "$lastname" },
+          username: {
+            $first: { $concat: ["$firstname", " ", "$lastname"] },
+          },
           userEmail: { $first: "$userEmail" },
           sectionwiseResult: { $push: "$sectionwiseResult" },
           sectionwiseTotalResult: { $first: "$sectionwiseTotalResult" },

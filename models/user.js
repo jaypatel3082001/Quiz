@@ -49,16 +49,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  result: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Result",
-    },
-  ],
-  role: {
-    type: String,
-    default: "User",
-  },
+  // result: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Result",
+  //   },
+  // ],
+  role: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
   // re
 });
 
