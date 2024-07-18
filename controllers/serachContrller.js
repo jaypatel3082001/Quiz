@@ -104,6 +104,7 @@ async function buildDocumentFilter(search, type) {
     } else if (type === "result") {
       // Using populate means we need to search by userId field
       // filter.userId.username = new RegExp(search, "i");
+      search = search?.trim();
       console.log("i am herw");
       const arruser = search.split(" ");
       console.log("first,", arruser);
