@@ -93,6 +93,7 @@ async function getsearchAll(req, res) {
 
 // Function to build document filter
 async function buildDocumentFilter(search, type) {
+  search = search?.trim();
   const filter = {};
   if (search) {
     if (type === "question") {
@@ -104,7 +105,7 @@ async function buildDocumentFilter(search, type) {
     } else if (type === "result") {
       // Using populate means we need to search by userId field
       // filter.userId.username = new RegExp(search, "i");
-      search = search?.trim();
+    
       console.log("i am herw");
       const arruser = search.split(" ");
       console.log("first,", arruser);
