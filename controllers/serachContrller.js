@@ -107,8 +107,8 @@ async function buildDocumentFilter(search, type) {
       console.log("i am herw");
       const arruser = search.split(" ");
       console.log("first,", arruser);
-      const first = arruser[0].trim();
-      const last = arruser[1].trim();
+      const first = arruser[0]?.trim();
+      const last = arruser[1]?.trim();
       first ? (filter.firstname = new RegExp(first, "i")) : null;
       last ? (filter.lastname = new RegExp(last, "i")) : null;
     }
