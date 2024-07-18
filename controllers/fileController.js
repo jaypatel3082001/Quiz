@@ -122,6 +122,54 @@ async function getFileInfo(fileName) {
 //     res.status(500).send(`Error uploading file ${err}`);
 //   }
 // }
+async function Uploadss(req, res) {
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    const fileName = file.originalname;
+    const filePath = file.path;
+
+    // Authorize with Backblaze B2
+    await b2.authorize();
+
+    // Get upload URL
+    const {
+      data: { uploadUrl, authorizationToken },
+    } = await b2.getUploadUrl({
+      bucketId: bucketId,
+    });
+
+    const myFile = fs.readFileSync(filePath);
+    await b2.uploadFile({
+      uploadUrl: uploadUrl,
+      uploadAuthToken: authorizationToken,
+      fileName: "upload/screenshot" + "/" + fileName,
+      data: myFile,
+    });
+
+    // // Upload file to Backblaze B2
+    // const uploadResponse = await b2.uploadFile({
+    //   uploadUrl,
+    //   uploadAuthToken: authorizationToken,
+    //   fileName,
+    //   data: file.buffer,
+    // });
+
+    // Construct the file download URL
+    // const fileDownloadUrl = `https://f000.backblazeb2.com/file/${bucketName}/upload/${fileName}`;
+
+    // Fetch the file from the download URL
+
+    res.status(201).json("Success");
+  } catch (err) {
+    // console.error(err);
+    res.status(500).send(`Error uploading file ${err} ${ExsitFile}`);
+  }
+}
+
 async function generateDownloadLink(fileName) {
   try {
     const authResponse = await b2.authorize();
@@ -234,4 +282,4 @@ async function getFileBackblazeByName(req, res) {
   }
 }
 
-module.exports = { UploadquestionFile, getFileBackblazeByName };
+module.exports = { UploadquestionFile, getFileBackblazeByName, Uploadss };
