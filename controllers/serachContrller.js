@@ -105,7 +105,12 @@ async function buildDocumentFilter(search, type) {
       // Using populate means we need to search by userId field
       // filter.userId.username = new RegExp(search, "i");
       console.log("i am herw");
-      filter.userId = await getUserIdByUsername(search);
+      const arruser = search.split(" ");
+      console.log("first,", arruser);
+      const first = arruser[0].trim();
+      const last = arruser[1].trim();
+      first ? (filter.firstname = new RegExp(first, "i")) : null;
+      last ? (filter.lastname = new RegExp(last, "i")) : null;
     }
     console.log("w ghgherw");
   }
@@ -114,12 +119,17 @@ async function buildDocumentFilter(search, type) {
 }
 
 // Helper function to get user ID by username
-async function getUserIdByUsername(username) {
-  const user = await User.findOne({ username: new RegExp(username, "i") })
-    .select("_id")
-    .exec();
-  return user ? user._id : null;
-}
+// async function getUserIdByUsername(username) {
+//   const usernamearr = username.split(" ");
+//   if (usernamearr.length < 2) return null;
+
+//   const user = await Resultmodel.findOne({
+//     firstname: new RegExp(usernamearr[0], "i"),
+//     lastname: new RegExp(usernamearr[1], "i"),
+//   });
+
+//   return user ? user._id : null;
+// }
 
 // Helper function to build date filter
 function buildDateFilter(startDate, endDate, filter) {
@@ -201,15 +211,15 @@ async function getsearchSection(req, res) {
           ...filter,
         },
       },
-      {
-        $match: {
-          $or: [
-            { firstname: { $regex: search, $options: "i" } },
-            { lastname: { $regex: search, $options: "i" } },
-            { userEmail: { $regex: search, $options: "i" } },
-          ],
-        },
-      },
+      // {
+      //   $match: {
+      //     $or: [
+      //       { firstname: { $regex: search, $options: "i" } },
+      //       { lastname: { $regex: search, $options: "i" } },
+      //       { userEmail: { $regex: search, $options: "i" } },
+      //     ],
+      //   },
+      // },
       {
         $unwind: "$sectionwiseResult",
       },

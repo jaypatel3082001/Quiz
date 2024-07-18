@@ -85,11 +85,13 @@ exports.login = async (req, res) => {
     // const admin = await User.aggregate(adminPipeline);
 
     // role1=checkAdmin(email,password)
+    console.log("firstdgdf,", user);
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    if(user.role!=="Admin"){
+    console.log("first,", user.role);
+    if (user.role !== "Admin") {
       return res.status(401).json({ message: "Admin can Only access" });
     }
     // Generate a JWT token

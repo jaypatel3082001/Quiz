@@ -55,7 +55,8 @@ const userSchema = new mongoose.Schema({
   //     ref: "Result",
   //   },
   // ],
-  role: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
+  role: { type: String },
+  // role: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
   // re
 });
 
