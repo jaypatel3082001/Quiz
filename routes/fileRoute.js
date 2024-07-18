@@ -8,9 +8,9 @@ const {
 const { middlewareAuth } = require("../middleware/authMiddleware");
 
 const router = express.Router();
-router.use(middlewareAuth);
-router.post("/questionupload", upload.single("file"), UploadquestionFile);
+// router.use(middlewareAuth);
+router.post("/questionupload", upload.single("file"),middlewareAuth, UploadquestionFile);
 router.post("/ssupload", upload.single("file"), Uploadss);
-router.get("/questioread/:fileName", getFileBackblazeByName);
+router.get("/questioread/:fileName", middlewareAuth,getFileBackblazeByName);
 
 module.exports = router;
