@@ -7,7 +7,8 @@ const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
-const puppeteer = require("puppeteer");
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 const Section = require("../models/Quizearr");
 async function UploadquestionFile(req, res) {
   try {
@@ -172,7 +173,11 @@ async function getFileInfo(fileName) {
 // }
 async function Uploadss(req, res) {
   try {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+    });
     const page = await browser.newPage();
     await b2.authorize();
 
