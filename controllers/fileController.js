@@ -7,6 +7,7 @@ const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
+const puppeteer = require("puppeteer");
 const Section = require("../models/Quizearr");
 async function UploadquestionFile(req, res) {
   try {
