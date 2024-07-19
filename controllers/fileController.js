@@ -175,7 +175,7 @@ async function Uploadss(req, res) {
   try {
     const browser = await puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath,
+      executablePath: await chromium.executablePath || "C:\ProgramData\Microsoft\Windows\Start Menu\Programs",
       headless: chromium.headless,
     });
     const page = await browser.newPage();
