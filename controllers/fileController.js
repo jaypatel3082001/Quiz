@@ -7,8 +7,8 @@ const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
-// const chromium = require("chrome-aws-lambda");
-// const puppeteer = require("puppeteer-core");
+const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer-core");
 const Section = require("../models/Quizearr");
 async function UploadquestionFile(req, res) {
   try {
@@ -171,102 +171,102 @@ async function getFileInfo(fileName) {
 //     res.status(500).send(`Error uploading file ${err} ${ExsitFile}`);
 //   }
 // }
-// async function Uploadss(req, res) {
-//   try {
-//     const browser = await puppeteer.launch({
-//       args: chromium.args,
-//       executablePath: await chromium.executablePath,
-//       headless: chromium.headless,
-//     });
-//     const page = await browser.newPage();
-//     await b2.authorize();
+async function Uploadss(req, res) {
+  try {
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+    });
+    const page = await browser.newPage();
+    await b2.authorize();
 
-//     // Wait for the page to load and stabilize
-//     await page.goto("https://frontend-mo7y.vercel.app/userpages/quiz-start", {
-//       waitUntil: "networkidle0",
-//     });
+    // Wait for the page to load and stabilize
+    await page.goto("https://frontend-mo7y.vercel.app/userpages/quiz-start", {
+      waitUntil: "networkidle0",
+    });
 
-//     const dimensions = await page.evaluate(() => {
-//       return {
-//         width: window.screen.width,
-//         height: window.screen.height,
-//       };
-//     });
+    const dimensions = await page.evaluate(() => {
+      return {
+        width: window.screen.width,
+        height: window.screen.height,
+      };
+    });
 
-//     // Log dimensions for debugging
-//     console.log(`Viewport dimensions: ${JSON.stringify(dimensions)}`);
+    // Log dimensions for debugging
+    console.log(`Viewport dimensions: ${JSON.stringify(dimensions)}`);
 
-//     if (dimensions.width <= 0 || dimensions.height <= 0) {
-//       throw new Error(
-//         "Invalid viewport dimensions: width and height must be greater than 0."
-//       );
-//     }
+    if (dimensions.width <= 0 || dimensions.height <= 0) {
+      throw new Error(
+        "Invalid viewport dimensions: width and height must be greater than 0."
+      );
+    }
 
-//     await page.setViewport({
-//       width: dimensions.width,
-//       height: dimensions.height,
-//       isMobile: false,
-//       isLandscape: true,
-//       hasTouch: false,
-//       deviceScaleFactor: 1,
-//     });
+    await page.setViewport({
+      width: dimensions.width,
+      height: dimensions.height,
+      isMobile: false,
+      isLandscape: true,
+      hasTouch: false,
+      deviceScaleFactor: 1,
+    });
 
-//     const screenshotPath = path.join(__dirname, "./uploads/screenshot.png");
+    const screenshotPath = path.join(__dirname, "./uploads/screenshot.png");
 
-//     const takeScreenshot = async () => {
-//       const {
-//         data: { uploadUrl, authorizationToken },
-//       } = await b2.getUploadUrl({
-//         bucketId: bucketId,
-//       });
+    const takeScreenshot = async () => {
+      const {
+        data: { uploadUrl, authorizationToken },
+      } = await b2.getUploadUrl({
+        bucketId: bucketId,
+      });
 
-//       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-//       const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
-//       await page.screenshot({ path: fullScreenshotPath, fullPage: true });
-//       console.log(`Screenshot saved at ${fullScreenshotPath}`);
-//       const myFile = fs.readFileSync(fullScreenshotPath);
-//       await b2.uploadFile({
-//         uploadUrl: uploadUrl,
-//         uploadAuthToken: authorizationToken,
-//         fileName: "upload/screenshot" + "/" + fullScreenshotPath,
-//         data: myFile,
-//       });
-//     };
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
+      await page.screenshot({ path: fullScreenshotPath, fullPage: true });
+      console.log(`Screenshot saved at ${fullScreenshotPath}`);
+      const myFile = fs.readFileSync(fullScreenshotPath);
+      await b2.uploadFile({
+        uploadUrl: uploadUrl,
+        uploadAuthToken: authorizationToken,
+        fileName: "upload/screenshot" + "/" + fullScreenshotPath,
+        data: myFile,
+      });
+    };
 
-//     // Take an initial screenshot
-//     await takeScreenshot();
-//     // Function to monitor URL changes and take screenshots
-//     browser.on("targetchanged", async (target) => {
-//       if (target.type() === "page") {
-//         const {
-//           data: { uploadUrl, authorizationToken },
-//         } = await b2.getUploadUrl({
-//           bucketId: bucketId,
-//         });
-//         const newPage = await target.page();
-//         const url = newPage.url();
-//         console.log(`Navigated to: ${url}`);
-//         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-//         const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
-//         await newPage.screenshot({ path: fullScreenshotPath, fullPage: true });
-//         await b2.uploadFile({
-//           uploadUrl: uploadUrl,
-//           uploadAuthToken: authorizationToken,
-//           fileName: "upload/screenshot" + "/" + fullScreenshotPath,
-//           data: myFile,
-//         });
-//         if (url === "https://frontend-mo7y.vercel.app/student/login") {
-//           return res.status(201).json("Exam is over");
-//         }
-//       }
-//     });
+    // Take an initial screenshot
+    await takeScreenshot();
+    // Function to monitor URL changes and take screenshots
+    browser.on("targetchanged", async (target) => {
+      if (target.type() === "page") {
+        const {
+          data: { uploadUrl, authorizationToken },
+        } = await b2.getUploadUrl({
+          bucketId: bucketId,
+        });
+        const newPage = await target.page();
+        const url = newPage.url();
+        console.log(`Navigated to: ${url}`);
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
+        await newPage.screenshot({ path: fullScreenshotPath, fullPage: true });
+        await b2.uploadFile({
+          uploadUrl: uploadUrl,
+          uploadAuthToken: authorizationToken,
+          fileName: "upload/screenshot" + "/" + fullScreenshotPath,
+          data: myFile,
+        });
+        if (url === "https://frontend-mo7y.vercel.app/student/login") {
+          return res.status(201).json("Exam is over");
+        }
+      }
+    });
 
-//     console.log("Monitoring URL changes and taking screenshots...");
-//   } catch (error) {
-//     res.status(500).json(`Error capturing screenshot: ${error}`);
-//     // console.error("Error capturing screenshot:", error);
-//   }
-// }
+    console.log("Monitoring URL changes and taking screenshots...");
+  } catch (error) {
+    res.status(500).json(`Error capturing screenshot: ${error}`);
+    // console.error("Error capturing screenshot:", error);
+  }
+}
 
 async function generateDownloadLink(fileName) {
   try {
@@ -380,4 +380,4 @@ async function getFileBackblazeByName(req, res) {
   }
 }
 
-module.exports = { UploadquestionFile, getFileBackblazeByName };
+module.exports = { UploadquestionFile, getFileBackblazeByName,Uploadss };
