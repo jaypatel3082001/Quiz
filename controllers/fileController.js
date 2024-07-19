@@ -10,6 +10,7 @@ const Questions = require("../models/questions");
 const chromium = require("chrome-aws-lambda");
 const puppeteer = require("puppeteer-core");
 const Section = require("../models/Quizearr");
+const UserAgent = require("user-agent");
 async function UploadquestionFile(req, res) {
   try {
     const file = req.file;
@@ -173,9 +174,16 @@ async function getFileInfo(fileName) {
 // }
 async function Uploadss(req, res) {
   try {
+    const userAgentString =
+      "C:\ProgramData\Microsoft\Windows\Start Menu\Programs";
+    // const userAgent = UserAgent.parse(userAgentString);
+
+    // console.log(userAgent); // 'Chrome'
+    // console.log(userAgent.browser); // 'Chrome'
+    // console.log(userAgent.os); // 'Windows 10'
     const browser = await puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath || "C:\ProgramData\Microsoft\Windows\Start Menu\Programs",
+      executablePath: (await chromium.executablePath) || userAgentString,
       headless: chromium.headless,
     });
     const page = await browser.newPage();
@@ -380,4 +388,4 @@ async function getFileBackblazeByName(req, res) {
   }
 }
 
-module.exports = { UploadquestionFile, getFileBackblazeByName,Uploadss };
+module.exports = { UploadquestionFile, getFileBackblazeByName, Uploadss };
