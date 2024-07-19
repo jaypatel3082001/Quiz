@@ -7,8 +7,8 @@ const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer-core");
 const Section = require("../models/Quizearr");
 async function UploadquestionFile(req, res) {
   try {
@@ -93,7 +93,7 @@ async function getFileInfo(fileName) {
       return null; // File not found
     }
   } catch (error) {
-    console.error("Error getting file info:", error);
+    console.error(`Error getting file info: ${error}`);
     throw error;
   }
 }
