@@ -175,21 +175,17 @@ async function getFileInfo(fileName) {
 async function Uploadss(req, res) {
   try {
     const userAgentString =
-      "C:\ProgramData\Microsoft\Windows\Start Menu\Programs";
-    // const userAgent = UserAgent.parse(userAgentString);
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 
-    // console.log(userAgent); // 'Chrome'
-    // console.log(userAgent.browser); // 'Chrome'
-    // console.log(userAgent.os); // 'Windows 10'
     const browser = await puppeteer.launch({
       args: chromium.args,
       executablePath: (await chromium.executablePath) || userAgentString,
       headless: chromium.headless,
     });
+
     const page = await browser.newPage();
     await b2.authorize();
 
-    // Wait for the page to load and stabilize
     await page.goto("https://frontend-mo7y.vercel.app/userpages/quiz-start", {
       waitUntil: "networkidle0",
     });
@@ -201,7 +197,6 @@ async function Uploadss(req, res) {
       };
     });
 
-    // Log dimensions for debugging
     console.log(`Viewport dimensions: ${JSON.stringify(dimensions)}`);
 
     if (dimensions.width <= 0 || dimensions.height <= 0) {
@@ -241,9 +236,8 @@ async function Uploadss(req, res) {
       });
     };
 
-    // Take an initial screenshot
     await takeScreenshot();
-    // Function to monitor URL changes and take screenshots
+
     browser.on("targetchanged", async (target) => {
       if (target.type() === "page") {
         const {
@@ -257,6 +251,7 @@ async function Uploadss(req, res) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
         await newPage.screenshot({ path: fullScreenshotPath, fullPage: true });
+        const myFile = fs.readFileSync(fullScreenshotPath);
         await b2.uploadFile({
           uploadUrl: uploadUrl,
           uploadAuthToken: authorizationToken,
@@ -271,8 +266,8 @@ async function Uploadss(req, res) {
 
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
+    console.log("fdg", error);
     res.status(500).json(`Error capturing screenshot: ${error}`);
-    // console.error("Error capturing screenshot:", error);
   }
 }
 
