@@ -122,51 +122,143 @@ async function getFileInfo(fileName) {
 //     res.status(500).send(`Error uploading file ${err}`);
 //   }
 // }
+// async function Uploadss(req, res) {
+//   try {
+//     const file = req.file;
+//     if (!file) {
+//       return res.status(400).send("No file uploaded.");
+//     }
+
+//     const fileName = file.originalname;
+//     const filePath = file.path;
+
+//     // Authorize with Backblaze B2
+//     await b2.authorize();
+
+//     // Get upload URL
+//     const {
+//       data: { uploadUrl, authorizationToken },
+//     } = await b2.getUploadUrl({
+//       bucketId: bucketId,
+//     });
+
+//     const myFile = fs.readFileSync(filePath);
+//     await b2.uploadFile({
+//       uploadUrl: uploadUrl,
+//       uploadAuthToken: authorizationToken,
+//       fileName: "upload/screenshot" + "/" + fileName,
+//       data: myFile,
+//     });
+
+//     // // Upload file to Backblaze B2
+//     // const uploadResponse = await b2.uploadFile({
+//     //   uploadUrl,
+//     //   uploadAuthToken: authorizationToken,
+//     //   fileName,
+//     //   data: file.buffer,
+//     // });
+
+//     // Construct the file download URL
+//     // const fileDownloadUrl = `https://f000.backblazeb2.com/file/${bucketName}/upload/${fileName}`;
+
+//     // Fetch the file from the download URL
+
+//     res.status(201).json("Success");
+//   } catch (err) {
+//     // console.error(err);
+//     res.status(500).send(`Error uploading file ${err} ${ExsitFile}`);
+//   }
+// }
 async function Uploadss(req, res) {
   try {
-    const file = req.file;
-    if (!file) {
-      return res.status(400).send("No file uploaded.");
-    }
-
-    const fileName = file.originalname;
-    const filePath = file.path;
-
-    // Authorize with Backblaze B2
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
     await b2.authorize();
 
-    // Get upload URL
-    const {
-      data: { uploadUrl, authorizationToken },
-    } = await b2.getUploadUrl({
-      bucketId: bucketId,
+    // Wait for the page to load and stabilize
+    await page.goto("https://frontend-mo7y.vercel.app/userpages/quiz-start", {
+      waitUntil: "networkidle0",
     });
 
-    const myFile = fs.readFileSync(filePath);
-    await b2.uploadFile({
-      uploadUrl: uploadUrl,
-      uploadAuthToken: authorizationToken,
-      fileName: "upload/screenshot" + "/" + fileName,
-      data: myFile,
+    const dimensions = await page.evaluate(() => {
+      return {
+        width: window.screen.width,
+        height: window.screen.height,
+      };
     });
 
-    // // Upload file to Backblaze B2
-    // const uploadResponse = await b2.uploadFile({
-    //   uploadUrl,
-    //   uploadAuthToken: authorizationToken,
-    //   fileName,
-    //   data: file.buffer,
-    // });
+    // Log dimensions for debugging
+    console.log(`Viewport dimensions: ${JSON.stringify(dimensions)}`);
 
-    // Construct the file download URL
-    // const fileDownloadUrl = `https://f000.backblazeb2.com/file/${bucketName}/upload/${fileName}`;
+    if (dimensions.width <= 0 || dimensions.height <= 0) {
+      throw new Error(
+        "Invalid viewport dimensions: width and height must be greater than 0."
+      );
+    }
 
-    // Fetch the file from the download URL
+    await page.setViewport({
+      width: dimensions.width,
+      height: dimensions.height,
+      isMobile: false,
+      isLandscape: true,
+      hasTouch: false,
+      deviceScaleFactor: 1,
+    });
 
-    res.status(201).json("Success");
-  } catch (err) {
-    // console.error(err);
-    res.status(500).send(`Error uploading file ${err} ${ExsitFile}`);
+    const screenshotPath = path.join(__dirname, "./uploads/screenshot.png");
+
+    const takeScreenshot = async () => {
+      const {
+        data: { uploadUrl, authorizationToken },
+      } = await b2.getUploadUrl({
+        bucketId: bucketId,
+      });
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
+      await page.screenshot({ path: fullScreenshotPath, fullPage: true });
+      console.log(`Screenshot saved at ${fullScreenshotPath}`);
+      const myFile = fs.readFileSync(fullScreenshotPath);
+      await b2.uploadFile({
+        uploadUrl: uploadUrl,
+        uploadAuthToken: authorizationToken,
+        fileName: "upload/screenshot" + "/" + fullScreenshotPath,
+        data: myFile,
+      });
+    };
+
+    // Take an initial screenshot
+    await takeScreenshot();
+    // Function to monitor URL changes and take screenshots
+    browser.on("targetchanged", async (target) => {
+      if (target.type() === "page") {
+        const {
+          data: { uploadUrl, authorizationToken },
+        } = await b2.getUploadUrl({
+          bucketId: bucketId,
+        });
+        const newPage = await target.page();
+        const url = newPage.url();
+        console.log(`Navigated to: ${url}`);
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
+        await newPage.screenshot({ path: fullScreenshotPath, fullPage: true });
+        await b2.uploadFile({
+          uploadUrl: uploadUrl,
+          uploadAuthToken: authorizationToken,
+          fileName: "upload/screenshot" + "/" + fullScreenshotPath,
+          data: myFile,
+        });
+        if (url === "https://frontend-mo7y.vercel.app/student/login") {
+          return res.status(201).json("Exam is over");
+        }
+      }
+    });
+
+    console.log("Monitoring URL changes and taking screenshots...");
+  } catch (error) {
+    res.status(500).json(`Error capturing screenshot: ${error}`);
+    // console.error("Error capturing screenshot:", error);
   }
 }
 
