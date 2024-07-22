@@ -16,10 +16,7 @@ const env = require("dotenv");
 env.config();
 
 
-const cacheDir = path.join(__dirname, '.cache', 'puppeteer');
-if (!fs.existsSync(cacheDir)) {
-  fs.mkdirSync(cacheDir, { recursive: true });
-}
+
 // const UserAgent = require("user-agent");
 async function UploadquestionFile(req, res) {
   try {

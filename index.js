@@ -21,7 +21,10 @@ env.config();
 const bodyParser = require("body-parser");
 
 const port = process.env.PORT || 3001;
-
+const cacheDir = path.join(__dirname, '.cache', 'puppeteer');
+if (!fs.existsSync(cacheDir)) {
+  fs.mkdirSync(cacheDir, { recursive: true });
+}
 mongoose
   .connect(
     "mongodb+srv://jayp_3008:jay123@cluster0.xycjrla.mongodb.net/Quizz_soft?retryWrites=true&w=majority"
