@@ -21,7 +21,7 @@ env.config();
 const bodyParser = require("body-parser");
 
 const port = process.env.PORT || 3001;
-const cacheDir = path.join(__dirname, '.cache', 'puppeteer');
+const cacheDir = path.join(__dirname, ".cache", "puppeteer");
 if (!fs.existsSync(cacheDir)) {
   fs.mkdirSync(cacheDir, { recursive: true });
 }
