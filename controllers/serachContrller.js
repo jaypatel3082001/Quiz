@@ -113,6 +113,9 @@ async function buildDocumentFilter(search, type) {
       const last = arruser[1]?.trim();
       first ? (filter.firstname = new RegExp(first, "i")) : null;
       last ? (filter.lastname = new RegExp(last, "i")) : null;
+
+    } else if (type === "user") {
+      filter.username = new RegExp(search, "i");
     }
     console.log("w ghgherw");
   }
@@ -319,7 +322,84 @@ async function getsearchSection(req, res) {
   }
 }
 
+
+async function getusersearchAll(req, res) {
+  try {
+    const {
+      search,
+      limit = 0,
+      offset = 0,
+      sortOrder = "asc",
+      startDate,
+      endDate,
+      type,
+      role,
+    } = req.query;
+
+    // Build filter object based on search criteria
+    const filter = await buildDocumentFilter(search, type);
+
+    // Add date range filter if both startDate and endDate are provided
+    if (startDate && endDate) {
+      buildDateFilter(startDate, endDate, filter);
+    }
+
+
+    // Count the total documents matching the filter
+    const totalCount = await User.countDocuments(filter);
+
+    // Build the aggregation pipeline
+    const pipeline = [
+      { $match: filter },
+      {
+        $addFields: {
+          sortField: {
+            $switch: {
+              branches: [
+                { case: { $eq: [type, "question"] }, then: "$question" },
+                { case: { $eq: [type, "section"] }, then: "$sectionname" },
+                { case: { $eq: [type, "quiz"] }, then: "$quizName" },
+                { case: { $eq: [type, "user"] }, then: "$username" },
+              ],
+              default: "",
+            },
+          },
+        },
+      },
+      // {
+      //   $addFields: {
+      //     sortIndex: {
+      //       $indexOfArray: [
+      //         customOrder.split(""),
+      //         { $substr: ["$sortField", 0, 1] },
+      //       ],
+      //     },
+      //   },
+      // },
+      { $sort: { sortField: sortOrder === "asc" ? 1 : -1 } },
+      { $sort: { role: role === "asc" ? 1 : -1 } },
+      { $skip: parseInt(offset) },
+      { $limit: parseInt(limit) },
+    ];
+
+    let documents;
+
+    documents = await User.aggregate(pipeline);
+
+    // Manually populate the userId field after aggregation
+
+    // Return response with data
+    return res.status(200).json({
+      data: documents,
+      totalCount,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+}
 module.exports = {
   getsearchAll,
   getsearchSection,
+  getusersearchAll
 };
