@@ -173,10 +173,10 @@ exports.userHandle = async (req, res) => {
 };
 exports.userauth = async (req, res) => {
   try {
-    // const admins = await User.find().populate('role');
+    const admins = await User.find()
     res.status(201).json({ message: "helloo user" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json("error ");
   }
 
   // Get the current date and time

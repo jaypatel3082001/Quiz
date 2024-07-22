@@ -17,6 +17,7 @@ router.post("/signup", signup);
 router.post("/userLogin", userHandle);
 router.post("/login", login);
 router.get("/admins", handleAdmin);
+router.get("/alluser", middlewareAuth, userauth);
 router.get("/protected", middlewareAuth, userauth);
 router.post("/AdminAccess/:id", AdminAccess);
 // router.get('/protected-route', authenticateToken, async function hgj (req, res){
