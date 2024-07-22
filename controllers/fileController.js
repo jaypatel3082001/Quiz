@@ -197,11 +197,11 @@ async function Uploadss(req, res) {
     try {
       let browser;
       if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-        browser = await chromium.puppeteer.launch({
-          args: chromium.args,
-          defaultViewport: chromium.defaultViewport,
-          executablePath: await chromium.executablePath,
-          headless: chromium.headless,
+        browser = await chrome.puppeteer.launch({
+          args: chrome.args,
+          defaultViewport: chrome.defaultViewport,
+          executablePath: await chrome.executablePath,
+          headless: chrome.headless,
           ignoreHTTPSErrors: true,
         });
       }
