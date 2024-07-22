@@ -7,10 +7,10 @@ const path = require("path");
 const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
-const chromium = require("chrome-aws-lambda");
-const puppeteer = require("puppeteer-core");
+// const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer");
 const Section = require("../models/Quizearr");
-const UserAgent = require("user-agent");
+// const UserAgent = require("user-agent");
 async function UploadquestionFile(req, res) {
   try {
     const file = req.file;
@@ -174,28 +174,18 @@ async function getFileInfo(fileName) {
 // }
 async function Uploadss(req, res) {
   try {
-    const userAgentString =
-      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: (await chromium.executablePath) || userAgentString,
-      headless: chromium.headless,
-    });
-
+    const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
     await b2.authorize();
 
-    await page.goto("https://frontend-mo7y.vercel.app/userpages/quiz-start", {
+    await page.goto("https://frontend-mo7y.vercel.app/student/login", {
       waitUntil: "networkidle0",
     });
 
-    const dimensions = await page.evaluate(() => {
-      return {
-        width: window.screen.width,
-        height: window.screen.height,
-      };
-    });
+    const dimensions = await page.evaluate(() => ({
+      width: window.screen.width,
+      height: window.screen.height,
+    }));
 
     console.log(`Viewport dimensions: ${JSON.stringify(dimensions)}`);
 
@@ -214,22 +204,26 @@ async function Uploadss(req, res) {
       deviceScaleFactor: 1,
     });
 
-    const screenshotPath = path.join(__dirname, "./uploads/screenshot.png");
+    const screenshotDir = path.join(__dirname, "./upload");
+    if (!fs.existsSync(screenshotDir)) {
+      fs.mkdirSync(screenshotDir, { recursive: true });
+    }
+
+    const screenshotPath = path.join(screenshotDir, "screenshot.png");
 
     const takeScreenshot = async () => {
       const {
         data: { uploadUrl, authorizationToken },
-      } = await b2.getUploadUrl({
-        bucketId: bucketId,
-      });
+      } = await b2.getUploadUrl({ bucketId });
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
       await page.screenshot({ path: fullScreenshotPath, fullPage: true });
       console.log(`Screenshot saved at ${fullScreenshotPath}`);
+
       const myFile = fs.readFileSync(fullScreenshotPath);
       await b2.uploadFile({
-        uploadUrl: uploadUrl,
+        uploadUrl,
         uploadAuthToken: authorizationToken,
         fileName: "upload/screenshot" + "/" + fullScreenshotPath,
         data: myFile,
@@ -242,22 +236,23 @@ async function Uploadss(req, res) {
       if (target.type() === "page") {
         const {
           data: { uploadUrl, authorizationToken },
-        } = await b2.getUploadUrl({
-          bucketId: bucketId,
-        });
+        } = await b2.getUploadUrl({ bucketId });
         const newPage = await target.page();
         const url = newPage.url();
         console.log(`Navigated to: ${url}`);
+
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
         await newPage.screenshot({ path: fullScreenshotPath, fullPage: true });
+
         const myFile = fs.readFileSync(fullScreenshotPath);
         await b2.uploadFile({
-          uploadUrl: uploadUrl,
+          uploadUrl,
           uploadAuthToken: authorizationToken,
           fileName: "upload/screenshot" + "/" + fullScreenshotPath,
           data: myFile,
         });
+
         if (url === "https://frontend-mo7y.vercel.app/student/login") {
           return res.status(201).json("Exam is over");
         }
@@ -266,8 +261,8 @@ async function Uploadss(req, res) {
 
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
-    console.log("fdg", error);
-    res.status(500).json(`Error capturing screenshot: ${error}`);
+    console.error("Error capturing screenshot:", error);
+    res.status(500).json(`Error capturing screenshot: ${error.message}`);
   }
 }
 

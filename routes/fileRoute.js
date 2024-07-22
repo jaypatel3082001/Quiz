@@ -3,7 +3,7 @@ const { upload } = require("../middleware/multerMiddle");
 const {
   UploadquestionFile,
   getFileBackblazeByName,
-  Uploadss
+  Uploadss,
 } = require("../controllers/fileController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
 
