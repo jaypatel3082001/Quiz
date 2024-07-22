@@ -8,14 +8,20 @@ const bucketId = "947d64b3985929e583fc0f12";
 const bucketName = "KT-developer";
 const Questions = require("../models/questions");
 // const chromium = require("chrome-aws-lambda");
-const puppeteer = require("puppeteer");
+
 const Section = require("../models/Quizearr");
 const env = require("dotenv");
 
 
 env.config();
-
-
+let chrome={}
+let puppeteer
+if(process.env.AWS_LAMBDA_FUNCTION_VERSION){
+  chrome=require('chrome-aws-lambda')
+  puppeteer=require('puppeteer-core')
+}else{
+  const puppeteer = require("puppeteer");
+}
 
 // const UserAgent = require("user-agent");
 async function UploadquestionFile(req, res) {
@@ -180,12 +186,25 @@ async function getFileInfo(fileName) {
 //   }
 // }
 async function Uploadss(req, res) {
-  try {
-    const browser = await puppeteer.launch({
-      headless: false,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: "/usr/bin/chromium-browser" || undefined, // Optionally specify the path if needed
-    });
+
+
+    let options={};
+    if(process.env.AWS_LAMBDA_FUNCTION_VERSION){
+      options={
+        args: [chrome.args,'--hide-scrollbars', '--disable-web-security'],
+        defaultViewport: chrome.defaultViewport,
+        executablePath: await chrome.executablePath,
+        headless: true,
+        ignoreHTTPSErrors:true
+      }
+    }else{
+      options={
+        headless: false,
+   
+      }
+    }
+    try {
+    const browser = await puppeteer.launch(options);
     const page = await browser.newPage();
     await b2.authorize();
 
