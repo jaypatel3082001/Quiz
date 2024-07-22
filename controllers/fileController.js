@@ -189,21 +189,24 @@ async function Uploadss(req, res) {
 
 
     let options={};
-    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-      options = {
-        args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
-        defaultViewport: chrome.defaultViewport,
-        executablePath: await chrome.executablePath,
-        headless: true,
-        ignoreHTTPSErrors: true
-      };
-    } else {
+ 
       options = {
         headless: false,
       };
-    }
+
     try {
-    const browser = await puppeteer.launch(options);
+      let browser;
+      if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+        browser = await chromium.puppeteer.launch({
+          args: chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath,
+          headless: chromium.headless,
+          ignoreHTTPSErrors: true,
+        });
+      }
+       browser = await puppeteer.launch(options);
+
     const page = await browser.newPage();
     await b2.authorize();
 
