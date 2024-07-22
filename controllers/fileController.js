@@ -204,12 +204,7 @@ async function Uploadss(req, res) {
       deviceScaleFactor: 1,
     });
 
-    const screenshotDir = path.join(__dirname, "./upload");
-    if (!fs.existsSync(screenshotDir)) {
-      fs.mkdirSync(screenshotDir, { recursive: true });
-    }
-
-    const screenshotPath = path.join(screenshotDir, "screenshot.png");
+    const screenshotPath = "upload/";
 
     const takeScreenshot = async () => {
       const {
@@ -218,15 +213,14 @@ async function Uploadss(req, res) {
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
-      await page.screenshot({ path: fullScreenshotPath, fullPage: true });
-      console.log(`Screenshot saved at ${fullScreenshotPath}`);
+      const screenshotBuffer = await page.screenshot({ fullPage: true });
+      console.log(`Screenshot taken`);
 
-      const myFile = fs.readFileSync(fullScreenshotPath);
       await b2.uploadFile({
         uploadUrl,
         uploadAuthToken: authorizationToken,
-        fileName: "upload/screenshot" + "/" + fullScreenshotPath,
-        data: myFile,
+        fileName: `upload/screenshot/${fullScreenshotPath}`,
+        data: screenshotBuffer,
       });
     };
 
@@ -243,14 +237,14 @@ async function Uploadss(req, res) {
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
-        await newPage.screenshot({ path: fullScreenshotPath, fullPage: true });
+        const screenshotBuffer = await newPage.screenshot({ fullPage: true });
+        console.log(`Screenshot taken`);
 
-        const myFile = fs.readFileSync(fullScreenshotPath);
         await b2.uploadFile({
           uploadUrl,
           uploadAuthToken: authorizationToken,
-          fileName: "upload/screenshot" + "/" + fullScreenshotPath,
-          data: myFile,
+          fileName: `upload/screenshot/${fullScreenshotPath}`,
+          data: screenshotBuffer,
         });
 
         if (url === "https://frontend-mo7y.vercel.app/student/login") {
@@ -265,7 +259,6 @@ async function Uploadss(req, res) {
     res.status(500).json(`Error capturing screenshot: ${error.message}`);
   }
 }
-
 async function generateDownloadLink(fileName) {
   try {
     const authResponse = await b2.authorize();
