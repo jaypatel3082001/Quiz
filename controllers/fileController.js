@@ -203,6 +203,7 @@ async function Uploadss(req, res) {
           executablePath: await chrome.executablePath,
           headless: chrome.headless,
           ignoreHTTPSErrors: true,
+          ignoreDefaultArgs: ['--disable-extensions']
         });
       }
        browser = await puppeteer.launch(options);
