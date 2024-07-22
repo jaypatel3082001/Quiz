@@ -173,8 +173,8 @@ exports.userHandle = async (req, res) => {
 };
 exports.userauth = async (req, res) => {
   try {
-    const admins = await User.find()
-    res.status(201).json({ message: "helloo user" });
+    const admins = await User.find({})
+    res.status(201).json({ message: admins });
   } catch (error) {
     res.status(500).json("error ");
   }
