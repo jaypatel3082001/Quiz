@@ -10,6 +10,16 @@ const Questions = require("../models/questions");
 // const chromium = require("chrome-aws-lambda");
 const puppeteer = require("puppeteer");
 const Section = require("../models/Quizearr");
+const env = require("dotenv");
+
+
+env.config();
+
+
+const cacheDir = path.join(__dirname, '.cache', 'puppeteer');
+if (!fs.existsSync(cacheDir)) {
+  fs.mkdirSync(cacheDir, { recursive: true });
+}
 // const UserAgent = require("user-agent");
 async function UploadquestionFile(req, res) {
   try {
@@ -174,7 +184,11 @@ async function getFileInfo(fileName) {
 // }
 async function Uploadss(req, res) {
   try {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({
+      headless: false,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined, // Optionally specify the path if needed
+    });
     const page = await browser.newPage();
     await b2.authorize();
 

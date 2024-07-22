@@ -14,6 +14,10 @@ const storage = multer.diskStorage({
     cb(null, file.originalname); // You can customize the filename if needed
   },
 });
+// const cacheDir = path.join(__dirname, '.cache', 'puppeteer');
+// if (!fs.existsSync(cacheDir)) {
+//   fs.mkdirSync(cacheDir, { recursive: true });
+// }
 const upload = multer({ storage: storage });
 
 module.exports = { b2, upload };
