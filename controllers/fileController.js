@@ -20,7 +20,7 @@ if(process.env.AWS_LAMBDA_FUNCTION_VERSION){
   chrome=require('chrome-aws-lambda')
   puppeteer=require('puppeteer-core')
 }else{
-  const puppeteer = require("puppeteer");
+   puppeteer = require("puppeteer");
 }
 
 // const UserAgent = require("user-agent");
@@ -189,19 +189,18 @@ async function Uploadss(req, res) {
 
 
     let options={};
-    if(process.env.AWS_LAMBDA_FUNCTION_VERSION){
-      options={
-        args: [chrome.args,'--hide-scrollbars', '--disable-web-security'],
+    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+      options = {
+        args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
         defaultViewport: chrome.defaultViewport,
         executablePath: await chrome.executablePath,
         headless: true,
-        ignoreHTTPSErrors:true
-      }
-    }else{
-      options={
+        ignoreHTTPSErrors: true
+      };
+    } else {
+      options = {
         headless: false,
-   
-      }
+      };
     }
     try {
     const browser = await puppeteer.launch(options);
