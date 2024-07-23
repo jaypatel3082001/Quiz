@@ -85,10 +85,16 @@ function generateRandomKey(length) {
 
 async function fetchkey(req, res) {
   try {
-    const alldata = await Key.find({});
+    const alldata = await Key.find({}).populate('Quiz');
     let newArr = [];
+    const oneHour = 1000 * 60 * 60;
     newArr = alldata.filter((ele) => {
-      if (ele.Remaintime > 0) {
+      const differenceInMs = ele.Endtime.getTime() - Date.now();
+    
+      // console.log("differenceInMs", differenceInMs);
+  
+      const hoursDifference = Math.floor(differenceInMs / oneHour);
+      if (ele.Remaintime > 0 || hoursDifference > 0 ) {
         return ele;
       }
     });
