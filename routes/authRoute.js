@@ -9,6 +9,8 @@ const {
 const { middlewareAuth } = require("../middleware/authMiddleware");
 const { KeyAuth } = require("../middleware/keyMiddleware");
 const { AdminAccess } = require("../controllers/adminController");
+const { cutomeColor } = require("../controllers/superAdminController");
+const { upload } = require("../middleware/multerMiddle");
 // const user = require('../models/user');
 // const authchreckmid = ddd;
 const router = express.Router();
@@ -20,6 +22,11 @@ router.get("/admins", handleAdmin);
 router.get("/alluser", middlewareAuth, userauth);
 router.get("/protected", middlewareAuth, userauth);
 router.post("/AdminAccess/:id", AdminAccess);
+router.post("/ExamLoginpage",
+  upload.fields([
+    { name: "backgroundImage", maxCount: 1 },
+    { name: "logo", maxCount: 1 },
+  ]), cutomeColor);
 // router.get('/protected-route', authenticateToken, async function hgj (req, res){
 //     // If token is verified and not expired, you can access the decoded user ID
 //     res.send('Access granted!');

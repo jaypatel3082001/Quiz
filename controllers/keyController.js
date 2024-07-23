@@ -225,7 +225,7 @@ async function getFileInfo(fileName) {
   try {
     const response = await b2.listFileNames({
       bucketId: "947d64b3985929e583fc0f12",
-      fileNamePrefix: "upload/",
+      fileNamePrefix: "upload/examImg",
       maxFileCount: 1000, // Adjust as necessary for your needs
     });
 
