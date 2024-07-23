@@ -76,7 +76,7 @@ async function seedAdminAndRole() {
           username: 'admin',
           email:'admin@123.com',
           password: hashedPassword, // Note: In a real application, hash passwords securely
-          role: 'Admin'
+          role: 'SuperAdmin'
         });
       }
   
