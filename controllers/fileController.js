@@ -12,17 +12,15 @@ const Questions = require("../models/questions");
 const Section = require("../models/Quizearr");
 const env = require("dotenv");
 
-
 env.config();
-let chrome={}
-let puppeteer
-if(process.env.AWS_LAMBDA_FUNCTION_VERSION){
-  chrome=require('chrome-aws-lambda')
-  puppeteer=require('puppeteer-core')
-}else{
-   puppeteer = require("puppeteer");
+let chrome = {};
+let puppeteer;
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  chrome = require("chrome-aws-lambda");
+  puppeteer = require("puppeteer-core");
+} else {
+  puppeteer = require("puppeteer");
 }
-
 
 // const UserAgent = require("user-agent");
 async function UploadquestionFile(req, res) {
@@ -187,27 +185,25 @@ async function getFileInfo(fileName) {
 //   }
 // }
 async function Uploadss(req, res) {
-
-
-    let options={};
-    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-      // console.log("chrome",chrome)
-      options = {
-        args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
-        defaultViewport: chrome.defaultViewport,
-        executablePath: await chrome.executablePath,
-        headless: chrome.headless,
-        ignoreHTTPSErrors: true,
-        ignoreDefaultArgs: ['--disable-extensions'],
-      };
-    } else {
-      options = {
-        headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      };
-    }
-    try {
-      const browser = await puppeteer.launch(options);
+  let options = {};
+  if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    // console.log("chrome",chrome)
+    options = {
+      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chrome.defaultViewport,
+      executablePath: await chrome.executablePath,
+      headless: chrome.headless,
+      ignoreHTTPSErrors: true,
+      ignoreDefaultArgs: ["--disable-extensions"],
+    };
+  } else {
+    options = {
+      headless: false,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    };
+  }
+  try {
+    const browser = await puppeteer.launch(options);
 
     const page = await browser.newPage();
     await b2.authorize();
@@ -290,7 +286,13 @@ async function Uploadss(req, res) {
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
     console.error("Error capturing screenshot:", error);
-    res.status(500).json(`Error capturing screenshot: ${chrome.executablePath} ${error.message}`);
+    res
+      .status(500)
+      .json(
+        `Error capturing screenshot: ${{crome: await chrome.executablePath}} ${
+          error.message
+        }`
+      );
   }
 }
 async function generateDownloadLink(fileName) {
