@@ -183,7 +183,7 @@ async function generateDownloadLink(fileName) {
       // Process the file using xlsx
      
   
-      res.status(201).json({ data: {buffer1,buffer2} });
+      res.status(201).json("success");
       // return responseHandler.ResponseSuccessMessageWithData(
       //   res,
       //   downloadResponse,
