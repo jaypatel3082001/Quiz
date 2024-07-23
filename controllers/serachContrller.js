@@ -327,7 +327,7 @@ async function getusersearchAll(req, res) {
       search,
       limit = 0,
       offset = 0,
-      sortOrder,
+      sortOrder = "asc",
       startDate,
       endDate,
       type,
@@ -345,6 +345,29 @@ async function getusersearchAll(req, res) {
     // Count the total documents matching the filter
     const totalCount = await User.countDocuments(filter);
 
+    let sortField={}
+
+    if (sortOrder === "asc") {
+      sortField.username = 1;
+    } else if (sortOrder === "desc") {
+      sortField.username = -1;
+    }
+    
+    if (role=== "asc") {
+      sortField.role = 1;
+    } else if (role === "desc") {
+      sortField.role = -1;
+    }
+    
+    // If both username and role need to be sorted
+    if (sortOrder && role) {
+      sortField = {
+        username: sortOrder === "asc" ? 1 : -1,
+        role: role === "asc" ? 1 : -1
+      };
+    }
+
+  
     // Build the aggregation pipeline
     const pipeline = [
       { $match: filter },
@@ -375,21 +398,11 @@ async function getusersearchAll(req, res) {
       //     },
       //   },
       // },
-      {
-        $sort: {
-          username: sortOrder === "asc" ? 1 : -1,
-     
-        },
-      },
-      {
-        $sort: {
-          role: role === "asc" ? 1 : -1,
-     
-        },
-      },
+      { $sort: sortField },
       { $skip: parseInt(offset) },
       { $limit: parseInt(limit) },
     ];
+
 
     let documents;
 
