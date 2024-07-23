@@ -19,8 +19,8 @@ async function cutomeColor(req, res) {
   try {
     const { backgroundColor } = req.body;
     const files = req.files;
-    const backgroundImage = files.backgroundImage[0];
-    const logo = files.logo[0];
+    const backgroundImage = files?.backgroundImage[0];
+    const logo = files?.logo[0];
 
     //   const existingKey = await Key.findOne({ key: key });
     //   if (!existingKey) {
@@ -28,10 +28,10 @@ async function cutomeColor(req, res) {
     //   }
     //   existingKey.backgroundColor = backgroundColor;
 
-    const backgroundImageFileName = backgroundImage.originalname;
-    const backgroundImageFilePath = backgroundImage.path;
-    const logoFileName = logo.originalname;
-    const logoFilePath = logo.path;
+    const backgroundImageFileName = backgroundImage?.originalname;
+    const backgroundImageFilePath = backgroundImage?.path;
+    const logoFileName = logo?.originalname;
+    const logoFilePath = logo?.path;
 
     await b2.authorize();
 
@@ -103,4 +103,95 @@ async function getFileInfo(fileName) {
     throw error;
   }
 }
+async function generateDownloadLink(fileName) {
+    try {
+      const authResponse = await b2.authorize();
+      // console.log("Authorization response:", authResponse.data);
+  
+      // const bucketId = B2_BUCKET_ID;
+      // const bucketName = B2_BUCKET_NAME;
+      const bucketId = "947d64b3985929e583fc0f12";
+      const bucketName = "KT-developer";
+  
+      const fileNamePrefix = "upload/"; // Ensure this is set correctly, example: 'sourceid/'
+      const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
+  
+      const downloadAuth = await b2.getDownloadAuthorization({
+        bucketId,
+        fileNamePrefix,
+        validDurationInSeconds: 3600, // Valid for 1 hour
+        //b2ContentDisposition: 'inline'
+      });
+      console.log("downloadAuth", downloadAuth);
+  
+      // console.log("Download authorization response:", downloadAuth);
+  
+      if (!downloadAuth.data.authorizationToken) {
+        throw new Error("Authorization token is undefined.");
+      }
+      console.log("authResponse.data.downloadUrl", authResponse.data.downloadUrl);
+      const baseUrl = authResponse.data.downloadUrl + "/file/" + bucketName + "/";
+      const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
+      console.log("presignedUrl", presignedUrl);
+  
+      return presignedUrl;
+    } catch (error) {
+      console.error("Error generating presigned URL:", error);
+      return null;
+    }
+  }
+  async function getFileBackblazeByName(req, res) {
+    try {
+
+        const exsitExampage= await Exampage.aggregate([
+            {
+                
+                $sort: {
+                  createdAt: -1, 
+                },
+              },
+              {
+       
+                $limit: 1,
+              },
+        ])
+
+
+      const  backgroundImgName  = exsitExampage[0].backgroundImage;
+      const  logoName  = exsitExampage[0].logo;
+    //   if (!fileName) {
+    //     return res.status(404).json("File not provided");
+    //     // return responseHandler.ResponseUnsuccess(res, "File not provided");
+    //   }
+      // Fetch the file from Backblaze B2 using the fileId
+      const downloadResponse1 = await generateDownloadLink(backgroundImgName);
+      const downloadResponse2 = await generateDownloadLink(logoName);
+      // Handle potential errors (e.g., file not found, permission issues)
+      if (!downloadResponse1) {
+        return res.status(404).json("File not provided");
+      }
+      if (!downloadResponse2) {
+        return res.status(404).json("File not provided");
+      }
+      const response1 = await fetch(downloadResponse1);
+      const response2 = await fetch(downloadResponse2);
+      const arrayBuffer1 = await response1.arrayBuffer();
+      const arrayBuffer2 = await response2.arrayBuffer();
+      const buffer1 = Buffer.from(arrayBuffer1);
+      const buffer2 = Buffer.from(arrayBuffer2);
+  
+      // Process the file using xlsx
+     
+  
+      res.status(201).json({ data: {buffer1,buffer2} });
+      // return responseHandler.ResponseSuccessMessageWithData(
+      //   res,
+      //   downloadResponse,
+      //   "File fetched"
+      // );
+    } catch (error) {
+      // console.error("Error fetching file:", error);
+      return res.status(500).json(`error fetching while ${error}`);
+    }
+  }
 module.exports = { cutomeColor };
