@@ -200,7 +200,7 @@ async function cutomeColor(req, res) {
       fileName: `upload/examImg/${backgroundImageFileName}`,
       data: backgroundImageData,
     });
-    existingKey.backgroundImage = backgroundImageData.uploadUrl;
+
     const logoData = fs.readFileSync(logoFilePath);
     await b2.uploadFile({
       uploadUrl: uploadUrl,
@@ -211,7 +211,8 @@ async function cutomeColor(req, res) {
 
     // Save the new field to the database (if needed)
     // Add the new field you want to save
-    existingKey.logo = logoData.uploadUrl; // Add the new field you want to save
+    existingKey.backgroundImage = backgroundImageFileName;
+    existingKey.logo = logoFileName; // Add the new field you want to save
     await existingKey.save();
 
     res.status(201).json("Successfully uploaded files and updated database");
@@ -243,5 +244,7 @@ async function getFileInfo(fileName) {
     throw error;
   }
 }
+
+async function download
 
 module.exports = { generatekey, fetchkey, updateKey, deleteKey, cutomeColor };
