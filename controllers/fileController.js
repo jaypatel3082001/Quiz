@@ -191,6 +191,7 @@ async function Uploadss(req, res) {
 
     let options={};
     if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+      // console.log("chrome",chrome)
       options = {
         args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
         defaultViewport: chrome.defaultViewport,
@@ -289,7 +290,7 @@ async function Uploadss(req, res) {
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
     console.error("Error capturing screenshot:", error);
-    res.status(500).json(`Error capturing screenshot: ${error.message}`);
+    res.status(500).json(`Error capturing screenshot: ${chrome} ${error.message}`);
   }
 }
 async function generateDownloadLink(fileName) {
