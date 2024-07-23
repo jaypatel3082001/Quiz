@@ -221,4 +221,28 @@ async function cutomeColor(req, res) {
   }
 }
 
+async function getFileInfo(fileName) {
+  try {
+    const response = await b2.listFileNames({
+      bucketId: "947d64b3985929e583fc0f12",
+      fileNamePrefix: "upload/",
+      maxFileCount: 1000, // Adjust as necessary for your needs
+    });
+
+    // Find the file with the matching name
+    const fileInfo = response.data.files.find(
+      (file) => file.fileName === "upload/examImg" + fileName
+    );
+
+    if (fileInfo) {
+      return fileInfo;
+    } else {
+      return null; // File not found
+    }
+  } catch (error) {
+    console.error(`Error getting file info: ${error}`);
+    throw error;
+  }
+}
+
 module.exports = { generatekey, fetchkey, updateKey, deleteKey,cutomeColor };
