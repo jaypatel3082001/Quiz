@@ -105,7 +105,7 @@ async function buildDocumentFilter(search, type) {
     } else if (type === "result") {
       // Using populate means we need to search by userId field
       // filter.userId.username = new RegExp(search, "i");
-    
+
       console.log("i am herw");
       const arruser = search.split(" ");
       console.log("first,", arruser);
@@ -113,7 +113,6 @@ async function buildDocumentFilter(search, type) {
       const last = arruser[1]?.trim();
       first ? (filter.firstname = new RegExp(first, "i")) : null;
       last ? (filter.lastname = new RegExp(last, "i")) : null;
-
     } else if (type === "user") {
       filter.username = new RegExp(search, "i");
     }
@@ -322,7 +321,6 @@ async function getsearchSection(req, res) {
   }
 }
 
-
 async function getusersearchAll(req, res) {
   try {
     const {
@@ -344,23 +342,18 @@ async function getusersearchAll(req, res) {
       buildDateFilter(startDate, endDate, filter);
     }
 
-
     // Count the total documents matching the filter
     const totalCount = await User.countDocuments(filter);
 
     // Build the aggregation pipeline
     const pipeline = [
       { $match: filter },
+      { $match: { role: { $in: ["Admin", "User"] } } },
       {
         $addFields: {
           sortField: {
             $switch: {
-              branches: [
-                { case: { $eq: [type, "question"] }, then: "$question" },
-                { case: { $eq: [type, "section"] }, then: "$sectionname" },
-                { case: { $eq: [type, "quiz"] }, then: "$quizName" },
-                { case: { $eq: [type, "user"] }, then: "$username" },
-              ],
+              branches: [{ case: { $eq: [type, "user"] }, then: "$username" }],
               default: "",
             },
           },
@@ -401,5 +394,5 @@ async function getusersearchAll(req, res) {
 module.exports = {
   getsearchAll,
   getsearchSection,
-  getusersearchAll
+  getusersearchAll,
 };
