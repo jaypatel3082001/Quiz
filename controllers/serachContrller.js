@@ -353,12 +353,18 @@ async function getusersearchAll(req, res) {
         $addFields: {
           sortField: {
             $switch: {
-              branches: [{ case: { $eq: [type, "user"] }, then: "$username" }],
+              branches: [
+                { case: { $eq: [type, "question"] }, then: "$question" },
+                { case: { $eq: [type, "section"] }, then: "$sectionname" },
+                { case: { $eq: [type, "quiz"] }, then: "$quizName" },
+                { case: { $eq: [type, "user"] }, then: "$username" },
+              ],
               default: "",
             },
           },
         },
       },
+      // Uncomment and correct this part if custom ordering is needed
       // {
       //   $addFields: {
       //     sortIndex: {
@@ -370,7 +376,7 @@ async function getusersearchAll(req, res) {
       //   },
       // },
       { $sort: { sortField: sortOrder === "asc" ? 1 : -1 } },
-      { $sort: { role: role === "asc" ? 1 : -1 } },
+      { $sort: { role: role === "asc" ? 1 : -1 } }, // If you need to sort by role
       { $skip: parseInt(offset) },
       { $limit: parseInt(limit) },
     ];
