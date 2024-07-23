@@ -327,7 +327,7 @@ async function getusersearchAll(req, res) {
       search,
       limit = 0,
       offset = 0,
-      sortOrder = "asc",
+      sortOrder,
       startDate,
       endDate,
       type,
@@ -349,21 +349,21 @@ async function getusersearchAll(req, res) {
     const pipeline = [
       { $match: filter },
       { $match: { role: { $in: ["Admin", "User"] } } },
-      {
-        $addFields: {
-          sortField: {
-            $switch: {
-              branches: [
-                { case: { $eq: [type, "question"] }, then: "$question" },
-                { case: { $eq: [type, "section"] }, then: "$sectionname" },
-                { case: { $eq: [type, "quiz"] }, then: "$quizName" },
-                { case: { $eq: [type, "user"] }, then: "$username" },
-              ],
-              default: "",
-            },
-          },
-        },
-      },
+      // {
+      //   $addFields: {
+      //     sortField: {
+      //       $switch: {
+      //         branches: [
+      //           { case: { $eq: [type, "question"] }, then: "$question" },
+      //           { case: { $eq: [type, "section"] }, then: "$sectionname" },
+      //           { case: { $eq: [type, "quiz"] }, then: "$quizName" },
+      //           { case: { $eq: [type, "user"] }, then: "$username" },
+      //         ],
+      //         default: "",
+      //       },
+      //     },
+      //   },
+      // },
       // Uncomment and correct this part if custom ordering is needed
       // {
       //   $addFields: {
@@ -375,8 +375,18 @@ async function getusersearchAll(req, res) {
       //     },
       //   },
       // },
-      { $sort: { sortField: sortOrder === "asc" ? 1 : -1 } },
-      { $sort: { role: role === "asc" ? 1 : -1 } }, // If you need to sort by role
+      {
+        $sort: {
+          username: sortOrder === "asc" ? 1 : -1,
+     
+        },
+      },
+      {
+        $sort: {
+          role: role === "asc" ? 1 : -1,
+     
+        },
+      },
       { $skip: parseInt(offset) },
       { $limit: parseInt(limit) },
     ];
