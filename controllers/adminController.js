@@ -30,34 +30,37 @@ exports.AdminAccess = async (req, res) => {
     // role1=checkAdmin(email,password)
     const isMatch = await bcrypt.compare(ASSS, Adminuser.password);
     console.log("first,", isMatch);
+    let message;
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid Admin" });
     }
     if(user.role==="User"){
-
+      
       user.role = "Admin";
+      message="Admin created"
     }else{
       user.role = "User";
+         message="Admin removed"
     }
     //   if(user.role!=="Admin"){
     //     return res.status(401).json({ message: "Admin can Only access" });
     //   }
     // Generate a JWT token
-    const token = jwt.sign(
-      {
-        email: user.email,
-        username: user.username,
-        role: user.role,
-        user: user._id,
-      },
-      "Hs235",
-      {
-        expiresIn: "12h",
-      }
-    );
+    // const token = jwt.sign(
+    //   {
+    //     email: user.email,
+    //     username: user.username,
+    //     role: user.role,
+    //     user: user._id,
+    //   },
+    //   "Hs235",
+    //   {
+    //     expiresIn: "12h",
+    //   }
+    // );
     await user.save();
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message:  message});
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error logging in" });
