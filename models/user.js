@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema({
   //     ref: "Result",
   //   },
   // ],
-  role: { type: String },
+  role: { type: String,default:"User" },
   // role: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
   // re
 },  {
