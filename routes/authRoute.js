@@ -26,7 +26,7 @@ router.post("/ExamLoginpage",
   upload.fields([
     { name: "backgroundImage", maxCount: 1 },
     { name: "logo", maxCount: 1 },
-  ]), cutomeColor);
+  ]),middlewareAuth, cutomeColor);
 // router.get('/protected-route', authenticateToken, async function hgj (req, res){
 //     // If token is verified and not expired, you can access the decoded user ID
 //     res.send('Access granted!');
