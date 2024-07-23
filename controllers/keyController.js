@@ -202,7 +202,8 @@ async function cutomeColor(req, res) {
     });
 
     // Save the new field to the database (if needed)
-    existingKey.someNewField = "newValue"; // Add the new field you want to save
+    existingKey.backgroundImage = backgroundImageFileName; // Add the new field you want to save
+    existingKey.logo = logoFileName; // Add the new field you want to save
     await existingKey.save();
 
     res.status(201).json("Successfully uploaded files and updated database");
