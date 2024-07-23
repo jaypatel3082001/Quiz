@@ -85,7 +85,7 @@ function generateRandomKey(length) {
 
 async function fetchkey(req, res) {
   try {
-    const alldata = await Key.find({}).populate('Quiz');
+    const alldata = await Key.find({}).populate('quizId');
     let newArr = [];
     const oneHour = 1000 * 60 * 60;
     newArr = alldata.filter((ele) => {
