@@ -33,7 +33,12 @@ exports.AdminAccess = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid Admin" });
     }
-    user.role = "Admin";
+    if(user.role==="User"){
+
+      user.role = "Admin";
+    }else{
+      user.role = "User";
+    }
     //   if(user.role!=="Admin"){
     //     return res.status(401).json({ message: "Admin can Only access" });
     //   }
@@ -58,3 +63,14 @@ exports.AdminAccess = async (req, res) => {
     res.status(500).json({ message: "Error logging in" });
   }
 };
+
+
+
+// exports.Adminremoveaccess = async (req, res) => {
+//   try{
+
+
+//   }catch(error){
+
+//   }
+// }
