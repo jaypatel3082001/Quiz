@@ -1,5 +1,13 @@
 const Key = require("../models/randomkey");
 const User = require("../models/user");
+const xlsx = require("xlsx");
+const fetch = require("node-fetch"); // If not already installed, install it
+const { b2 } = require("../middleware/multerMiddle");
+// const { generateDownloadLink } = require("./linkControllert");
+const fs = require("fs");
+const path = require("path");
+const bucketId = "947d64b3985929e583fc0f12";
+const bucketName = "KT-developer";
 // import sha256 from 'crypto-js/sha256';
 // import hmacSHA512 from 'crypto-js/hmac-sha512';
 // import Base64 from 'crypto-js/enc-base64';
@@ -21,7 +29,7 @@ async function generatekey(req, res) {
       const differenceInMs = ele.Endtime.getTime() - now;
       const hoursDifference = Math.floor(differenceInMs / oneHour);
 
-      if (hoursDifference > 0 && ele.Remaintime>0) {
+      if (hoursDifference > 0 && ele.Remaintime > 0) {
         newArr.push(ele);
       } else {
         ele.Remaintime = 0;
@@ -145,4 +153,62 @@ async function deleteKey(req, res) {
   }
 }
 
-module.exports = { generatekey, fetchkey, updateKey, deleteKey };
+async function cutomeColor(req, res) {
+  try {
+    const { backgroundColor } = req.body;
+    const files = req.files;
+    const backgroundImage = files.backgroundImage[0];
+    const logo = files.logo[0];
+
+    const existingKey = await Key.findOne({ key: req.params.id });
+    if (!existingKey) {
+      return res.status(400).json(`Key not found`);
+    }
+    existingKey.backgroundColor = backgroundColor;
+
+    const backgroundImageFileName = backgroundImage.originalname;
+    const backgroundImageFilePath = backgroundImage.path;
+    const logoFileName = logo.originalname;
+    const logoFilePath = logo.path;
+
+    await b2.authorize();
+
+    const existingFile1 = await getFileInfo(backgroundImageFileName);
+    const existingFile2 = await getFileInfo(logoFileName);
+    if (existingFile1 || existingFile2) {
+      return res.status(400).json({ error: `File already exists` });
+    }
+
+    const {
+      data: { uploadUrl, authorizationToken },
+    } = await b2.getUploadUrl({
+      bucketId: bucketId,
+    });
+
+    const backgroundImageData = fs.readFileSync(backgroundImageFilePath);
+    await b2.uploadFile({
+      uploadUrl: uploadUrl,
+      uploadAuthToken: authorizationToken,
+      fileName: `upload/examImg/${backgroundImageFileName}`,
+      data: backgroundImageData,
+    });
+
+    const logoData = fs.readFileSync(logoFilePath);
+    await b2.uploadFile({
+      uploadUrl: uploadUrl,
+      uploadAuthToken: authorizationToken,
+      fileName: `upload/examImg/${logoFileName}`,
+      data: logoData,
+    });
+
+    // Save the new field to the database (if needed)
+    existingKey.someNewField = "newValue"; // Add the new field you want to save
+    await existingKey.save();
+
+    res.status(201).json("Successfully uploaded files and updated database");
+  } catch (error) {
+    res.status(500).json(`Error: ${error}`);
+  }
+}
+
+module.exports = { generatekey, fetchkey, updateKey, deleteKey,cutomeColor };

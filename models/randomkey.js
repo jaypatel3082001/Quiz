@@ -17,6 +17,18 @@ const keySchema = new mongoose.Schema({
   Remaintime: {
     type: Number,
   },
+  backgroundColor: {
+    type: String,
+    default:"black"
+  },
+  backgroundImage: {
+    type: String,
+    default:"black"
+  },
+  logo: {
+    type: String,
+    default:"black"
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

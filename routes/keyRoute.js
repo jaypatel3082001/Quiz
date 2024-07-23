@@ -4,8 +4,10 @@ const {
   fetchkey,
   updateKey,
   deleteKey,
+  // cutomeColor,
 } = require("../controllers/keyController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
+const { upload } = require("../middleware/multerMiddle");
 // const { middlewareAuth } = require('../middleware/authMiddleware');
 // const user = require('../models/user');
 // const authchreckmid = ddd;
@@ -16,6 +18,7 @@ router.post("/generatekey", generatekey);
 router.get("/fetchkey", fetchkey);
 router.get("/update/:id", updateKey);
 router.put("/delete/:id", deleteKey);
+// router.post("/changecolor/:id",upload.fields([{ name: 'backgroundImage', maxCount: 1 }, { name: 'logo', maxCount: 1 }]), cutomeColor);
 // router.post('/login',login);
 // router.get('/admins', handleAdmin);
 // router.get('/protected', middlewareAuth,userauth);
