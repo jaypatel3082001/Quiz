@@ -245,6 +245,6 @@ async function getFileInfo(fileName) {
   }
 }
 
-async function download
+// async function download
 
 module.exports = { generatekey, fetchkey, updateKey, deleteKey, cutomeColor };
