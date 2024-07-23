@@ -94,8 +94,11 @@ async function fetchkey(req, res) {
       // console.log("differenceInMs", differenceInMs);
   
       const hoursDifference = Math.floor(differenceInMs / oneHour);
-      if (ele.Remaintime > 0 || hoursDifference > 0 ) {
-        return ele;
+      if (hoursDifference > 0 ) {
+        if(ele.Remaintime > 0 ){
+
+          return ele;
+        }
       }
     });
     res.status(201).json({ data: newArr });
@@ -161,12 +164,12 @@ async function deleteKey(req, res) {
 
 async function cutomeColor(req, res) {
   try {
-    const { backgroundColor } = req.body;
+    const { backgroundColor,key } = req.body;
     const files = req.files;
     const backgroundImage = files.backgroundImage[0];
     const logo = files.logo[0];
 
-    const existingKey = await Key.findOne({ key: req.params.id });
+    const existingKey = await Key.findOne({ key:key});
     if (!existingKey) {
       return res.status(400).json(`Key not found`);
     }
