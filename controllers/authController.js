@@ -91,7 +91,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
     console.log("first,", user.role);
-    if (user.role !== "Admin") {
+    if (user.role !== "Admin" || user.role !== "SuperAdmin") {
       return res.status(401).json({ message: "Admin can Only access" });
     }
     // Generate a JWT token
