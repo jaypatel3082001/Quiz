@@ -85,18 +85,17 @@ function generateRandomKey(length) {
 
 async function fetchkey(req, res) {
   try {
-    const alldata = await Key.find({}).populate('quizId');
+    const alldata = await Key.find({}).populate("quizId");
     let newArr = [];
     const oneHour = 1000 * 60 * 60;
     newArr = alldata.filter((ele) => {
       const differenceInMs = ele.Endtime.getTime() - Date.now();
-    
-      // console.log("differenceInMs", differenceInMs);
-  
-      const hoursDifference = Math.floor(differenceInMs / oneHour);
-      if (hoursDifference > 0 ) {
-        if(ele.Remaintime > 0 ){
 
+      // console.log("differenceInMs", differenceInMs);
+
+      const hoursDifference = Math.floor(differenceInMs / oneHour);
+      if (hoursDifference > 0) {
+        if (ele.Remaintime > 0) {
           return ele;
         }
       }
@@ -164,12 +163,12 @@ async function deleteKey(req, res) {
 
 async function cutomeColor(req, res) {
   try {
-    const { backgroundColor,key } = req.body;
+    const { backgroundColor, key } = req.body;
     const files = req.files;
     const backgroundImage = files.backgroundImage[0];
     const logo = files.logo[0];
 
-    const existingKey = await Key.findOne({ key:key});
+    const existingKey = await Key.findOne({ key: key });
     if (!existingKey) {
       return res.status(400).json(`Key not found`);
     }
@@ -201,7 +200,7 @@ async function cutomeColor(req, res) {
       fileName: `upload/examImg/${backgroundImageFileName}`,
       data: backgroundImageData,
     });
-
+    existingKey.backgroundImage = backgroundImageData.uploadUrl;
     const logoData = fs.readFileSync(logoFilePath);
     await b2.uploadFile({
       uploadUrl: uploadUrl,
@@ -211,8 +210,8 @@ async function cutomeColor(req, res) {
     });
 
     // Save the new field to the database (if needed)
-    existingKey.backgroundImage = backgroundImageFileName; // Add the new field you want to save
-    existingKey.logo = logoFileName; // Add the new field you want to save
+    // Add the new field you want to save
+    existingKey.logo = logoData.uploadUrl; // Add the new field you want to save
     await existingKey.save();
 
     res.status(201).json("Successfully uploaded files and updated database");
@@ -245,4 +244,4 @@ async function getFileInfo(fileName) {
   }
 }
 
-module.exports = { generatekey, fetchkey, updateKey, deleteKey,cutomeColor };
+module.exports = { generatekey, fetchkey, updateKey, deleteKey, cutomeColor };
