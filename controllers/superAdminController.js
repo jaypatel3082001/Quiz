@@ -194,4 +194,4 @@ async function generateDownloadLink(fileName) {
       return res.status(500).json(`error fetching while ${error}`);
     }
   }
-module.exports = { cutomeColor };
+module.exports = { cutomeColor,getFileBackblazeByName };

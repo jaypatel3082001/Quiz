@@ -9,7 +9,7 @@ const {
 const { middlewareAuth } = require("../middleware/authMiddleware");
 const { KeyAuth } = require("../middleware/keyMiddleware");
 const { AdminAccess } = require("../controllers/adminController");
-const { cutomeColor } = require("../controllers/superAdminController");
+const { cutomeColor, getFileBackblazeByName } = require("../controllers/superAdminController");
 const { upload } = require("../middleware/multerMiddle");
 // const user = require('../models/user');
 // const authchreckmid = ddd;
@@ -27,6 +27,7 @@ router.post("/ExamLoginpage",
     { name: "backgroundImage", maxCount: 1 },
     { name: "logo", maxCount: 1 },
   ]),middlewareAuth, cutomeColor);
+  router.get("/examlogin", middlewareAuth, getFileBackblazeByName);
 // router.get('/protected-route', authenticateToken, async function hgj (req, res){
 //     // If token is verified and not expired, you can access the decoded user ID
 //     res.send('Access granted!');
