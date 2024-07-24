@@ -194,20 +194,17 @@ async function Uploadss(req, res) {
 
   try {
     // Fetch the page using Axios to verify if it works with the provided User-Agent
-    const response = await axios.get(url, {
-      timeout: 10000,
-      headers: {
-        "User-Agent": userAgent,
-      },
-    });
+    // const response = await axios.get(url, {
+    //   timeout: 10000,
+    //   headers: {
+    //     "User-Agent": userAgent,
+    //   },
+    // });
+    console.log(`try `);
 
     // Configure Puppeteer options
     const options = {
-      args: [
-        ...chromium.args,
-        "--hide-scrollbars",
-        "--disable-web-security",
-      ],
+      args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
       headless: false,
@@ -248,7 +245,9 @@ async function Uploadss(req, res) {
     const screenshotPath = "upload/";
 
     const takeScreenshot = async () => {
-      const { data: { uploadUrl, authorizationToken } } = await b2.getUploadUrl({ bucketId });
+      const {
+        data: { uploadUrl, authorizationToken },
+      } = await b2.getUploadUrl({ bucketId });
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
@@ -280,7 +279,9 @@ async function Uploadss(req, res) {
 
         console.log(`Screenshot taken`);
 
-        const { data: { uploadUrl, authorizationToken } } = await b2.getUploadUrl({ bucketId });
+        const {
+          data: { uploadUrl, authorizationToken },
+        } = await b2.getUploadUrl({ bucketId });
 
         await b2.uploadFile({
           uploadUrl,
