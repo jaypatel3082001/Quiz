@@ -200,7 +200,6 @@ async function Uploadss(req, res) {
     //     "User-Agent": userAgent,
     //   },
     // });
-  
 
     // Configure Puppeteer options
     const options = {
@@ -219,12 +218,12 @@ async function Uploadss(req, res) {
     await page.setUserAgent(userAgent);
 
     await page.goto(url, { waitUntil: "networkidle0" });
-    console.log(`try ${page} `);
+    console.log(`try `);
     const dimensions = await page.evaluate(() => ({
       width: window.screen.width,
       height: window.screen.height,
     }));
-
+    console.log(`2second ggg `);
     console.log(`Viewport dimensions: ${JSON.stringify(dimensions)}`);
 
     if (dimensions.width <= 0 || dimensions.height <= 0) {
@@ -232,7 +231,7 @@ async function Uploadss(req, res) {
         "Invalid viewport dimensions: width and height must be greater than 0."
       );
     }
-
+    console.log(`3second ggg `);
     await page.setViewport({
       width: dimensions.width,
       height: dimensions.height,
