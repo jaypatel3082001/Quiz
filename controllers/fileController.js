@@ -206,7 +206,7 @@ async function Uploadss(req, res) {
     args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(),
-    headless: chromium.headless,
+    headless: false,
     ignoreHTTPSErrors: true,
     ignoreDefaultArgs: ["--disable-extensions"],
   };
