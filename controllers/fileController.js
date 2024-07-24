@@ -189,41 +189,39 @@ async function getFileInfo(fileName) {
 //   }
 // }
 async function Uploadss(req, res) {
-  let options = {};
   const url = "https://frontend-mo7y.vercel.app/userpages/quiz-start";
-  const response = await axios.get(url, {
-    timeout: 10000,
-    headers: {
-      "User-Agent": req.header("user-agent"),
-    },
-  });
-  puppeteerExtra.use(stealthPlugin());
+  const userAgent = req.header("user-agent"); // Get User-Agent from request
 
-  // if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  // console.log("chrome",chrome)
-  options = {
-    args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
-    headless: false,
-    ignoreHTTPSErrors: true,
-    ignoreDefaultArgs: ["--disable-extensions"],
-  };
-  // } else {
-  //   options = {
-  //     headless: false,
-  //     args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  //   };
-  // }
   try {
-    const browser = await puppeteer.launch(options);
-
-    const page = await browser.newPage();
-    await b2.authorize();
-
-    await page.goto("https://frontend-mo7y.vercel.app/userpages/quiz-start", {
-      waitUntil: "networkidle0",
+    // Fetch the page using Axios to verify if it works with the provided User-Agent
+    const response = await axios.get(url, {
+      timeout: 10000,
+      headers: {
+        "User-Agent": userAgent,
+      },
     });
+
+    // Configure Puppeteer options
+    const options = {
+      args: [
+        ...chromium.args,
+        "--hide-scrollbars",
+        "--disable-web-security",
+      ],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: false,
+      ignoreHTTPSErrors: true,
+      ignoreDefaultArgs: ["--disable-extensions"],
+    };
+
+    const browser = await puppeteer.launch(options);
+    const page = await browser.newPage();
+
+    // Set the same User-Agent in Puppeteer
+    await page.setUserAgent(userAgent);
+
+    await page.goto(url, { waitUntil: "networkidle0" });
 
     const dimensions = await page.evaluate(() => ({
       width: window.screen.width,
@@ -250,13 +248,12 @@ async function Uploadss(req, res) {
     const screenshotPath = "upload/";
 
     const takeScreenshot = async () => {
-      const {
-        data: { uploadUrl, authorizationToken },
-      } = await b2.getUploadUrl({ bucketId });
+      const { data: { uploadUrl, authorizationToken } } = await b2.getUploadUrl({ bucketId });
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
       const screenshotBuffer = await page.screenshot({ fullPage: true });
+
       console.log(`Screenshot taken`);
 
       await b2.uploadFile({
@@ -265,15 +262,14 @@ async function Uploadss(req, res) {
         fileName: `upload/screenshot/${fullScreenshotPath}`,
         data: screenshotBuffer,
       });
+
+      console.log(`Screenshot uploaded to B2`);
     };
 
     await takeScreenshot();
 
     browser.on("targetchanged", async (target) => {
       if (target.type() === "page") {
-        const {
-          data: { uploadUrl, authorizationToken },
-        } = await b2.getUploadUrl({ bucketId });
         const newPage = await target.page();
         const url = newPage.url();
         console.log(`Navigated to: ${url}`);
@@ -281,7 +277,10 @@ async function Uploadss(req, res) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const fullScreenshotPath = `${screenshotPath}-${timestamp}.png`;
         const screenshotBuffer = await newPage.screenshot({ fullPage: true });
+
         console.log(`Screenshot taken`);
+
+        const { data: { uploadUrl, authorizationToken } } = await b2.getUploadUrl({ bucketId });
 
         await b2.uploadFile({
           uploadUrl,
@@ -290,7 +289,10 @@ async function Uploadss(req, res) {
           data: screenshotBuffer,
         });
 
+        console.log(`Screenshot uploaded to B2`);
+
         if (url === "https://frontend-mo7y.vercel.app/student/login") {
+          await browser.close();
           return res.status(201).json("Exam is over");
         }
       }
@@ -299,9 +301,10 @@ async function Uploadss(req, res) {
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
     console.error("Error capturing screenshot:", error);
-    res.status(500).json(`aaaa ${error}`);
+    res.status(500).json(`Error: ${error.message}`);
   }
 }
+
 async function generateDownloadLink(fileName) {
   try {
     const authResponse = await b2.authorize();
