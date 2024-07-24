@@ -16,7 +16,7 @@ const Section = require("../models/Quizearr");
 const env = require("dotenv");
 
 env.config();
-let chromium = {};
+// let chromium = {};
 let puppeteer;
 // let asd=process.env.AWS_LAMBDA_FUNCTION_VERSION
 // if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
