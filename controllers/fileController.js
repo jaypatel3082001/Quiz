@@ -286,7 +286,7 @@ async function Uploadss(req, res) {
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
     console.error("Error capturing screenshot:", error);
-    res.status(500).json({ crome: await chrome.executablePath });
+    res.status(500).json(`${error}`);
   }
 }
 async function generateDownloadLink(fileName) {
