@@ -190,7 +190,7 @@ async function getFileInfo(fileName) {
 // }
 async function Uploadss(req, res) {
   let options = {};
-  const url = "https://frontend-mo7y.vercel.app/student/login";
+  const url = "https://frontend-mo7y.vercel.app/userpages/quiz-start";
   const response = await axios.get(url, {
     timeout: 10000,
     headers: {
@@ -222,7 +222,7 @@ async function Uploadss(req, res) {
     const page = await browser.newPage();
     await b2.authorize();
 
-    await page.goto("https://frontend-mo7y.vercel.app/student/login", {
+    await page.goto("https://frontend-mo7y.vercel.app/userpages/quiz-start", {
       waitUntil: "networkidle0",
     });
 
@@ -291,7 +291,7 @@ async function Uploadss(req, res) {
           data: screenshotBuffer,
         });
 
-        if (url === "https://frontend-mo7y.vercel.app/admin/login") {
+        if (url === "https://frontend-mo7y.vercel.app/student/login") {
           return res.status(201).json("Exam is over");
         }
       }
