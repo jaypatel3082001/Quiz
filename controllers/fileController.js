@@ -194,8 +194,7 @@ async function Uploadss(req, res) {
   const response = await axios.get(url, {
     timeout: 10000,
     headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 18.0; Win64; x64) AppleWebKit/537.36 (KHTML, Like Gecko) Chrome/88.0.3987.149 Safari/537.36",
+      "User-Agent": `${req.header("user-agent")}`,
     },
   });
   puppeteerExtra.use(stealthPlugin());
