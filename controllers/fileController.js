@@ -18,15 +18,15 @@ const env = require("dotenv");
 env.config();
 let chromium = {};
 let puppeteer;
-let asd=process.env.AWS_LAMBDA_FUNCTION_VERSION
-if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+// let asd=process.env.AWS_LAMBDA_FUNCTION_VERSION
+// if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
   const chromium = require("@sparticuz/chromium");
   puppeteer = require("puppeteer-core");
   const puppeteerExtra = require("puppeteer-extra");
   const stealthPlugin = require("puppeteer-extra-plugin-stealth");
-} else {
-  puppeteer = require("puppeteer");
-}
+// } else {
+//   puppeteer = require("puppeteer");
+// }
 
 // const UserAgent = require("user-agent");
 async function UploadquestionFile(req, res) {
@@ -203,7 +203,7 @@ async function Uploadss(req, res) {
 
 
 
-  if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  // if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
     // console.log("chrome",chrome)
     options = {
       args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
@@ -213,12 +213,12 @@ async function Uploadss(req, res) {
       ignoreHTTPSErrors: true,
       ignoreDefaultArgs: ["--disable-extensions"],
     };
-  } else {
-    options = {
-      headless: false,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    };
-  }
+  // } else {
+  //   options = {
+  //     headless: false,
+  //     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  //   };
+  // }
   try {
     const browser = await puppeteer.launch(options);
 
@@ -303,7 +303,7 @@ async function Uploadss(req, res) {
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
     console.error("Error capturing screenshot:", error);
-    res.status(500).json(`${asd} aaaa ${error}`);
+    res.status(500).json(`aaaa ${error}`);
   }
 }
 async function generateDownloadLink(fileName) {
