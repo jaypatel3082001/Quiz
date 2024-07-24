@@ -39,6 +39,14 @@ async function middlewareAuth(req, res, next) {
   //   console.log(`the respose has error: ${err}`);
   // }
 }
+
+  // console.log(first)
+  // res.status(200).send({ message: "Success" });
+
+  // } catch (err) {
+  //   console.log(`the respose has error: ${err}`);
+  // }
+
 //     // Get token from headers, query parameters, or cookies
 //     // const token = req.headers['authorization'];
 //     // console.log("tokkk",req.headers)

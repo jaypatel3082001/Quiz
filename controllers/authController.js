@@ -104,11 +104,28 @@ exports.login = async (req, res) => {
       },
       "Hs235",
       {
-        expiresIn: "12h",
+        expiresIn: "1m",
       }
     );
+    const dummytoken = jwt.sign(
+      {
+      token :token,
+      data:{
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        user: user._id,
+      }
 
-    res.status(200).json({ message: "Login successful", token });
+      },
+      "Hs235",
+      {
+        expiresIn: "10m",
+      }
+    );
+    
+
+    res.status(200).json({data: {token, dummytoken} });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error logging in" });
@@ -181,6 +198,48 @@ exports.userauth = async (req, res) => {
 
   // Get the current date and time
 };
+
+exports.middlewareAuthrefresh=async(req, res)=> {
+  // try {
+  const authHeader = req.header("Authorization");
+
+  if (!authHeader) {
+    return res.status(400).send({ message: "Token Invalid" });
+  }
+
+  const jwttoken = authHeader.replace("Bearer", "").trim();
+
+  try {
+    const isVerified = jwt.verify(jwttoken, "Hs235");
+    if(!isVerified.token || !isVerified.data){
+      res.status(404).json("Token is Invalid")
+    }
+
+    const token = jwt.sign(
+      
+        isVerified.data
+     ,
+      "Hs235",
+      {
+        expiresIn: "1m",
+      }
+    );
+  
+
+    // if ((isVerified.role && isVerified.user) || isVerified.userEmail) {
+    //   if(isVerified.role && isVerified.user){
+    //     const exsistinguser = await User.findById(isVerified.user)
+    //     if(!exsistinguser){
+    //       return res.status(400).json({ message: "User is not found" });
+    //     }
+    //   }
+    return res.status(200).json({ token });
+    }
+    catch (error) {
+      return res.status(500).send({ message: `Something went wrong: ${error}` });
+    }
+    // return res.status(400).json({ message: "User is Unauthorised" });
+  } 
 const formatDatew = (date) => {
   const year = date.getFullYear();
   const month = ("0" + (date.getMonth() + 1)).slice(-2);

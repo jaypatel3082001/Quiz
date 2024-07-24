@@ -5,6 +5,7 @@ const {
   handleAdmin,
   userauth,
   userHandle,
+  middlewareAuthrefresh,
 } = require("../controllers/authController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
 const { KeyAuth } = require("../middleware/keyMiddleware");
@@ -28,6 +29,7 @@ router.post("/ExamLoginpage",
     { name: "logo", maxCount: 1 },
   ]),middlewareAuth, cutomeColor);
   router.get("/examlogin", middlewareAuth, getFileBackblazeByName);
+  router.get("/refreshToken", middlewareAuthrefresh);
 // router.get('/protected-route', authenticateToken, async function hgj (req, res){
 //     // If token is verified and not expired, you can access the decoded user ID
 //     res.send('Access granted!');
