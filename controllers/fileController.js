@@ -200,7 +200,7 @@ async function Uploadss(req, res) {
     //     "User-Agent": userAgent,
     //   },
     // });
-    console.log(`try `);
+  
 
     // Configure Puppeteer options
     const options = {
@@ -219,7 +219,7 @@ async function Uploadss(req, res) {
     await page.setUserAgent(userAgent);
 
     await page.goto(url, { waitUntil: "networkidle0" });
-
+    console.log(`try ${page} `);
     const dimensions = await page.evaluate(() => ({
       width: window.screen.width,
       height: window.screen.height,
