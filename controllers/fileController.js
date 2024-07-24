@@ -15,6 +15,7 @@ const env = require("dotenv");
 env.config();
 let chrome = {};
 let puppeteer;
+let asd=process.env.AWS_LAMBDA_FUNCTION_VERSION
 if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
   chrome = require("chrome-aws-lambda");
   puppeteer = require("puppeteer-core");
@@ -286,7 +287,7 @@ async function Uploadss(req, res) {
     console.log("Monitoring URL changes and taking screenshots...");
   } catch (error) {
     console.error("Error capturing screenshot:", error);
-    res.status(500).json(`${error}`);
+    res.status(500).json(`${asd} aaaa ${error}`);
   }
 }
 async function generateDownloadLink(fileName) {
