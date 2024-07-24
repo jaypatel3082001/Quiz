@@ -10,8 +10,6 @@ const Questions = require("../models/questions");
 
 const axios = require("axios");
 
-
-
 const Section = require("../models/Quizearr");
 const env = require("dotenv");
 
@@ -20,10 +18,10 @@ env.config();
 let puppeteer;
 // let asd=process.env.AWS_LAMBDA_FUNCTION_VERSION
 // if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  const chromium = require("@sparticuz/chromium");
-  puppeteer = require("puppeteer-core");
-  const puppeteerExtra = require("puppeteer-extra");
-  const stealthPlugin = require("puppeteer-extra-plugin-stealth");
+const chromium = require("@sparticuz/chromium");
+puppeteer = require("puppeteer-core");
+const puppeteerExtra = require("puppeteer-extra");
+const stealthPlugin = require("puppeteer-extra-plugin-stealth");
 // } else {
 //   puppeteer = require("puppeteer");
 // }
@@ -194,25 +192,24 @@ async function Uploadss(req, res) {
   let options = {};
   const url = "https://frontend-mo7y.vercel.app/student/login";
   const response = await axios.get(url, {
-      timeout: 10000,
-      headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 18.0; Win64; x64) AppleWebKit/537.36 (KHTML, Like Gecko) Chrome/88.0.3987.149 Safari/537.36"
-      }})
-      puppeteerExtra.use(stealthPlugin())
-
-
-
+    timeout: 10000,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 18.0; Win64; x64) AppleWebKit/537.36 (KHTML, Like Gecko) Chrome/88.0.3987.149 Safari/537.36",
+    },
+  });
+  puppeteerExtra.use(stealthPlugin());
 
   // if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-    // console.log("chrome",chrome)
-    options = {
-      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
-      ignoreDefaultArgs: ["--disable-extensions"],
-    };
+  // console.log("chrome",chrome)
+  options = {
+    args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
+    ignoreHTTPSErrors: true,
+    ignoreDefaultArgs: ["--disable-extensions"],
+  };
   // } else {
   //   options = {
   //     headless: false,
