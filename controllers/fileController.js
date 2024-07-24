@@ -291,7 +291,7 @@ async function Uploadss(req, res) {
           data: screenshotBuffer,
         });
 
-        if (url === "https://frontend-mo7y.vercel.app/student/login") {
+        if (url === "https://frontend-mo7y.vercel.app/admin/login") {
           return res.status(201).json("Exam is over");
         }
       }
