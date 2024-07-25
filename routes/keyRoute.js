@@ -5,6 +5,7 @@ const {
   updateKey,
   deleteKey,
   cutomeColor,
+  getFileBackblazeByNameforKey,
 } = require("../controllers/keyController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
 const { upload } = require("../middleware/multerMiddle");
@@ -26,6 +27,7 @@ router.post(
   ]),
   cutomeColor
 );
+router.get('/exampagegechangebykey/:id', getFileBackblazeByNameforKey);
 // router.post('/login',login);
 // router.get('/admins', handleAdmin);
 // router.get('/protected', middlewareAuth,userauth);

@@ -7,8 +7,8 @@ const { b2 } = require("../middleware/multerMiddle");
 // const { generateDownloadLink } = require("./linkControllert");
 const fs = require("fs");
 const path = require("path");
-const bucketId = "947d64b3985929e583fc0f12";
-const bucketName = "KT-developer";
+const bucketId = "2d5f461dfdaeae7a98020d13";
+const bucketName = "DemoPRoject";
 // import sha256 from 'crypto-js/sha256';
 // import hmacSHA512 from 'crypto-js/hmac-sha512';
 // import Base64 from 'crypto-js/enc-base64';
@@ -83,7 +83,7 @@ async function cutomeColor(req, res) {
 async function getFileInfo(fileName) {
   try {
     const response = await b2.listFileNames({
-      bucketId: "947d64b3985929e583fc0f12",
+      bucketId: "2d5f461dfdaeae7a98020d13",
       fileNamePrefix: "upload/exampageImg",
       maxFileCount: 1000, // Adjust as necessary for your needs
     });
@@ -110,10 +110,10 @@ async function generateDownloadLink(fileName) {
   
       // const bucketId = B2_BUCKET_ID;
       // const bucketName = B2_BUCKET_NAME;
-      const bucketId = "947d64b3985929e583fc0f12";
-      const bucketName = "KT-developer";
+      const bucketId = "2d5f461dfdaeae7a98020d13";
+      const bucketName = "DemoPRoject";
   
-      const fileNamePrefix = "upload/"; // Ensure this is set correctly, example: 'sourceid/'
+      const fileNamePrefix = "upload/exampageImg"; // Ensure this is set correctly, example: 'sourceid/'
       const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
   
       const downloadAuth = await b2.getDownloadAuthorization({

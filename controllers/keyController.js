@@ -6,8 +6,8 @@ const { b2 } = require("../middleware/multerMiddle");
 // const { generateDownloadLink } = require("./linkControllert");
 const fs = require("fs");
 const path = require("path");
-const bucketId = "947d64b3985929e583fc0f12";
-const bucketName = "KT-developer";
+const bucketId = "2d5f461dfdaeae7a98020d13";
+const bucketName = "DemoPRoject";
 // import sha256 from 'crypto-js/sha256';
 // import hmacSHA512 from 'crypto-js/hmac-sha512';
 // import Base64 from 'crypto-js/enc-base64';
@@ -224,7 +224,7 @@ async function cutomeColor(req, res) {
 async function getFileInfo(fileName) {
   try {
     const response = await b2.listFileNames({
-      bucketId: "947d64b3985929e583fc0f12",
+      bucketId: "2d5f461dfdaeae7a98020d13",
       fileNamePrefix: "upload/examImg",
       maxFileCount: 1000, // Adjust as necessary for your needs
     });
@@ -247,4 +247,91 @@ async function getFileInfo(fileName) {
 
 // async function download
 
-module.exports = { generatekey, fetchkey, updateKey, deleteKey, cutomeColor };
+async function generateDownloadLink(fileName) {
+  try {
+    const authResponse = await b2.authorize();
+    // console.log("Authorization response:", authResponse.data);
+
+    // const bucketId = B2_BUCKET_ID;
+    // const bucketName = B2_BUCKET_NAME;
+    const bucketId = "2d5f461dfdaeae7a98020d13";
+    const bucketName = "DemoPRoject";
+
+    const fileNamePrefix = "upload/examImg"; // Ensure this is set correctly, example: 'sourceid/'
+    const fullPath = `${fileNamePrefix}${fileName}`; // Full path includes the prefix
+
+    const downloadAuth = await b2.getDownloadAuthorization({
+      bucketId,
+      fileNamePrefix,
+      validDurationInSeconds: 3600, // Valid for 1 hour
+      //b2ContentDisposition: 'inline'
+    });
+    console.log("downloadAuth", downloadAuth);
+
+    // console.log("Download authorization response:", downloadAuth);
+
+    if (!downloadAuth.data.authorizationToken) {
+      throw new Error("Authorization token is undefined.");
+    }
+    console.log("authResponse.data.downloadUrl", authResponse.data.downloadUrl);
+    const baseUrl = authResponse.data.downloadUrl + "/file/" + bucketName + "/";
+    const presignedUrl = `${baseUrl}${fullPath}?Authorization=${downloadAuth.data.authorizationToken}`;
+    console.log("presignedUrl", presignedUrl);
+
+    return presignedUrl;
+  } catch (error) {
+    console.error("Error generating presigned URL:", error);
+    return null;
+  }
+}
+async function getFileBackblazeByNameforKey(req, res) {
+  try {
+
+      const exsitExampage= await Exampage.aggregate([
+          {
+            $match:{
+              key:req.params.id
+            }
+          },
+      ])
+
+
+    const  backgroundImgName  = exsitExampage[0].backgroundImage;
+    const  logoName  = exsitExampage[0].logo;
+  //   if (!fileName) {
+  //     return res.status(404).json("File not provided");
+  //     // return responseHandler.ResponseUnsuccess(res, "File not provided");
+  //   }
+    // Fetch the file from Backblaze B2 using the fileId
+    const downloadResponse1 = await generateDownloadLink(backgroundImgName);
+    const downloadResponse2 = await generateDownloadLink(logoName);
+    // Handle potential errors (e.g., file not found, permission issues)
+    if (!downloadResponse1) {
+      return res.status(404).json("File not provided");
+    }
+    if (!downloadResponse2) {
+      return res.status(404).json("File not provided");
+    }
+    // const response1 = await fetch(downloadResponse1);
+    // const response2 = await fetch(downloadResponse2);
+    // const arrayBuffer1 = await response1.arrayBuffer();
+    // const arrayBuffer2 = await response2.arrayBuffer();
+    // const buffer1 = Buffer.from(arrayBuffer1);
+    // const buffer2 = Buffer.from(arrayBuffer2);
+
+    // Process the file using xlsx
+   
+
+    res.status(201).json({backgroundImage:downloadResponse1,logo:downloadResponse2,backgroundColor:exsitExampage[0].backgroundColor});
+    // return responseHandler.ResponseSuccessMessageWithData(
+    //   res,
+    //   downloadResponse,
+    //   "File fetched"
+    // );
+  } catch (error) {
+    // console.error("Error fetching file:", error);
+    return res.status(500).json(`error fetching while ${error}`);
+  }
+}
+
+module.exports = { generatekey, fetchkey, updateKey, deleteKey, cutomeColor,getFileBackblazeByNameforKey };

@@ -2,8 +2,8 @@ const multer = require("multer");
 const B2 = require("backblaze-b2");
 
 const b2 = new B2({
-  applicationKeyId: "0054d4389953cf20000000001",
-  applicationKey: "K005LmVnh1gEcuZbjYFoPe2RlgrwhAw",
+  applicationKeyId: "005df6ddeea82d30000000003",
+  applicationKey: "K005vhdyA34S1wOU9JpSpEYMIpRUPKE",
 });
 
 const storage = multer.diskStorage({
