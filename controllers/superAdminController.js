@@ -173,17 +173,17 @@ async function generateDownloadLink(fileName) {
       if (!downloadResponse2) {
         return res.status(404).json("File not provided");
       }
-      const response1 = await fetch(downloadResponse1);
-      const response2 = await fetch(downloadResponse2);
-      const arrayBuffer1 = await response1.arrayBuffer();
-      const arrayBuffer2 = await response2.arrayBuffer();
-      const buffer1 = Buffer.from(arrayBuffer1);
-      const buffer2 = Buffer.from(arrayBuffer2);
+      // const response1 = await fetch(downloadResponse1);
+      // const response2 = await fetch(downloadResponse2);
+      // const arrayBuffer1 = await response1.arrayBuffer();
+      // const arrayBuffer2 = await response2.arrayBuffer();
+      // const buffer1 = Buffer.from(arrayBuffer1);
+      // const buffer2 = Buffer.from(arrayBuffer2);
   
       // Process the file using xlsx
      
   
-      res.status(201).json("success");
+      res.status(201).json({backgroundImage:downloadResponse1,logo:downloadResponse2,backgroundColor:exsitExampage[0].backgroundColor});
       // return responseHandler.ResponseSuccessMessageWithData(
       //   res,
       //   downloadResponse,
