@@ -193,38 +193,34 @@ async function Uploadss(req, res) {
   const userAgent = req.header("user-agent"); // Get User-Agent from request
 
   try {
-    // Fetch the page using Axios to verify if it works with the provided User-Agent
-    // const response = await axios.get(url, {
-    //   timeout: 10000,
-    //   headers: {
-    //     "User-Agent": userAgent,
-    //   },
-    // });
-
-    // Configure Puppeteer options
+    const executablePath = await chromium.executablePath();
+    console.log('Chromium executable path:', executablePath);
+    
     const options = {
       args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: false,
+      executablePath,
+      headless: true, // Change to true for debugging
       ignoreHTTPSErrors: true,
       ignoreDefaultArgs: ["--disable-extensions"],
     };
 
     const browser = await puppeteer.launch(options);
-    console.log(`try `);
+    console.log('Browser launched');
+    
     const page = await browser.newPage();
+    console.log('New page created');
 
-    // Set the same User-Agent in Puppeteer
     await page.setUserAgent(userAgent);
+    console.log('User-Agent set:', userAgent);
 
     await page.goto(url, { waitUntil: "networkidle0" });
+    console.log(`Navigated to: ${url}`);
 
     const dimensions = await page.evaluate(() => ({
       width: window.screen.width,
       height: window.screen.height,
     }));
-    console.log(`2second ggg `);
     console.log(`Viewport dimensions: ${JSON.stringify(dimensions)}`);
 
     if (dimensions.width <= 0 || dimensions.height <= 0) {
@@ -232,7 +228,7 @@ async function Uploadss(req, res) {
         "Invalid viewport dimensions: width and height must be greater than 0."
       );
     }
-    console.log(`3second ggg `);
+
     await page.setViewport({
       width: dimensions.width,
       height: dimensions.height,
@@ -243,7 +239,6 @@ async function Uploadss(req, res) {
     });
 
     const screenshotPath = "upload/";
-
     const takeScreenshot = async () => {
       const {
         data: { uploadUrl, authorizationToken },
@@ -305,7 +300,6 @@ async function Uploadss(req, res) {
     res.status(500).json(`Error: ${error.message}`);
   }
 }
-
 async function generateDownloadLink(fileName) {
   try {
     const authResponse = await b2.authorize();

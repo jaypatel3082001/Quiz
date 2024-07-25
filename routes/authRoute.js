@@ -15,6 +15,7 @@ const {
   getFileBackblazeByName,
 } = require("../controllers/superAdminController");
 const { upload } = require("../middleware/multerMiddle");
+const { middlewareAuthforSuperAdmin } = require("../middleware/SuperadminMiddleware");
 // const user = require('../models/user');
 // const authchreckmid = ddd;
 const router = express.Router();
@@ -37,7 +38,7 @@ router.post(
 );
 router.get("/examlogin", getFileBackblazeByName);
 router.get("/refreshToken", middlewareAuthrefresh);
-router.delete("/delete/:id", deleteUser);
+router.delete("/delete/:id",middlewareAuthforSuperAdmin, deleteUser);
 // router.get('/protected-route', authenticateToken, async function hgj (req, res){
 //     // If token is verified and not expired, you can access the decoded user ID
 //     res.send('Access granted!');

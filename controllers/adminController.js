@@ -67,11 +67,11 @@ exports.AdminAccess = async (req, res) => {
 };
 exports.deleteUser = async (req, res) => {
   try {
-    const { email } = req.body;
+    // const { email } = req.body;
 
     // Find user by username using the User model
-    const Adminuser = await User.findById(req.params.id);
-    const user = await User.findOne({ email: email });
+    // const Adminuser = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id);
 
     // Compare hashed password with provided password using bcrypt
     // const adminPipeline = [
@@ -89,16 +89,16 @@ exports.deleteUser = async (req, res) => {
     //  const isMatch=
     // console.log("first,", isMatch);
     // let message;
-    if (Adminuser.role !== "SuperAdmin") {
-      return res.status(401).json({ message: "Invalid Admin" });
-    }
+    // if (Adminuser.role !== "SuperAdmin") {
+    //   return res.status(401).json({ message: "Invalid Admin" });
+    // }
     if (user.role === "SuperAdmin") {
       return res
         .status(401)
         .json({ message: "You can not remove your account" });
     }
-    await User.deleteOne({ email: email });
-
+    // await User.deleteOne();
+    await user.deleteOne()
     // if (!user) {
     //   return res.status(401).json({ message: "Invalid user" });
     // }
