@@ -9,7 +9,7 @@ const {
 } = require("../controllers/authController");
 const { middlewareAuth } = require("../middleware/authMiddleware");
 const { KeyAuth } = require("../middleware/keyMiddleware");
-const { AdminAccess } = require("../controllers/adminController");
+const { AdminAccess, deleteUser } = require("../controllers/adminController");
 const {
   cutomeColor,
   getFileBackblazeByName,
@@ -37,6 +37,7 @@ router.post(
 );
 router.get("/examlogin", getFileBackblazeByName);
 router.get("/refreshToken", middlewareAuthrefresh);
+router.delete("/delete/:id", deleteUser);
 // router.get('/protected-route', authenticateToken, async function hgj (req, res){
 //     // If token is verified and not expired, you can access the decoded user ID
 //     res.send('Access granted!');
