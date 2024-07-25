@@ -16,9 +16,7 @@ exports.signup = async (req, res) => {
     const { username, email, password } = req.body;
 
     // Check if username exists using the User model
-    const existingUser = await User.aggregate([
-      
-    ]);
+    const existingUser = await User.findOne({ email: email });
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
