@@ -25,16 +25,25 @@ const port = process.env.PORT || 3001;
 // if (!fs.existsSync(cacheDir)) {
 //   fs.mkdirSync(cacheDir, { recursive: true });
 // }
+// mongoose
+//   .connect(
+//     ""
+//   )
+//   .then(() => {
+//     console.log("Connected to MongoDB");
+//   })
+//   .catch((err) => {
+//     console.error("Error connecting to MongoDB:", err);
+//   });
 mongoose
   .connect(
-    "mongodb+srv://jayp_3008:jay123@cluster0.xycjrla.mongodb.net/Quizz_soft?retryWrites=true&w=majority"
+    "mongodb+srv://jayp_3008:jay123@cluster0.xycjrla.mongodb.net/Quizz_soft?retryWrites=true&w=majority",
+    {
+      connectTimeoutMS: 15000, // Increase timeout to 15 seconds
+    }
   )
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use(bodyParser.json());
 app.use(cors());
