@@ -104,28 +104,26 @@ exports.login = async (req, res) => {
       },
       "Hs235",
       {
-        expiresIn: "1m",
+        expiresIn: "5m",
       }
     );
     const dummytoken = jwt.sign(
       {
-      token :token,
-      data:{
-        email: user.email,
-        username: user.username,
-        role: user.role,
-        user: user._id,
-      }
-
+        token: token,
+        data: {
+          email: user.email,
+          username: user.username,
+          role: user.role,
+          user: user._id,
+        },
       },
       "Hs235",
       {
-        expiresIn: "10m",
+        expiresIn: "10h",
       }
     );
-    
 
-    res.status(200).json({data: {token, dummytoken} });
+    res.status(200).json({ data: { token, dummytoken } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error logging in" });
@@ -199,7 +197,7 @@ exports.userauth = async (req, res) => {
   // Get the current date and time
 };
 
-exports.middlewareAuthrefresh=async(req, res)=> {
+exports.middlewareAuthrefresh = async (req, res) => {
   // try {
   const authHeader = req.header("Authorization");
 
@@ -211,20 +209,13 @@ exports.middlewareAuthrefresh=async(req, res)=> {
 
   try {
     const isVerified = jwt.verify(jwttoken, "Hs235");
-    if(!isVerified.token || !isVerified.data){
-      res.status(404).json("Token is Invalid")
+    if (!isVerified.token || !isVerified.data) {
+      res.status(404).json("Token is Invalid");
     }
 
-    const token = jwt.sign(
-      
-        isVerified.data
-     ,
-      "Hs235",
-      {
-        expiresIn: "1m",
-      }
-    );
-  
+    const token = jwt.sign(isVerified.data, "Hs235", {
+      expiresIn: "5m",
+    });
 
     // if ((isVerified.role && isVerified.user) || isVerified.userEmail) {
     //   if(isVerified.role && isVerified.user){
@@ -234,12 +225,12 @@ exports.middlewareAuthrefresh=async(req, res)=> {
     //     }
     //   }
     return res.status(200).json({ token });
-    }
-    catch (error) {
-      return res.status(500).send({ message: `Something went wrong: ${error}` });
-    }
-    // return res.status(400).json({ message: "User is Unauthorised" });
-  } 
+  } catch (error) {
+    return res.status(500).send({ message: `Something went wrong: ${error}` });
+  }
+  // return res.status(400).json({ message: "User is Unauthorised" });
+};
+
 const formatDatew = (date) => {
   const year = date.getFullYear();
   const month = ("0" + (date.getMonth() + 1)).slice(-2);

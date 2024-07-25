@@ -212,13 +212,14 @@ async function Uploadss(req, res) {
     };
 
     const browser = await puppeteer.launch(options);
+    console.log(`try `);
     const page = await browser.newPage();
 
     // Set the same User-Agent in Puppeteer
     await page.setUserAgent(userAgent);
 
     await page.goto(url, { waitUntil: "networkidle0" });
-    console.log(`try `);
+
     const dimensions = await page.evaluate(() => ({
       width: window.screen.width,
       height: window.screen.height,
